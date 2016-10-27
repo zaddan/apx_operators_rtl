@@ -37,7 +37,7 @@ module apx_float_adder(
 
   reg       [3:0] state;
   
-  parameter NAB_M = 5'd20; //Num of Apx Bits for Mantisa
+  parameter NAB_M = 5'd23; //Num of Apx Bits for Mantisa
   parameter get_a         = 4'd0,
             get_b         = 4'd1,
             unpack        = 4'd2,
@@ -66,6 +66,7 @@ module apx_float_adder(
     case(state)
       get_a:
       begin
+        z <=31'b0; //added this to avoid getting xxx in the output
         s_input_a_ack <= 1;
         if (s_input_a_ack && input_a_stb) begin
           a <= input_a;

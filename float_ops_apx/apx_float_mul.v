@@ -36,7 +36,6 @@ module apx_float_multiplier(
 
   reg       [3:0] state;
   parameter NAB_M = 5'd10; 
-  parameter NAB_E = 5'd0; 
   parameter get_a         = 4'd0,
             get_b         = 4'd1,
             unpack        = 4'd2,
@@ -53,7 +52,7 @@ module apx_float_multiplier(
 
   reg       [31:0] a, b, z;
   reg       [23-NAB_M:0] a_m, b_m, z_m;
-  reg       [9-NAB_E:0] a_e, b_e, z_e;
+  reg       [9:0] a_e, b_e, z_e;
   reg       a_s, b_s, z_s;
   reg       guard, round_bit, sticky;
   reg       [49-2*NAB_M:0] product;
@@ -87,8 +86,8 @@ module apx_float_multiplier(
       begin
         a_m <= a[22 : NAB_M];
         b_m <= b[22 : NAB_M];
-        a_e <= a[30 : 23+NAB_E] - 127;
-        b_e <= b[30 : 23+NAB_E] - 127;
+        a_e <= a[30 : 23] - 127;
+        b_e <= b[30 : 23] - 127;
         a_s <= a[31];
         b_s <= b[31];
         state <= normalise_a;
