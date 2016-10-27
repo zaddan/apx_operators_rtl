@@ -1,5 +1,11 @@
 `timescale 1ns / 1ps
 
+`define assert(signal, value) \
+if (signal !== value) begin \
+    $display("ASSERTION FAILED in %m: signal != value"); \
+    $finish; \
+end
+
 module test_bench_tb;
   reg  clk;
   reg  rst;
@@ -14,10 +20,16 @@ module test_bench_tb;
   
   reg input_b_stb; //input_b_stb
   wire   input_b_ack;
-  wire   [31:0] output_z; //output_z
-  real output_z_reg; 
-  wire   output_z_stb;
-  wire   output_z_ack;
+  
+  wire   [31:0] output_z_acc; //output_z
+  wire   output_z_stb_acc;
+  wire   output_z_ack_acc;
+
+  wire   [31:0] output_z_apx; //output_z
+  wire   output_z_stb_apx;
+  wire   output_z_ack_apx;
+
+
 
   initial
   begin
@@ -29,8 +41,11 @@ module test_bench_tb;
   initial
   begin
     #2000000 
-    $display("adder output is %b", output_z);
-    $finish;
+    $display("accurate adder output is %b", output_z_acc);
+    $display("apx adder output is %b", output_z_apx);
+    `assert(output_z_acc, output_z_apx)
+    `assert(output_z_acc, 31'b0)
+$finish;
   
 end
 
@@ -81,7 +96,7 @@ end
   end
   
 
-  adder #(9) adder_39759952(
+  adder adder_39759952_acc(
     .clk(clk),
     .rst(rst),
     .input_a(input_a),
@@ -90,12 +105,12 @@ end
     .input_b(input_b),
     .input_b_stb(input_b_stb),
     .input_b_ack(input_b_ack),
-    .output_z(output_z),
-    .output_z_stb(output_z_stb),
-    .output_z_ack(output_z_ack));
+    .output_z(output_z_acc),
+    .output_z_stb(output_z_stb_acc),
+    .output_z_ack(output_z_ack_acc));
 
 
-  adder #(9) adder_39759952(
+  apx_float_adder #(0) adder_39759952_apx(
     .clk(clk),
     .rst(rst),
     .input_a(input_a),
@@ -104,8 +119,8 @@ end
     .input_b(input_b),
     .input_b_stb(input_b_stb),
     .input_b_ack(input_b_ack),
-    .output_z(output_z),
-    .output_z_stb(output_z_stb),
-    .output_z_ack(output_z_ack));
+    .output_z(output_z_apx),
+    .output_z_stb(output_z_stb_apx),
+    .output_z_ack(output_z_ack_apx));
 
 endmodule
