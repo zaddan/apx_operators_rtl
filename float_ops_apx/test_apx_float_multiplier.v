@@ -78,12 +78,12 @@ module test_bench_tb;
            #100 
            input_a_stb <= 1;
            input_b_stb <= 1;
-           #1000 
+           #2000 
            $display("====================================");
            $display("input_a is %x", input_a);
            $display("input_b is %x", input_b);
-           $display("accurate adder output is %x", output_z_acc);
-           $display("apx adder output is %x", output_z_apx);
+           $display("accurate multiplier output is %x", output_z_acc);
+           $display("apx multiplier output is %x", output_z_apx);
            $display(" ");
            output_z_ack_apx_reg <= 1;
            output_z_ack_acc_reg <= 1;
@@ -113,7 +113,7 @@ module test_bench_tb;
   end
 
 
-  adder adder_39759952_acc(
+  multiplier multiplier_39759952_acc(
     .clk(clk),
     .rst(rst),
     .input_a(input_a),
@@ -127,7 +127,7 @@ module test_bench_tb;
     .output_z_ack(output_z_ack_acc_reg));
 
 
-  apx_float_adder #(3) adder_39759952_apx(
+  apx_float_multiplier #(3) multiplier_39759952_apx(
     .clk(clk),
     .rst(rst),
     .input_a(input_a),

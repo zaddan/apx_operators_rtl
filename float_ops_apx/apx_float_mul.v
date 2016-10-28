@@ -64,6 +64,7 @@ module apx_float_multiplier(
 
       get_a:
       begin
+        z <= 0;
         s_input_a_ack <= 1;
         if (s_input_a_ack && input_a_stb) begin
           a <= input_a;
@@ -90,7 +91,7 @@ module apx_float_multiplier(
         b_e <= b[30 : 23] - 127;
         a_s <= a[31];
         b_s <= b[31];
-        state <= normalise_a;
+        state <= special_cases;
       end
       special_cases:
       begin
