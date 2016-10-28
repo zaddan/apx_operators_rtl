@@ -7,7 +7,6 @@ if (signal !== value) begin \
 end
 
 
-`define BT_RND
 module test_bench_tb;
   reg [31:0] input_a; //input_a
   
@@ -23,7 +22,9 @@ module test_bench_tb;
   initial $readmemh("int_values_in_hex.txt", data);
   integer i;
   parameter NAB = 1;  
-  
+  parameter BT_RND = 0;
+
+
   //reset 
  /* 
   initial
@@ -43,8 +44,19 @@ module test_bench_tb;
     end
   end
  */
-  
-  //sample input, generate results, compare results 
+integer f;
+initial begin
+    if (BT_RND == 1) begin
+        f = $fopen("BT_RND.txt","w");
+    end
+    else begin
+        f = $fopen("TRUNCATION.txt","w");
+    end
+end
+
+
+
+//sample input, generate results, compare results 
   initial
   begin
       for (i=0; i < number_of_input_pairs; i = i + 1)begin
@@ -58,6 +70,12 @@ module test_bench_tb;
            $display("bta_trunc adder output is %x", output_c_bta_trunc);
            $display("bta_rnd adder output is %x", output_c_bta_rnd);
            $display("acc adder output is %x", output_c_acc);
+           if (BT_RND == 1) begin 
+               $fwrite(f,"%x %x %x\n",input_a, input_b , output_c_bta_rnd);
+           end
+           else begin
+               $fwrite(f,"%x %x %x\n",input_a, input_b, output_c_bta_trunc);
+           end
            if (NAB == 0)begin
            `assert(output_c_acc, output_c_bta_trunc)
            `assert(output_c_acc, output_c_bta_rnd)
@@ -80,7 +98,7 @@ module test_bench_tb;
   initial
   begin
       #2000000 
-
+       $fclose(f); 
       $finish;
   end
 
