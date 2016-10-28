@@ -87,8 +87,13 @@ module apx_float_adder(
 
       unpack:
       begin
-        a_m <= {a[22 : 0+NAB_M], 3'd0};
-        b_m <= {b[22 : 0+NAB_M], 3'd0};
+        `ifdef BT_RND 
+            a_m <= {a[22 : 0+NAB_M], 3'd0};
+            b_m <= {b[22 : 0+NAB_M], 3'd0};
+        `else 
+            a_m <= {a[22 : 0+NAB_M], 3'd0};
+            b_m <= {b[22 : 0+NAB_M], 3'd0};
+        `endif
         a_e <= a[30 : 23] - 127;
         b_e <= b[30 : 23] - 127;
         a_s <= a[31];

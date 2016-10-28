@@ -6,6 +6,8 @@ if (signal !== value) begin \
     //$finish; \
 end
 
+`define BT_RND
+
 module test_bench_tb;
   reg  clk;
   reg  rst;
@@ -32,7 +34,7 @@ module test_bench_tb;
   wire   output_z_ack_apx;
   reg output_z_ack_apx_reg;
   
-  parameter number_of_input_pairs = 8; 
+  parameter number_of_input_pairs = 50; 
   //variables to read from a file 
   reg [31:0] data [0:2*number_of_input_pairs - 1];
   // initialize the hexadecimal reads from the vectors.txt file
@@ -107,7 +109,7 @@ module test_bench_tb;
   //finish
   initial
   begin
-      #2000000 
+      #2000000
 
       $finish;
   end
@@ -127,7 +129,7 @@ module test_bench_tb;
     .output_z_ack(output_z_ack_acc_reg));
 
 
-  apx_float_multiplier #(3) multiplier_39759952_apx(
+  apx_float_multiplier #(0) multiplier_39759952_apx(
     .clk(clk),
     .rst(rst),
     .input_a(input_a),

@@ -1,0 +1,4290 @@
+ncverilog(64): 06.10-s002: (c) Copyright 1995-2007 Cadence Design Systems, Inc.
+TOOL:	ncverilog(64)	06.10-s002: Started on Oct 28, 2016 at 12:45:24 CDT
+ncverilog
+	test_apx_int_adder.v
+	bta_trunc.v
+	acc_adder.v
+	bta.v
+	rnd2.v
+	+access+rw
+Recompiling... reason: file './test_apx_int_adder.v' is newer than expected.
+	expected: Fri Oct 28 12:44:36 2016
+	actual:   Fri Oct 28 12:45:20 2016
+file: test_apx_int_adder.v
+	module worklib.test_bench_tb:v
+		errors: 0, warnings: 0
+file: bta_trunc.v
+file: acc_adder.v
+file: bta.v
+file: rnd2.v
+		Caching library 'worklib' ....... Done
+	Elaborating the design hierarchy:
+    .a(input_a),
+             |
+ncelab: *W,CUVMPW (./test_apx_int_adder.v,94|13): port sizes differ in port connection.
+    .b(input_b),
+             |
+ncelab: *W,CUVMPW (./test_apx_int_adder.v,95|13): port sizes differ in port connection.
+    .c(output_c_acc));
+                  |
+ncelab: *W,CUVMPW (./test_apx_int_adder.v,96|18): port sizes differ in port connection.
+	Building instance overlay tables: .................... Done
+	Generating native compiled code:
+		worklib.test_bench_tb:v <0x613b3462>
+			streams:   7, words:  7378
+	Loading native compiled code:     .................... Done
+	Building instance specific data structures.
+	Design hierarchy summary:
+		                 Instances  Unique
+		Modules:                 6       5
+		Registers:               6       5
+		Scalar wires:            2       -
+		Expanded wires:         33       1
+		Vectored wires:         16       -
+		Always blocks:           2       1
+		Initial blocks:          4       4
+		Cont. assignments:       5       6
+		Pseudo assignments:      4       4
+		Simulation timescale:  1ps
+	Writing initial simulation snapshot: worklib.test_bench_tb:v
+Loading snapshot worklib.test_bench_tb:v .................... Done
+ncsim> source /usr/local/packages/cadence_2007/ius61/tools/inca/files/ncsimrc
+ncsim> run
+====================================
+input_a is 0000055e
+input_b is 000014ce
+bta_trunc adder output is 00001a2c
+bta_rnd adder output is 00001a2c
+acc adder output is 00001a2c
+ 
+====================================
+input_a is 00000d14
+input_b is 00002674
+bta_trunc adder output is 00003388
+bta_rnd adder output is 00003388
+acc adder output is 00003388
+ 
+====================================
+input_a is 00002165
+input_b is 00000fc8
+bta_trunc adder output is 0000312c
+bta_rnd adder output is 0000312e
+acc adder output is 0000312d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000cd1
+input_b is 00000428
+bta_trunc adder output is 000010f8
+bta_rnd adder output is 000010fa
+acc adder output is 000010f9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000015e7
+input_b is 000014a9
+bta_trunc adder output is 00002a8e
+bta_rnd adder output is 00002a92
+acc adder output is 00002a90
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is ffffffbf
+input_b is fffffea4
+bta_trunc adder output is fffffe62
+bta_rnd adder output is fffffe64
+acc adder output is fffffe63
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000013e8
+input_b is 0000052f
+bta_trunc adder output is 00001916
+bta_rnd adder output is 00001918
+acc adder output is 00001917
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001beb
+input_b is 0000138d
+bta_trunc adder output is 00002f76
+bta_rnd adder output is 00002f7a
+acc adder output is 00002f78
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffe3b
+input_b is 00000f73
+bta_trunc adder output is 00000dac
+bta_rnd adder output is 00000db0
+acc adder output is 00000dae
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000187c
+input_b is 000015b1
+bta_trunc adder output is 00002e2c
+bta_rnd adder output is 00002e2e
+acc adder output is 00002e2d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffdbf
+input_b is 000018c0
+bta_trunc adder output is 0000167e
+bta_rnd adder output is 00001680
+acc adder output is 0000167f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001eda
+input_b is 00000def
+bta_trunc adder output is 00002cc8
+bta_rnd adder output is 00002cca
+acc adder output is 00002cc9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000011ce
+input_b is 000019bc
+bta_trunc adder output is 00002b8a
+bta_rnd adder output is 00002b8a
+acc adder output is 00002b8a
+ 
+====================================
+input_a is fffffc98
+input_b is 000020ab
+bta_trunc adder output is 00001d42
+bta_rnd adder output is 00001d44
+acc adder output is 00001d43
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000d9a
+input_b is 000007d7
+bta_trunc adder output is 00001570
+bta_rnd adder output is 00001572
+acc adder output is 00001571
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001ef8
+input_b is 00002077
+bta_trunc adder output is 00003f6e
+bta_rnd adder output is 00003f70
+acc adder output is 00003f6f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000846
+input_b is ffffffca
+bta_trunc adder output is 00000810
+bta_rnd adder output is 00000810
+acc adder output is 00000810
+ 
+====================================
+input_a is 00001c48
+input_b is fffffeef
+bta_trunc adder output is 00001b36
+bta_rnd adder output is 00001b38
+acc adder output is 00001b37
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001279
+input_b is 00001a17
+bta_trunc adder output is 00002c8e
+bta_rnd adder output is 00002c92
+acc adder output is 00002c90
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000135
+input_b is 00000ce1
+bta_trunc adder output is 00000e14
+bta_rnd adder output is 00000e18
+acc adder output is 00000e16
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffe9c
+input_b is 00000c9d
+bta_trunc adder output is 00000b38
+bta_rnd adder output is 00000b3a
+acc adder output is 00000b39
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000004e6
+input_b is 0000048c
+bta_trunc adder output is 00000972
+bta_rnd adder output is 00000972
+acc adder output is 00000972
+ 
+====================================
+input_a is 00001c6b
+input_b is 0000021d
+bta_trunc adder output is 00001e86
+bta_rnd adder output is 00001e8a
+acc adder output is 00001e88
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000021f0
+input_b is 00000c03
+bta_trunc adder output is 00002df2
+bta_rnd adder output is 00002df4
+acc adder output is 00002df3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000005ac
+input_b is 00002545
+bta_trunc adder output is 00002af0
+bta_rnd adder output is 00002af2
+acc adder output is 00002af1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001b24
+input_b is 00000229
+bta_trunc adder output is 00001d4c
+bta_rnd adder output is 00001d4e
+acc adder output is 00001d4d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001a5c
+input_b is 0000050c
+bta_trunc adder output is 00001f68
+bta_rnd adder output is 00001f68
+acc adder output is 00001f68
+ 
+====================================
+input_a is 00000415
+input_b is 00000810
+bta_trunc adder output is 00000c24
+bta_rnd adder output is 00000c26
+acc adder output is 00000c25
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001b9b
+input_b is fffffe39
+bta_trunc adder output is 000019d2
+bta_rnd adder output is 000019d6
+acc adder output is 000019d4
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000c4f
+input_b is 00002297
+bta_trunc adder output is 00002ee4
+bta_rnd adder output is 00002ee8
+acc adder output is 00002ee6
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000689
+input_b is 00001ca7
+bta_trunc adder output is 0000232e
+bta_rnd adder output is 00002332
+acc adder output is 00002330
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002522
+input_b is 0000199a
+bta_trunc adder output is 00003ebc
+bta_rnd adder output is 00003ebc
+acc adder output is 00003ebc
+ 
+====================================
+input_a is 0000061c
+input_b is 00001912
+bta_trunc adder output is 00001f2e
+bta_rnd adder output is 00001f2e
+acc adder output is 00001f2e
+ 
+====================================
+input_a is 00000a80
+input_b is 00000c59
+bta_trunc adder output is 000016d8
+bta_rnd adder output is 000016da
+acc adder output is 000016d9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000068e
+input_b is 000002de
+bta_trunc adder output is 0000096c
+bta_rnd adder output is 0000096c
+acc adder output is 0000096c
+ 
+====================================
+input_a is 00000174
+input_b is 00001753
+bta_trunc adder output is 000018c6
+bta_rnd adder output is 000018c8
+acc adder output is 000018c7
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000018d6
+input_b is 0000059d
+bta_trunc adder output is 00001e72
+bta_rnd adder output is 00001e74
+acc adder output is 00001e73
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000004f9
+input_b is 00000a74
+bta_trunc adder output is 00000f6c
+bta_rnd adder output is 00000f6e
+acc adder output is 00000f6d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001ae7
+input_b is 0000150f
+bta_trunc adder output is 00002ff4
+bta_rnd adder output is 00002ff8
+acc adder output is 00002ff6
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000684
+input_b is 00000553
+bta_trunc adder output is 00000bd6
+bta_rnd adder output is 00000bd8
+acc adder output is 00000bd7
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000382
+input_b is 0000097d
+bta_trunc adder output is 00000cfe
+bta_rnd adder output is 00000d00
+acc adder output is 00000cff
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001dbd
+input_b is 000014c9
+bta_trunc adder output is 00003284
+bta_rnd adder output is 00003288
+acc adder output is 00003286
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001236
+input_b is 00001af5
+bta_trunc adder output is 00002d2a
+bta_rnd adder output is 00002d2c
+acc adder output is 00002d2b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000179b
+input_b is 00001258
+bta_trunc adder output is 000029f2
+bta_rnd adder output is 000029f4
+acc adder output is 000029f3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is ffffffd1
+input_b is 000015e4
+bta_trunc adder output is 000015b4
+bta_rnd adder output is 000015b6
+acc adder output is 000015b5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000a93
+input_b is 000013f0
+bta_trunc adder output is 00001e82
+bta_rnd adder output is 00001e84
+acc adder output is 00001e83
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000207b
+input_b is 00000ce6
+bta_trunc adder output is 00002d60
+bta_rnd adder output is 00002d62
+acc adder output is 00002d61
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001cb6
+input_b is 00001fef
+bta_trunc adder output is 00003ca4
+bta_rnd adder output is 00003ca6
+acc adder output is 00003ca5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000005de
+input_b is 00001e77
+bta_trunc adder output is 00002454
+bta_rnd adder output is 00002456
+acc adder output is 00002455
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000026f7
+input_b is 0000247d
+bta_trunc adder output is 00004b72
+bta_rnd adder output is 00004b76
+acc adder output is 00004b74
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000014af
+input_b is 0000224c
+bta_trunc adder output is 000036fa
+bta_rnd adder output is 000036fc
+acc adder output is 000036fb
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffdb9
+input_b is 0000087e
+bta_trunc adder output is 00000636
+bta_rnd adder output is 00000638
+acc adder output is 00000637
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002588
+input_b is 00001a84
+bta_trunc adder output is 0000400c
+bta_rnd adder output is 0000400c
+acc adder output is 0000400c
+ 
+====================================
+input_a is ffffff96
+input_b is 000024ad
+bta_trunc adder output is 00002442
+bta_rnd adder output is 00002444
+acc adder output is 00002443
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000d15
+input_b is 000013ae
+bta_trunc adder output is 000020c2
+bta_rnd adder output is 000020c4
+acc adder output is 000020c3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001017
+input_b is 00000ec9
+bta_trunc adder output is 00001ede
+bta_rnd adder output is 00001ee2
+acc adder output is 00001ee0
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002251
+input_b is 0000110c
+bta_trunc adder output is 0000335c
+bta_rnd adder output is 0000335e
+acc adder output is 0000335d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000002e5
+input_b is 00001dc5
+bta_trunc adder output is 000020a8
+bta_rnd adder output is 000020ac
+acc adder output is 000020aa
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002040
+input_b is 000021ec
+bta_trunc adder output is 0000422c
+bta_rnd adder output is 0000422c
+acc adder output is 0000422c
+ 
+====================================
+input_a is 00001bc4
+input_b is 00000f15
+bta_trunc adder output is 00002ad8
+bta_rnd adder output is 00002ada
+acc adder output is 00002ad9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001e79
+input_b is 000004d6
+bta_trunc adder output is 0000234e
+bta_rnd adder output is 00002350
+acc adder output is 0000234f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000d53
+input_b is 000003b2
+bta_trunc adder output is 00001104
+bta_rnd adder output is 00001106
+acc adder output is 00001105
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001b00
+input_b is 0000068c
+bta_trunc adder output is 0000218c
+bta_rnd adder output is 0000218c
+acc adder output is 0000218c
+ 
+====================================
+input_a is 00000df7
+input_b is 0000219b
+bta_trunc adder output is 00002f90
+bta_rnd adder output is 00002f94
+acc adder output is 00002f92
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000017bb
+input_b is 00000ac9
+bta_trunc adder output is 00002282
+bta_rnd adder output is 00002286
+acc adder output is 00002284
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000042c
+input_b is 00001e69
+bta_trunc adder output is 00002294
+bta_rnd adder output is 00002296
+acc adder output is 00002295
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001df1
+input_b is fffffcc4
+bta_trunc adder output is 00001ab4
+bta_rnd adder output is 00001ab6
+acc adder output is 00001ab5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000ceb
+input_b is 00001531
+bta_trunc adder output is 0000221a
+bta_rnd adder output is 0000221e
+acc adder output is 0000221c
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000559
+input_b is 000006ec
+bta_trunc adder output is 00000c44
+bta_rnd adder output is 00000c46
+acc adder output is 00000c45
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000b98
+input_b is 00001876
+bta_trunc adder output is 0000240e
+bta_rnd adder output is 0000240e
+acc adder output is 0000240e
+ 
+====================================
+input_a is 00002205
+input_b is 000018b3
+bta_trunc adder output is 00003ab6
+bta_rnd adder output is 00003aba
+acc adder output is 00003ab8
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002035
+input_b is 0000023a
+bta_trunc adder output is 0000226e
+bta_rnd adder output is 00002270
+acc adder output is 0000226f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000266b
+input_b is 00000db6
+bta_trunc adder output is 00003420
+bta_rnd adder output is 00003422
+acc adder output is 00003421
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000016b6
+input_b is ffffff04
+bta_trunc adder output is 000015ba
+bta_rnd adder output is 000015ba
+acc adder output is 000015ba
+ 
+====================================
+input_a is 000008b4
+input_b is 00000997
+bta_trunc adder output is 0000124a
+bta_rnd adder output is 0000124c
+acc adder output is 0000124b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000000da
+input_b is 0000231d
+bta_trunc adder output is 000023f6
+bta_rnd adder output is 000023f8
+acc adder output is 000023f7
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000016ac
+input_b is 00001306
+bta_trunc adder output is 000029b2
+bta_rnd adder output is 000029b2
+acc adder output is 000029b2
+ 
+====================================
+input_a is 00001b2b
+input_b is 00000a01
+bta_trunc adder output is 0000252a
+bta_rnd adder output is 0000252e
+acc adder output is 0000252c
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000081a
+input_b is 000024d0
+bta_trunc adder output is 00002cea
+bta_rnd adder output is 00002cea
+acc adder output is 00002cea
+ 
+====================================
+input_a is 000005c8
+input_b is 00000746
+bta_trunc adder output is 00000d0e
+bta_rnd adder output is 00000d0e
+acc adder output is 00000d0e
+ 
+====================================
+input_a is 00001456
+input_b is 00001817
+bta_trunc adder output is 00002c6c
+bta_rnd adder output is 00002c6e
+acc adder output is 00002c6d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffd87
+input_b is 00001cc9
+bta_trunc adder output is 00001a4e
+bta_rnd adder output is 00001a52
+acc adder output is 00001a50
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000c0a
+input_b is 000021fd
+bta_trunc adder output is 00002e06
+bta_rnd adder output is 00002e08
+acc adder output is 00002e07
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000022e1
+input_b is 00001d49
+bta_trunc adder output is 00004028
+bta_rnd adder output is 0000402c
+acc adder output is 0000402a
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001043
+input_b is 00001744
+bta_trunc adder output is 00002786
+bta_rnd adder output is 00002788
+acc adder output is 00002787
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000004c4
+input_b is 00000964
+bta_trunc adder output is 00000e28
+bta_rnd adder output is 00000e28
+acc adder output is 00000e28
+ 
+====================================
+input_a is 00001dc4
+input_b is 0000085a
+bta_trunc adder output is 0000261e
+bta_rnd adder output is 0000261e
+acc adder output is 0000261e
+ 
+====================================
+input_a is 00002032
+input_b is 00001259
+bta_trunc adder output is 0000328a
+bta_rnd adder output is 0000328c
+acc adder output is 0000328b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000807
+input_b is 00002136
+bta_trunc adder output is 0000293c
+bta_rnd adder output is 0000293e
+acc adder output is 0000293d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is ffffff7e
+input_b is 00001d65
+bta_trunc adder output is 00001ce2
+bta_rnd adder output is 00001ce4
+acc adder output is 00001ce3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000011d8
+input_b is 00002414
+bta_trunc adder output is 000035ec
+bta_rnd adder output is 000035ec
+acc adder output is 000035ec
+ 
+====================================
+input_a is 00002279
+input_b is fffffc9f
+bta_trunc adder output is 00001f16
+bta_rnd adder output is 00001f1a
+acc adder output is 00001f18
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000a66
+input_b is 00001533
+bta_trunc adder output is 00001f98
+bta_rnd adder output is 00001f9a
+acc adder output is 00001f99
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000223e
+input_b is fffffc8a
+bta_trunc adder output is 00001ec8
+bta_rnd adder output is 00001ec8
+acc adder output is 00001ec8
+ 
+====================================
+input_a is 000001f3
+input_b is 00000153
+bta_trunc adder output is 00000344
+bta_rnd adder output is 00000348
+acc adder output is 00000346
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000f5a
+input_b is 00000487
+bta_trunc adder output is 000013e0
+bta_rnd adder output is 000013e2
+acc adder output is 000013e1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000ae0
+input_b is 00000c4f
+bta_trunc adder output is 0000172e
+bta_rnd adder output is 00001730
+acc adder output is 0000172f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001102
+input_b is 000017c8
+bta_trunc adder output is 000028ca
+bta_rnd adder output is 000028ca
+acc adder output is 000028ca
+ 
+====================================
+input_a is 00000eb8
+input_b is 000015c4
+bta_trunc adder output is 0000247c
+bta_rnd adder output is 0000247c
+acc adder output is 0000247c
+ 
+====================================
+input_a is 00002538
+input_b is fffffee7
+bta_trunc adder output is 0000241e
+bta_rnd adder output is 00002420
+acc adder output is 0000241f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffd32
+input_b is ffffff1a
+bta_trunc adder output is fffffc4c
+bta_rnd adder output is fffffc4c
+acc adder output is fffffc4c
+ 
+====================================
+input_a is 000006c8
+input_b is 00001196
+bta_trunc adder output is 0000185e
+bta_rnd adder output is 0000185e
+acc adder output is 0000185e
+ 
+====================================
+input_a is 00000a1e
+input_b is 0000006f
+bta_trunc adder output is 00000a8c
+bta_rnd adder output is 00000a8e
+acc adder output is 00000a8d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000158
+input_b is 000001c4
+bta_trunc adder output is 0000031c
+bta_rnd adder output is 0000031c
+acc adder output is 0000031c
+ 
+====================================
+input_a is 000010e2
+input_b is 00000e30
+bta_trunc adder output is 00001f12
+bta_rnd adder output is 00001f12
+acc adder output is 00001f12
+ 
+====================================
+input_a is 00000eb9
+input_b is fffffddb
+bta_trunc adder output is 00000c92
+bta_rnd adder output is 00000c96
+acc adder output is 00000c94
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000023a6
+input_b is 00000275
+bta_trunc adder output is 0000261a
+bta_rnd adder output is 0000261c
+acc adder output is 0000261b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001ec5
+input_b is 00001ddb
+bta_trunc adder output is 00003c9e
+bta_rnd adder output is 00003ca2
+acc adder output is 00003ca0
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000faa
+input_b is 00000a58
+bta_trunc adder output is 00001a02
+bta_rnd adder output is 00001a02
+acc adder output is 00001a02
+ 
+====================================
+input_a is 00000a9c
+input_b is 000025e8
+bta_trunc adder output is 00003084
+bta_rnd adder output is 00003084
+acc adder output is 00003084
+ 
+====================================
+input_a is 00001c00
+input_b is 00000052
+bta_trunc adder output is 00001c52
+bta_rnd adder output is 00001c52
+acc adder output is 00001c52
+ 
+====================================
+input_a is ffffff82
+input_b is 0000169e
+bta_trunc adder output is 00001620
+bta_rnd adder output is 00001620
+acc adder output is 00001620
+ 
+====================================
+input_a is 00002680
+input_b is 000026b6
+bta_trunc adder output is 00004d36
+bta_rnd adder output is 00004d36
+acc adder output is 00004d36
+ 
+====================================
+input_a is 00000870
+input_b is 00000cf0
+bta_trunc adder output is 00001560
+bta_rnd adder output is 00001560
+acc adder output is 00001560
+ 
+====================================
+input_a is 000001fa
+input_b is fffffec1
+bta_trunc adder output is 000000ba
+bta_rnd adder output is 000000bc
+acc adder output is 000000bb
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002302
+input_b is 00000abf
+bta_trunc adder output is 00002dc0
+bta_rnd adder output is 00002dc2
+acc adder output is 00002dc1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000119a
+input_b is 00000eac
+bta_trunc adder output is 00002046
+bta_rnd adder output is 00002046
+acc adder output is 00002046
+ 
+====================================
+input_a is 000006b3
+input_b is fffffd2f
+bta_trunc adder output is 000003e0
+bta_rnd adder output is 000003e4
+acc adder output is 000003e2
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001796
+input_b is 0000097c
+bta_trunc adder output is 00002112
+bta_rnd adder output is 00002112
+acc adder output is 00002112
+ 
+====================================
+input_a is 00001680
+input_b is 00001ade
+bta_trunc adder output is 0000315e
+bta_rnd adder output is 0000315e
+acc adder output is 0000315e
+ 
+====================================
+input_a is 00001484
+input_b is 00000ce3
+bta_trunc adder output is 00002166
+bta_rnd adder output is 00002168
+acc adder output is 00002167
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001a08
+input_b is 00000a56
+bta_trunc adder output is 0000245e
+bta_rnd adder output is 0000245e
+acc adder output is 0000245e
+ 
+====================================
+input_a is fffffeae
+input_b is 000008ca
+bta_trunc adder output is 00000778
+bta_rnd adder output is 00000778
+acc adder output is 00000778
+ 
+====================================
+input_a is 000020f4
+input_b is 00000d0c
+bta_trunc adder output is 00002e00
+bta_rnd adder output is 00002e00
+acc adder output is 00002e00
+ 
+====================================
+input_a is 00001ffd
+input_b is 00000668
+bta_trunc adder output is 00002664
+bta_rnd adder output is 00002666
+acc adder output is 00002665
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002014
+input_b is 000018a1
+bta_trunc adder output is 000038b4
+bta_rnd adder output is 000038b6
+acc adder output is 000038b5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000016b4
+input_b is ffffff07
+bta_trunc adder output is 000015ba
+bta_rnd adder output is 000015bc
+acc adder output is 000015bb
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001a24
+input_b is 00000ac9
+bta_trunc adder output is 000024ec
+bta_rnd adder output is 000024ee
+acc adder output is 000024ed
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000007b6
+input_b is fffffc4a
+bta_trunc adder output is 00000400
+bta_rnd adder output is 00000400
+acc adder output is 00000400
+ 
+====================================
+input_a is fffffef0
+input_b is fffffe35
+bta_trunc adder output is fffffd24
+bta_rnd adder output is fffffd26
+acc adder output is fffffd25
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001494
+input_b is 00001b89
+bta_trunc adder output is 0000301c
+bta_rnd adder output is 0000301e
+acc adder output is 0000301d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000f9a
+input_b is 00000e37
+bta_trunc adder output is 00001dd0
+bta_rnd adder output is 00001dd2
+acc adder output is 00001dd1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001d5f
+input_b is 0000128f
+bta_trunc adder output is 00002fec
+bta_rnd adder output is 00002ff0
+acc adder output is 00002fee
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000015fc
+input_b is 00000c31
+bta_trunc adder output is 0000222c
+bta_rnd adder output is 0000222e
+acc adder output is 0000222d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000fce
+input_b is 00000eda
+bta_trunc adder output is 00001ea8
+bta_rnd adder output is 00001ea8
+acc adder output is 00001ea8
+ 
+====================================
+input_a is 00001dc9
+input_b is 00000d02
+bta_trunc adder output is 00002aca
+bta_rnd adder output is 00002acc
+acc adder output is 00002acb
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000020cc
+input_b is 00000ce3
+bta_trunc adder output is 00002dae
+bta_rnd adder output is 00002db0
+acc adder output is 00002daf
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000010f8
+input_b is 00000fc0
+bta_trunc adder output is 000020b8
+bta_rnd adder output is 000020b8
+acc adder output is 000020b8
+ 
+====================================
+input_a is 00001eed
+input_b is 0000254c
+bta_trunc adder output is 00004438
+bta_rnd adder output is 0000443a
+acc adder output is 00004439
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001bc7
+input_b is 00001c4a
+bta_trunc adder output is 00003810
+bta_rnd adder output is 00003812
+acc adder output is 00003811
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000216c
+input_b is 00000fb3
+bta_trunc adder output is 0000311e
+bta_rnd adder output is 00003120
+acc adder output is 0000311f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000005ce
+input_b is 00000def
+bta_trunc adder output is 000013bc
+bta_rnd adder output is 000013be
+acc adder output is 000013bd
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffe99
+input_b is 0000268a
+bta_trunc adder output is 00002522
+bta_rnd adder output is 00002524
+acc adder output is 00002523
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001b80
+input_b is 00000f46
+bta_trunc adder output is 00002ac6
+bta_rnd adder output is 00002ac6
+acc adder output is 00002ac6
+ 
+====================================
+input_a is 00002528
+input_b is 00002131
+bta_trunc adder output is 00004658
+bta_rnd adder output is 0000465a
+acc adder output is 00004659
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000c42
+input_b is 000019da
+bta_trunc adder output is 0000261c
+bta_rnd adder output is 0000261c
+acc adder output is 0000261c
+ 
+====================================
+input_a is 00000154
+input_b is 00001949
+bta_trunc adder output is 00001a9c
+bta_rnd adder output is 00001a9e
+acc adder output is 00001a9d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffdad
+input_b is 00001161
+bta_trunc adder output is 00000f0c
+bta_rnd adder output is 00000f10
+acc adder output is 00000f0e
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000002d0
+input_b is 00000326
+bta_trunc adder output is 000005f6
+bta_rnd adder output is 000005f6
+acc adder output is 000005f6
+ 
+====================================
+input_a is 00001a53
+input_b is 00001c3e
+bta_trunc adder output is 00003690
+bta_rnd adder output is 00003692
+acc adder output is 00003691
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000de1
+input_b is 00000248
+bta_trunc adder output is 00001028
+bta_rnd adder output is 0000102a
+acc adder output is 00001029
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001f0f
+input_b is 00000263
+bta_trunc adder output is 00002170
+bta_rnd adder output is 00002174
+acc adder output is 00002172
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000162a
+input_b is 000000fc
+bta_trunc adder output is 00001726
+bta_rnd adder output is 00001726
+acc adder output is 00001726
+ 
+====================================
+input_a is 00000d2f
+input_b is 00001ddd
+bta_trunc adder output is 00002b0a
+bta_rnd adder output is 00002b0e
+acc adder output is 00002b0c
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000086a
+input_b is 00001655
+bta_trunc adder output is 00001ebe
+bta_rnd adder output is 00001ec0
+acc adder output is 00001ebf
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000014e
+input_b is fffffefa
+bta_trunc adder output is 00000048
+bta_rnd adder output is 00000048
+acc adder output is 00000048
+ 
+====================================
+input_a is 00000662
+input_b is 00000721
+bta_trunc adder output is 00000d82
+bta_rnd adder output is 00000d84
+acc adder output is 00000d83
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000083f
+input_b is 0000170e
+bta_trunc adder output is 00001f4c
+bta_rnd adder output is 00001f4e
+acc adder output is 00001f4d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000328
+input_b is 00001f54
+bta_trunc adder output is 0000227c
+bta_rnd adder output is 0000227c
+acc adder output is 0000227c
+ 
+====================================
+input_a is 000016d9
+input_b is 0000115f
+bta_trunc adder output is 00002836
+bta_rnd adder output is 0000283a
+acc adder output is 00002838
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000015c3
+input_b is 00001feb
+bta_trunc adder output is 000035ac
+bta_rnd adder output is 000035b0
+acc adder output is 000035ae
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000005ec
+input_b is 00002141
+bta_trunc adder output is 0000272c
+bta_rnd adder output is 0000272e
+acc adder output is 0000272d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffd3c
+input_b is fffffc74
+bta_trunc adder output is fffff9b0
+bta_rnd adder output is fffff9b0
+acc adder output is fffff9b0
+ 
+====================================
+input_a is 000009a2
+input_b is 00001341
+bta_trunc adder output is 00001ce2
+bta_rnd adder output is 00001ce4
+acc adder output is 00001ce3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001086
+input_b is 000001dd
+bta_trunc adder output is 00001262
+bta_rnd adder output is 00001264
+acc adder output is 00001263
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001d6f
+input_b is 000008fd
+bta_trunc adder output is 0000266a
+bta_rnd adder output is 0000266e
+acc adder output is 0000266c
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000b3b
+input_b is 00002133
+bta_trunc adder output is 00002c6c
+bta_rnd adder output is 00002c70
+acc adder output is 00002c6e
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000081
+input_b is 0000093c
+bta_trunc adder output is 000009bc
+bta_rnd adder output is 000009be
+acc adder output is 000009bd
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000022ab
+input_b is 0000246e
+bta_trunc adder output is 00004718
+bta_rnd adder output is 0000471a
+acc adder output is 00004719
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffe4a
+input_b is 0000052c
+bta_trunc adder output is 00000376
+bta_rnd adder output is 00000376
+acc adder output is 00000376
+ 
+====================================
+input_a is 0000019e
+input_b is 00002692
+bta_trunc adder output is 00002830
+bta_rnd adder output is 00002830
+acc adder output is 00002830
+ 
+====================================
+input_a is 00001e6c
+input_b is 00001069
+bta_trunc adder output is 00002ed4
+bta_rnd adder output is 00002ed6
+acc adder output is 00002ed5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001858
+input_b is 000008c7
+bta_trunc adder output is 0000211e
+bta_rnd adder output is 00002120
+acc adder output is 0000211f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001134
+input_b is 00002111
+bta_trunc adder output is 00003244
+bta_rnd adder output is 00003246
+acc adder output is 00003245
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001757
+input_b is 0000143f
+bta_trunc adder output is 00002b94
+bta_rnd adder output is 00002b98
+acc adder output is 00002b96
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002560
+input_b is 00000197
+bta_trunc adder output is 000026f6
+bta_rnd adder output is 000026f8
+acc adder output is 000026f7
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002007
+input_b is 0000217f
+bta_trunc adder output is 00004184
+bta_rnd adder output is 00004188
+acc adder output is 00004186
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000025e7
+input_b is 00001272
+bta_trunc adder output is 00003858
+bta_rnd adder output is 0000385a
+acc adder output is 00003859
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffe10
+input_b is 000018e1
+bta_trunc adder output is 000016f0
+bta_rnd adder output is 000016f2
+acc adder output is 000016f1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001f67
+input_b is 00000c24
+bta_trunc adder output is 00002b8a
+bta_rnd adder output is 00002b8c
+acc adder output is 00002b8b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002245
+input_b is 00001a16
+bta_trunc adder output is 00003c5a
+bta_rnd adder output is 00003c5c
+acc adder output is 00003c5b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001751
+input_b is 00000754
+bta_trunc adder output is 00001ea4
+bta_rnd adder output is 00001ea6
+acc adder output is 00001ea5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001943
+input_b is 000004a0
+bta_trunc adder output is 00001de2
+bta_rnd adder output is 00001de4
+acc adder output is 00001de3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000045d
+input_b is 000005af
+bta_trunc adder output is 00000a0a
+bta_rnd adder output is 00000a0e
+acc adder output is 00000a0c
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001e22
+input_b is 0000039d
+bta_trunc adder output is 000021be
+bta_rnd adder output is 000021c0
+acc adder output is 000021bf
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000460
+input_b is 00001314
+bta_trunc adder output is 00001774
+bta_rnd adder output is 00001774
+acc adder output is 00001774
+ 
+====================================
+input_a is 00000c66
+input_b is 000011e7
+bta_trunc adder output is 00001e4c
+bta_rnd adder output is 00001e4e
+acc adder output is 00001e4d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001344
+input_b is 00001772
+bta_trunc adder output is 00002ab6
+bta_rnd adder output is 00002ab6
+acc adder output is 00002ab6
+ 
+====================================
+input_a is 0000131f
+input_b is 00000a56
+bta_trunc adder output is 00001d74
+bta_rnd adder output is 00001d76
+acc adder output is 00001d75
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000122b
+input_b is 00001143
+bta_trunc adder output is 0000236c
+bta_rnd adder output is 00002370
+acc adder output is 0000236e
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000c12
+input_b is 00000d8d
+bta_trunc adder output is 0000199e
+bta_rnd adder output is 000019a0
+acc adder output is 0000199f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000022e7
+input_b is 000010bb
+bta_trunc adder output is 000033a0
+bta_rnd adder output is 000033a4
+acc adder output is 000033a2
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000075c
+input_b is 00001a43
+bta_trunc adder output is 0000219e
+bta_rnd adder output is 000021a0
+acc adder output is 0000219f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000004db
+input_b is fffffd78
+bta_trunc adder output is 00000252
+bta_rnd adder output is 00000254
+acc adder output is 00000253
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000123b
+input_b is 00001582
+bta_trunc adder output is 000027bc
+bta_rnd adder output is 000027be
+acc adder output is 000027bd
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001562
+input_b is 00000af4
+bta_trunc adder output is 00002056
+bta_rnd adder output is 00002056
+acc adder output is 00002056
+ 
+====================================
+input_a is 0000185f
+input_b is 00001cbf
+bta_trunc adder output is 0000351c
+bta_rnd adder output is 00003520
+acc adder output is 0000351e
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001ebc
+input_b is 00000b92
+bta_trunc adder output is 00002a4e
+bta_rnd adder output is 00002a4e
+acc adder output is 00002a4e
+ 
+====================================
+input_a is 00000eec
+input_b is 000022fc
+bta_trunc adder output is 000031e8
+bta_rnd adder output is 000031e8
+acc adder output is 000031e8
+ 
+====================================
+input_a is 00000892
+input_b is 000001d9
+bta_trunc adder output is 00000a6a
+bta_rnd adder output is 00000a6c
+acc adder output is 00000a6b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000013e0
+input_b is 000023cb
+bta_trunc adder output is 000037aa
+bta_rnd adder output is 000037ac
+acc adder output is 000037ab
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000022cd
+input_b is 00000d80
+bta_trunc adder output is 0000304c
+bta_rnd adder output is 0000304e
+acc adder output is 0000304d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000126e
+input_b is 00000e3b
+bta_trunc adder output is 000020a8
+bta_rnd adder output is 000020aa
+acc adder output is 000020a9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000114e
+input_b is 00001ca7
+bta_trunc adder output is 00002df4
+bta_rnd adder output is 00002df6
+acc adder output is 00002df5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is ffffff28
+input_b is 00000c87
+bta_trunc adder output is 00000bae
+bta_rnd adder output is 00000bb0
+acc adder output is 00000baf
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000478
+input_b is 00001ebc
+bta_trunc adder output is 00002334
+bta_rnd adder output is 00002334
+acc adder output is 00002334
+ 
+====================================
+input_a is 00000c9c
+input_b is 000019a7
+bta_trunc adder output is 00002642
+bta_rnd adder output is 00002644
+acc adder output is 00002643
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000306
+input_b is 0000022f
+bta_trunc adder output is 00000534
+bta_rnd adder output is 00000536
+acc adder output is 00000535
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001850
+input_b is 00000f35
+bta_trunc adder output is 00002784
+bta_rnd adder output is 00002786
+acc adder output is 00002785
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000846
+input_b is 00001209
+bta_trunc adder output is 00001a4e
+bta_rnd adder output is 00001a50
+acc adder output is 00001a4f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001da7
+input_b is 00000030
+bta_trunc adder output is 00001dd6
+bta_rnd adder output is 00001dd8
+acc adder output is 00001dd7
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000010d1
+input_b is 00001a29
+bta_trunc adder output is 00002af8
+bta_rnd adder output is 00002afc
+acc adder output is 00002afa
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001c27
+input_b is fffffedb
+bta_trunc adder output is 00001b00
+bta_rnd adder output is 00001b04
+acc adder output is 00001b02
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000209c
+input_b is 00001227
+bta_trunc adder output is 000032c2
+bta_rnd adder output is 000032c4
+acc adder output is 000032c3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002204
+input_b is 00002114
+bta_trunc adder output is 00004318
+bta_rnd adder output is 00004318
+acc adder output is 00004318
+ 
+====================================
+input_a is 00001d80
+input_b is ffffff32
+bta_trunc adder output is 00001cb2
+bta_rnd adder output is 00001cb2
+acc adder output is 00001cb2
+ 
+====================================
+input_a is 000002b6
+input_b is 00000da4
+bta_trunc adder output is 0000105a
+bta_rnd adder output is 0000105a
+acc adder output is 0000105a
+ 
+====================================
+input_a is 0000038b
+input_b is 000006c4
+bta_trunc adder output is 00000a4e
+bta_rnd adder output is 00000a50
+acc adder output is 00000a4f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000201
+input_b is 0000138f
+bta_trunc adder output is 0000158e
+bta_rnd adder output is 00001592
+acc adder output is 00001590
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000017ec
+input_b is fffffcd1
+bta_trunc adder output is 000014bc
+bta_rnd adder output is 000014be
+acc adder output is 000014bd
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000570
+input_b is 00000ff0
+bta_trunc adder output is 00001560
+bta_rnd adder output is 00001560
+acc adder output is 00001560
+ 
+====================================
+input_a is 000020eb
+input_b is 00000f5a
+bta_trunc adder output is 00003044
+bta_rnd adder output is 00003046
+acc adder output is 00003045
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffcc5
+input_b is 00000c02
+bta_trunc adder output is 000008c6
+bta_rnd adder output is 000008c8
+acc adder output is 000008c7
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffc22
+input_b is fffffe3a
+bta_trunc adder output is fffffa5c
+bta_rnd adder output is fffffa5c
+acc adder output is fffffa5c
+ 
+====================================
+input_a is 000011da
+input_b is 0000034d
+bta_trunc adder output is 00001526
+bta_rnd adder output is 00001528
+acc adder output is 00001527
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000aae
+input_b is fffffd22
+bta_trunc adder output is 000007d0
+bta_rnd adder output is 000007d0
+acc adder output is 000007d0
+ 
+====================================
+input_a is 00000886
+input_b is 000020a1
+bta_trunc adder output is 00002926
+bta_rnd adder output is 00002928
+acc adder output is 00002927
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001755
+input_b is 00002597
+bta_trunc adder output is 00003cea
+bta_rnd adder output is 00003cee
+acc adder output is 00003cec
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000d60
+input_b is 00000cf5
+bta_trunc adder output is 00001a54
+bta_rnd adder output is 00001a56
+acc adder output is 00001a55
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000827
+input_b is 00002588
+bta_trunc adder output is 00002dae
+bta_rnd adder output is 00002db0
+acc adder output is 00002daf
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001b8d
+input_b is 000021c0
+bta_trunc adder output is 00003d4c
+bta_rnd adder output is 00003d4e
+acc adder output is 00003d4d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000c5f
+input_b is 00002638
+bta_trunc adder output is 00003296
+bta_rnd adder output is 00003298
+acc adder output is 00003297
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000015bb
+input_b is 00001283
+bta_trunc adder output is 0000283c
+bta_rnd adder output is 00002840
+acc adder output is 0000283e
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is ffffff0b
+input_b is 0000082e
+bta_trunc adder output is 00000738
+bta_rnd adder output is 0000073a
+acc adder output is 00000739
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000071d
+input_b is 00002292
+bta_trunc adder output is 000029ae
+bta_rnd adder output is 000029b0
+acc adder output is 000029af
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000026bf
+input_b is 00000885
+bta_trunc adder output is 00002f42
+bta_rnd adder output is 00002f46
+acc adder output is 00002f44
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002628
+input_b is 00000f48
+bta_trunc adder output is 00003570
+bta_rnd adder output is 00003570
+acc adder output is 00003570
+ 
+====================================
+input_a is 000000e9
+input_b is 00000a83
+bta_trunc adder output is 00000b6a
+bta_rnd adder output is 00000b6e
+acc adder output is 00000b6c
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000183
+input_b is 00000a4e
+bta_trunc adder output is 00000bd0
+bta_rnd adder output is 00000bd2
+acc adder output is 00000bd1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000ede
+input_b is 00000a00
+bta_trunc adder output is 000018de
+bta_rnd adder output is 000018de
+acc adder output is 000018de
+ 
+====================================
+input_a is 00000016
+input_b is 0000163b
+bta_trunc adder output is 00001650
+bta_rnd adder output is 00001652
+acc adder output is 00001651
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000b88
+input_b is ffffff42
+bta_trunc adder output is 00000aca
+bta_rnd adder output is 00000aca
+acc adder output is 00000aca
+ 
+====================================
+input_a is 00002081
+input_b is 000015f7
+bta_trunc adder output is 00003676
+bta_rnd adder output is 0000367a
+acc adder output is 00003678
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000e6b
+input_b is 00001519
+bta_trunc adder output is 00002382
+bta_rnd adder output is 00002386
+acc adder output is 00002384
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000f76
+input_b is 0000139c
+bta_trunc adder output is 00002312
+bta_rnd adder output is 00002312
+acc adder output is 00002312
+ 
+====================================
+input_a is 00000196
+input_b is 000014c8
+bta_trunc adder output is 0000165e
+bta_rnd adder output is 0000165e
+acc adder output is 0000165e
+ 
+====================================
+input_a is 0000053b
+input_b is 00001dc7
+bta_trunc adder output is 00002300
+bta_rnd adder output is 00002304
+acc adder output is 00002302
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000159e
+input_b is 00001ca6
+bta_trunc adder output is 00003244
+bta_rnd adder output is 00003244
+acc adder output is 00003244
+ 
+====================================
+input_a is 00000425
+input_b is 0000072a
+bta_trunc adder output is 00000b4e
+bta_rnd adder output is 00000b50
+acc adder output is 00000b4f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000020c4
+input_b is 000003e7
+bta_trunc adder output is 000024aa
+bta_rnd adder output is 000024ac
+acc adder output is 000024ab
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000037c
+input_b is 00000e63
+bta_trunc adder output is 000011de
+bta_rnd adder output is 000011e0
+acc adder output is 000011df
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000cc5
+input_b is 000026fb
+bta_trunc adder output is 000033be
+bta_rnd adder output is 000033c2
+acc adder output is 000033c0
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002375
+input_b is 00002267
+bta_trunc adder output is 000045da
+bta_rnd adder output is 000045de
+acc adder output is 000045dc
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000098a
+input_b is 000009b6
+bta_trunc adder output is 00001340
+bta_rnd adder output is 00001340
+acc adder output is 00001340
+ 
+====================================
+input_a is 00000196
+input_b is 00000392
+bta_trunc adder output is 00000528
+bta_rnd adder output is 00000528
+acc adder output is 00000528
+ 
+====================================
+input_a is fffffd91
+input_b is 000022fe
+bta_trunc adder output is 0000208e
+bta_rnd adder output is 00002090
+acc adder output is 0000208f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000248f
+input_b is 000015bd
+bta_trunc adder output is 00003a4a
+bta_rnd adder output is 00003a4e
+acc adder output is 00003a4c
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000207
+input_b is 0000197f
+bta_trunc adder output is 00001b84
+bta_rnd adder output is 00001b88
+acc adder output is 00001b86
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000874
+input_b is 00001170
+bta_trunc adder output is 000019e4
+bta_rnd adder output is 000019e4
+acc adder output is 000019e4
+ 
+====================================
+input_a is 00000a44
+input_b is 000011be
+bta_trunc adder output is 00001c02
+bta_rnd adder output is 00001c02
+acc adder output is 00001c02
+ 
+====================================
+input_a is 00002276
+input_b is fffffe51
+bta_trunc adder output is 000020c6
+bta_rnd adder output is 000020c8
+acc adder output is 000020c7
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000011eb
+input_b is 00001304
+bta_trunc adder output is 000024ee
+bta_rnd adder output is 000024f0
+acc adder output is 000024ef
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000b2e
+input_b is 000013fa
+bta_trunc adder output is 00001f28
+bta_rnd adder output is 00001f28
+acc adder output is 00001f28
+ 
+====================================
+input_a is 00001379
+input_b is fffffdf6
+bta_trunc adder output is 0000116e
+bta_rnd adder output is 00001170
+acc adder output is 0000116f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001f56
+input_b is 00001647
+bta_trunc adder output is 0000359c
+bta_rnd adder output is 0000359e
+acc adder output is 0000359d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffc52
+input_b is 0000231b
+bta_trunc adder output is 00001f6c
+bta_rnd adder output is 00001f6e
+acc adder output is 00001f6d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001f9b
+input_b is 00002490
+bta_trunc adder output is 0000442a
+bta_rnd adder output is 0000442c
+acc adder output is 0000442b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000026e3
+input_b is 00000129
+bta_trunc adder output is 0000280a
+bta_rnd adder output is 0000280e
+acc adder output is 0000280c
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffd42
+input_b is 0000224c
+bta_trunc adder output is 00001f8e
+bta_rnd adder output is 00001f8e
+acc adder output is 00001f8e
+ 
+====================================
+input_a is 00001e74
+input_b is 00001bf2
+bta_trunc adder output is 00003a66
+bta_rnd adder output is 00003a66
+acc adder output is 00003a66
+ 
+====================================
+input_a is 000017e4
+input_b is 000017ca
+bta_trunc adder output is 00002fae
+bta_rnd adder output is 00002fae
+acc adder output is 00002fae
+ 
+====================================
+input_a is fffffc88
+input_b is 00000a7b
+bta_trunc adder output is 00000702
+bta_rnd adder output is 00000704
+acc adder output is 00000703
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffe20
+input_b is 00001dab
+bta_trunc adder output is 00001bca
+bta_rnd adder output is 00001bcc
+acc adder output is 00001bcb
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001837
+input_b is ffffff68
+bta_trunc adder output is 0000179e
+bta_rnd adder output is 000017a0
+acc adder output is 0000179f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000028f
+input_b is 00000795
+bta_trunc adder output is 00000a22
+bta_rnd adder output is 00000a26
+acc adder output is 00000a24
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000017ec
+input_b is 00000cb0
+bta_trunc adder output is 0000249c
+bta_rnd adder output is 0000249c
+acc adder output is 0000249c
+ 
+====================================
+input_a is 00000d97
+input_b is 00002513
+bta_trunc adder output is 000032a8
+bta_rnd adder output is 000032ac
+acc adder output is 000032aa
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffe3a
+input_b is fffffe12
+bta_trunc adder output is fffffc4c
+bta_rnd adder output is fffffc4c
+acc adder output is fffffc4c
+ 
+====================================
+input_a is 00001e75
+input_b is fffffe37
+bta_trunc adder output is 00001caa
+bta_rnd adder output is 00001cae
+acc adder output is 00001cac
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000ef7
+input_b is fffffcb0
+bta_trunc adder output is 00000ba6
+bta_rnd adder output is 00000ba8
+acc adder output is 00000ba7
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002060
+input_b is 0000082b
+bta_trunc adder output is 0000288a
+bta_rnd adder output is 0000288c
+acc adder output is 0000288b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000060b
+input_b is 00000379
+bta_trunc adder output is 00000982
+bta_rnd adder output is 00000986
+acc adder output is 00000984
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffd88
+input_b is 00000a0c
+bta_trunc adder output is 00000794
+bta_rnd adder output is 00000794
+acc adder output is 00000794
+ 
+====================================
+input_a is 000022c6
+input_b is 00002029
+bta_trunc adder output is 000042ee
+bta_rnd adder output is 000042f0
+acc adder output is 000042ef
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000009d2
+input_b is 000002c3
+bta_trunc adder output is 00000c94
+bta_rnd adder output is 00000c96
+acc adder output is 00000c95
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001aa7
+input_b is 00000e98
+bta_trunc adder output is 0000293e
+bta_rnd adder output is 00002940
+acc adder output is 0000293f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000078e
+input_b is 000011f7
+bta_trunc adder output is 00001984
+bta_rnd adder output is 00001986
+acc adder output is 00001985
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000005cf
+input_b is 000022e6
+bta_trunc adder output is 000028b4
+bta_rnd adder output is 000028b6
+acc adder output is 000028b5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000011cb
+input_b is 00001e4f
+bta_trunc adder output is 00003018
+bta_rnd adder output is 0000301c
+acc adder output is 0000301a
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000026bc
+input_b is 000000c6
+bta_trunc adder output is 00002782
+bta_rnd adder output is 00002782
+acc adder output is 00002782
+ 
+====================================
+input_a is 00002580
+input_b is 00002132
+bta_trunc adder output is 000046b2
+bta_rnd adder output is 000046b2
+acc adder output is 000046b2
+ 
+====================================
+input_a is fffffe3e
+input_b is 0000034a
+bta_trunc adder output is 00000188
+bta_rnd adder output is 00000188
+acc adder output is 00000188
+ 
+====================================
+input_a is 00000c19
+input_b is 0000217f
+bta_trunc adder output is 00002d96
+bta_rnd adder output is 00002d9a
+acc adder output is 00002d98
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000239b
+input_b is fffffd07
+bta_trunc adder output is 000020a0
+bta_rnd adder output is 000020a4
+acc adder output is 000020a2
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000019f3
+input_b is 00000198
+bta_trunc adder output is 00001b8a
+bta_rnd adder output is 00001b8c
+acc adder output is 00001b8b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000210
+input_b is 00000fb9
+bta_trunc adder output is 000011c8
+bta_rnd adder output is 000011ca
+acc adder output is 000011c9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001f5e
+input_b is 00001353
+bta_trunc adder output is 000032b0
+bta_rnd adder output is 000032b2
+acc adder output is 000032b1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000fa6
+input_b is 00000d34
+bta_trunc adder output is 00001cda
+bta_rnd adder output is 00001cda
+acc adder output is 00001cda
+ 
+====================================
+input_a is 0000022b
+input_b is 00000507
+bta_trunc adder output is 00000730
+bta_rnd adder output is 00000734
+acc adder output is 00000732
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is ffffff7d
+input_b is 00000992
+bta_trunc adder output is 0000090e
+bta_rnd adder output is 00000910
+acc adder output is 0000090f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000282
+input_b is 000015a1
+bta_trunc adder output is 00001822
+bta_rnd adder output is 00001824
+acc adder output is 00001823
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000ed5
+input_b is 0000079e
+bta_trunc adder output is 00001672
+bta_rnd adder output is 00001674
+acc adder output is 00001673
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000dd5
+input_b is 000018a0
+bta_trunc adder output is 00002674
+bta_rnd adder output is 00002676
+acc adder output is 00002675
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000ee4
+input_b is 00000d42
+bta_trunc adder output is 00001c26
+bta_rnd adder output is 00001c26
+acc adder output is 00001c26
+ 
+====================================
+input_a is 00000f29
+input_b is 0000131c
+bta_trunc adder output is 00002244
+bta_rnd adder output is 00002246
+acc adder output is 00002245
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffd3c
+input_b is 0000183f
+bta_trunc adder output is 0000157a
+bta_rnd adder output is 0000157c
+acc adder output is 0000157b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000084f
+input_b is 000008cb
+bta_trunc adder output is 00001118
+bta_rnd adder output is 0000111c
+acc adder output is 0000111a
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000061d
+input_b is fffffd62
+bta_trunc adder output is 0000037e
+bta_rnd adder output is 00000380
+acc adder output is 0000037f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001ca0
+input_b is 000010d4
+bta_trunc adder output is 00002d74
+bta_rnd adder output is 00002d74
+acc adder output is 00002d74
+ 
+====================================
+input_a is 00000811
+input_b is 0000226b
+bta_trunc adder output is 00002a7a
+bta_rnd adder output is 00002a7e
+acc adder output is 00002a7c
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000021c6
+input_b is 0000151f
+bta_trunc adder output is 000036e4
+bta_rnd adder output is 000036e6
+acc adder output is 000036e5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000024a4
+input_b is 00001d47
+bta_trunc adder output is 000041ea
+bta_rnd adder output is 000041ec
+acc adder output is 000041eb
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000fc3
+input_b is 00001870
+bta_trunc adder output is 00002832
+bta_rnd adder output is 00002834
+acc adder output is 00002833
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001bbd
+input_b is fffffc54
+bta_trunc adder output is 00001810
+bta_rnd adder output is 00001812
+acc adder output is 00001811
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000024f8
+input_b is fffffe97
+bta_trunc adder output is 0000238e
+bta_rnd adder output is 00002390
+acc adder output is 0000238f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000021cb
+input_b is 00001e87
+bta_trunc adder output is 00004050
+bta_rnd adder output is 00004054
+acc adder output is 00004052
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000177b
+input_b is 00001b25
+bta_trunc adder output is 0000329e
+bta_rnd adder output is 000032a2
+acc adder output is 000032a0
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000217
+input_b is fffffefd
+bta_trunc adder output is 00000112
+bta_rnd adder output is 00000116
+acc adder output is 00000114
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001212
+input_b is 00000aba
+bta_trunc adder output is 00001ccc
+bta_rnd adder output is 00001ccc
+acc adder output is 00001ccc
+ 
+====================================
+input_a is 00001606
+input_b is 00000fec
+bta_trunc adder output is 000025f2
+bta_rnd adder output is 000025f2
+acc adder output is 000025f2
+ 
+====================================
+input_a is 00001b29
+input_b is ffffffe6
+bta_trunc adder output is 00001b0e
+bta_rnd adder output is 00001b10
+acc adder output is 00001b0f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001ef1
+input_b is 00001ab3
+bta_trunc adder output is 000039a2
+bta_rnd adder output is 000039a6
+acc adder output is 000039a4
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000011b7
+input_b is 00001039
+bta_trunc adder output is 000021ee
+bta_rnd adder output is 000021f2
+acc adder output is 000021f0
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001dce
+input_b is 000021c9
+bta_trunc adder output is 00003f96
+bta_rnd adder output is 00003f98
+acc adder output is 00003f97
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffeb7
+input_b is 0000055a
+bta_trunc adder output is 00000410
+bta_rnd adder output is 00000412
+acc adder output is 00000411
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000dc2
+input_b is 0000263e
+bta_trunc adder output is 00003400
+bta_rnd adder output is 00003400
+acc adder output is 00003400
+ 
+====================================
+input_a is 00000c59
+input_b is 00000eb1
+bta_trunc adder output is 00001b08
+bta_rnd adder output is 00001b0c
+acc adder output is 00001b0a
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000017e4
+input_b is 00000884
+bta_trunc adder output is 00002068
+bta_rnd adder output is 00002068
+acc adder output is 00002068
+ 
+====================================
+input_a is 00000fcb
+input_b is 00001006
+bta_trunc adder output is 00001fd0
+bta_rnd adder output is 00001fd2
+acc adder output is 00001fd1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000eab
+input_b is 0000216d
+bta_trunc adder output is 00003016
+bta_rnd adder output is 0000301a
+acc adder output is 00003018
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000138c
+input_b is 00001be3
+bta_trunc adder output is 00002f6e
+bta_rnd adder output is 00002f70
+acc adder output is 00002f6f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001669
+input_b is fffffe28
+bta_trunc adder output is 00001490
+bta_rnd adder output is 00001492
+acc adder output is 00001491
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000000cf
+input_b is 00001f10
+bta_trunc adder output is 00001fde
+bta_rnd adder output is 00001fe0
+acc adder output is 00001fdf
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000015fe
+input_b is 00000225
+bta_trunc adder output is 00001822
+bta_rnd adder output is 00001824
+acc adder output is 00001823
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000bec
+input_b is 000026bd
+bta_trunc adder output is 000032a8
+bta_rnd adder output is 000032aa
+acc adder output is 000032a9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001f17
+input_b is 000011e2
+bta_trunc adder output is 000030f8
+bta_rnd adder output is 000030fa
+acc adder output is 000030f9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffee2
+input_b is 000008a1
+bta_trunc adder output is 00000782
+bta_rnd adder output is 00000784
+acc adder output is 00000783
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002671
+input_b is 000000c2
+bta_trunc adder output is 00002732
+bta_rnd adder output is 00002734
+acc adder output is 00002733
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000630
+input_b is 000016a2
+bta_trunc adder output is 00001cd2
+bta_rnd adder output is 00001cd2
+acc adder output is 00001cd2
+ 
+====================================
+input_a is fffffd67
+input_b is 0000209c
+bta_trunc adder output is 00001e02
+bta_rnd adder output is 00001e04
+acc adder output is 00001e03
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000021ad
+input_b is 000021d0
+bta_trunc adder output is 0000437c
+bta_rnd adder output is 0000437e
+acc adder output is 0000437d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000000
+input_b is 000008f2
+bta_trunc adder output is 000008f2
+bta_rnd adder output is 000008f2
+acc adder output is 000008f2
+ 
+====================================
+input_a is 00001b57
+input_b is 00002292
+bta_trunc adder output is 00003de8
+bta_rnd adder output is 00003dea
+acc adder output is 00003de9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000112d
+input_b is 00001d66
+bta_trunc adder output is 00002e92
+bta_rnd adder output is 00002e94
+acc adder output is 00002e93
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000328
+input_b is 00001838
+bta_trunc adder output is 00001b60
+bta_rnd adder output is 00001b60
+acc adder output is 00001b60
+ 
+====================================
+input_a is 00000ca5
+input_b is 00000b6a
+bta_trunc adder output is 0000180e
+bta_rnd adder output is 00001810
+acc adder output is 0000180f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000bc2
+input_b is 0000210e
+bta_trunc adder output is 00002cd0
+bta_rnd adder output is 00002cd0
+acc adder output is 00002cd0
+ 
+====================================
+input_a is fffffee9
+input_b is 00001c9c
+bta_trunc adder output is 00001b84
+bta_rnd adder output is 00001b86
+acc adder output is 00001b85
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000a6e
+input_b is 00001da9
+bta_trunc adder output is 00002816
+bta_rnd adder output is 00002818
+acc adder output is 00002817
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001204
+input_b is fffffe0e
+bta_trunc adder output is 00001012
+bta_rnd adder output is 00001012
+acc adder output is 00001012
+ 
+====================================
+input_a is 0000058e
+input_b is 0000169f
+bta_trunc adder output is 00001c2c
+bta_rnd adder output is 00001c2e
+acc adder output is 00001c2d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000021ea
+input_b is 0000087f
+bta_trunc adder output is 00002a68
+bta_rnd adder output is 00002a6a
+acc adder output is 00002a69
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffd2c
+input_b is 0000218a
+bta_trunc adder output is 00001eb6
+bta_rnd adder output is 00001eb6
+acc adder output is 00001eb6
+ 
+====================================
+input_a is 00001af3
+input_b is 00001ddf
+bta_trunc adder output is 000038d0
+bta_rnd adder output is 000038d4
+acc adder output is 000038d2
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000003a1
+input_b is 00000aa0
+bta_trunc adder output is 00000e40
+bta_rnd adder output is 00000e42
+acc adder output is 00000e41
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001f90
+input_b is 000018a9
+bta_trunc adder output is 00003838
+bta_rnd adder output is 0000383a
+acc adder output is 00003839
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001f86
+input_b is 00001edc
+bta_trunc adder output is 00003e62
+bta_rnd adder output is 00003e62
+acc adder output is 00003e62
+ 
+====================================
+input_a is 00002314
+input_b is 00001163
+bta_trunc adder output is 00003476
+bta_rnd adder output is 00003478
+acc adder output is 00003477
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001c0c
+input_b is 00000e40
+bta_trunc adder output is 00002a4c
+bta_rnd adder output is 00002a4c
+acc adder output is 00002a4c
+ 
+====================================
+input_a is 00001f70
+input_b is 00001127
+bta_trunc adder output is 00003096
+bta_rnd adder output is 00003098
+acc adder output is 00003097
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000024a
+input_b is 00000d81
+bta_trunc adder output is 00000fca
+bta_rnd adder output is 00000fcc
+acc adder output is 00000fcb
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000025c7
+input_b is 000011dc
+bta_trunc adder output is 000037a2
+bta_rnd adder output is 000037a4
+acc adder output is 000037a3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000194b
+input_b is 00000665
+bta_trunc adder output is 00001fae
+bta_rnd adder output is 00001fb2
+acc adder output is 00001fb0
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000011c7
+input_b is 000005d3
+bta_trunc adder output is 00001798
+bta_rnd adder output is 0000179c
+acc adder output is 0000179a
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000004a9
+input_b is 0000235f
+bta_trunc adder output is 00002806
+bta_rnd adder output is 0000280a
+acc adder output is 00002808
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000b0b
+input_b is 00001bee
+bta_trunc adder output is 000026f8
+bta_rnd adder output is 000026fa
+acc adder output is 000026f9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001516
+input_b is 00000189
+bta_trunc adder output is 0000169e
+bta_rnd adder output is 000016a0
+acc adder output is 0000169f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000db9
+input_b is 00000135
+bta_trunc adder output is 00000eec
+bta_rnd adder output is 00000ef0
+acc adder output is 00000eee
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002085
+input_b is 000018a0
+bta_trunc adder output is 00003924
+bta_rnd adder output is 00003926
+acc adder output is 00003925
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000176
+input_b is 00001410
+bta_trunc adder output is 00001586
+bta_rnd adder output is 00001586
+acc adder output is 00001586
+ 
+====================================
+input_a is 000016af
+input_b is 00000df7
+bta_trunc adder output is 000024a4
+bta_rnd adder output is 000024a8
+acc adder output is 000024a6
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001b1f
+input_b is 000002e6
+bta_trunc adder output is 00001e04
+bta_rnd adder output is 00001e06
+acc adder output is 00001e05
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000213d
+input_b is 00002228
+bta_trunc adder output is 00004364
+bta_rnd adder output is 00004366
+acc adder output is 00004365
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000023f3
+input_b is 00001cb8
+bta_trunc adder output is 000040aa
+bta_rnd adder output is 000040ac
+acc adder output is 000040ab
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000017ff
+input_b is fffffcee
+bta_trunc adder output is 000014ec
+bta_rnd adder output is 000014ee
+acc adder output is 000014ed
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000cb6
+input_b is 00001142
+bta_trunc adder output is 00001df8
+bta_rnd adder output is 00001df8
+acc adder output is 00001df8
+ 
+====================================
+input_a is 0000219b
+input_b is fffffe31
+bta_trunc adder output is 00001fca
+bta_rnd adder output is 00001fce
+acc adder output is 00001fcc
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000013f1
+input_b is 00002012
+bta_trunc adder output is 00003402
+bta_rnd adder output is 00003404
+acc adder output is 00003403
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001975
+input_b is 00000015
+bta_trunc adder output is 00001988
+bta_rnd adder output is 0000198c
+acc adder output is 0000198a
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000011c1
+input_b is 000017f0
+bta_trunc adder output is 000029b0
+bta_rnd adder output is 000029b2
+acc adder output is 000029b1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000293
+input_b is 00001fd3
+bta_trunc adder output is 00002264
+bta_rnd adder output is 00002268
+acc adder output is 00002266
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000235a
+input_b is 00001cbc
+bta_trunc adder output is 00004016
+bta_rnd adder output is 00004016
+acc adder output is 00004016
+ 
+====================================
+input_a is 0000021a
+input_b is 00001217
+bta_trunc adder output is 00001430
+bta_rnd adder output is 00001432
+acc adder output is 00001431
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000006ba
+input_b is 00000cc6
+bta_trunc adder output is 00001380
+bta_rnd adder output is 00001380
+acc adder output is 00001380
+ 
+====================================
+input_a is 000022a6
+input_b is 00001b97
+bta_trunc adder output is 00003e3c
+bta_rnd adder output is 00003e3e
+acc adder output is 00003e3d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001d92
+input_b is 00002682
+bta_trunc adder output is 00004414
+bta_rnd adder output is 00004414
+acc adder output is 00004414
+ 
+====================================
+input_a is 000026f5
+input_b is 00001840
+bta_trunc adder output is 00003f34
+bta_rnd adder output is 00003f36
+acc adder output is 00003f35
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001995
+input_b is 0000175e
+bta_trunc adder output is 000030f2
+bta_rnd adder output is 000030f4
+acc adder output is 000030f3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000e0a
+input_b is ffffff13
+bta_trunc adder output is 00000d1c
+bta_rnd adder output is 00000d1e
+acc adder output is 00000d1d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001a44
+input_b is 00001a7e
+bta_trunc adder output is 000034c2
+bta_rnd adder output is 000034c2
+acc adder output is 000034c2
+ 
+====================================
+input_a is 0000017c
+input_b is 000011b2
+bta_trunc adder output is 0000132e
+bta_rnd adder output is 0000132e
+acc adder output is 0000132e
+ 
+====================================
+input_a is 00000a40
+input_b is 000014b9
+bta_trunc adder output is 00001ef8
+bta_rnd adder output is 00001efa
+acc adder output is 00001ef9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000012d9
+input_b is 000002ac
+bta_trunc adder output is 00001584
+bta_rnd adder output is 00001586
+acc adder output is 00001585
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000025b2
+input_b is 00001328
+bta_trunc adder output is 000038da
+bta_rnd adder output is 000038da
+acc adder output is 000038da
+ 
+====================================
+input_a is 00000290
+input_b is 00000f2b
+bta_trunc adder output is 000011ba
+bta_rnd adder output is 000011bc
+acc adder output is 000011bb
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000021c7
+input_b is 00001c7a
+bta_trunc adder output is 00003e40
+bta_rnd adder output is 00003e42
+acc adder output is 00003e41
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001e5d
+input_b is 00000a48
+bta_trunc adder output is 000028a4
+bta_rnd adder output is 000028a6
+acc adder output is 000028a5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000015e0
+input_b is 00001ae1
+bta_trunc adder output is 000030c0
+bta_rnd adder output is 000030c2
+acc adder output is 000030c1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001238
+input_b is 00001224
+bta_trunc adder output is 0000245c
+bta_rnd adder output is 0000245c
+acc adder output is 0000245c
+ 
+====================================
+input_a is 00001200
+input_b is 00000f70
+bta_trunc adder output is 00002170
+bta_rnd adder output is 00002170
+acc adder output is 00002170
+ 
+====================================
+input_a is 00001745
+input_b is 00002265
+bta_trunc adder output is 000039a8
+bta_rnd adder output is 000039ac
+acc adder output is 000039aa
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000600
+input_b is ffffffd6
+bta_trunc adder output is 000005d6
+bta_rnd adder output is 000005d6
+acc adder output is 000005d6
+ 
+====================================
+input_a is 0000045f
+input_b is 00001099
+bta_trunc adder output is 000014f6
+bta_rnd adder output is 000014fa
+acc adder output is 000014f8
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001909
+input_b is 000009d5
+bta_trunc adder output is 000022dc
+bta_rnd adder output is 000022e0
+acc adder output is 000022de
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001dec
+input_b is ffffffa7
+bta_trunc adder output is 00001d92
+bta_rnd adder output is 00001d94
+acc adder output is 00001d93
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001304
+input_b is 000026ca
+bta_trunc adder output is 000039ce
+bta_rnd adder output is 000039ce
+acc adder output is 000039ce
+ 
+====================================
+input_a is 00000824
+input_b is 000023f2
+bta_trunc adder output is 00002c16
+bta_rnd adder output is 00002c16
+acc adder output is 00002c16
+ 
+====================================
+input_a is 00002126
+input_b is 00000395
+bta_trunc adder output is 000024ba
+bta_rnd adder output is 000024bc
+acc adder output is 000024bb
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000003c6
+input_b is 00000ab4
+bta_trunc adder output is 00000e7a
+bta_rnd adder output is 00000e7a
+acc adder output is 00000e7a
+ 
+====================================
+input_a is 000002c9
+input_b is 00001662
+bta_trunc adder output is 0000192a
+bta_rnd adder output is 0000192c
+acc adder output is 0000192b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffc1c
+input_b is 00002545
+bta_trunc adder output is 00002160
+bta_rnd adder output is 00002162
+acc adder output is 00002161
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000006dc
+input_b is 0000117e
+bta_trunc adder output is 0000185a
+bta_rnd adder output is 0000185a
+acc adder output is 0000185a
+ 
+====================================
+input_a is 0000262b
+input_b is 0000139a
+bta_trunc adder output is 000039c4
+bta_rnd adder output is 000039c6
+acc adder output is 000039c5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001b52
+input_b is 00001343
+bta_trunc adder output is 00002e94
+bta_rnd adder output is 00002e96
+acc adder output is 00002e95
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000259b
+input_b is 0000246f
+bta_trunc adder output is 00004a08
+bta_rnd adder output is 00004a0c
+acc adder output is 00004a0a
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000d3b
+input_b is 0000202f
+bta_trunc adder output is 00002d68
+bta_rnd adder output is 00002d6c
+acc adder output is 00002d6a
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffcd0
+input_b is 0000068c
+bta_trunc adder output is 0000035c
+bta_rnd adder output is 0000035c
+acc adder output is 0000035c
+ 
+====================================
+input_a is 000005c7
+input_b is 000018ce
+bta_trunc adder output is 00001e94
+bta_rnd adder output is 00001e96
+acc adder output is 00001e95
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001dd2
+input_b is 00000e98
+bta_trunc adder output is 00002c6a
+bta_rnd adder output is 00002c6a
+acc adder output is 00002c6a
+ 
+====================================
+input_a is 000006e5
+input_b is 00001a9a
+bta_trunc adder output is 0000217e
+bta_rnd adder output is 00002180
+acc adder output is 0000217f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000000a1
+input_b is 0000189e
+bta_trunc adder output is 0000193e
+bta_rnd adder output is 00001940
+acc adder output is 0000193f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000264a
+input_b is 00001a5b
+bta_trunc adder output is 000040a4
+bta_rnd adder output is 000040a6
+acc adder output is 000040a5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000ae8
+input_b is 00001fcd
+bta_trunc adder output is 00002ab4
+bta_rnd adder output is 00002ab6
+acc adder output is 00002ab5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001b5b
+input_b is 00001c1e
+bta_trunc adder output is 00003778
+bta_rnd adder output is 0000377a
+acc adder output is 00003779
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000cc2
+input_b is 000019ac
+bta_trunc adder output is 0000266e
+bta_rnd adder output is 0000266e
+acc adder output is 0000266e
+ 
+====================================
+input_a is fffffebc
+input_b is 000020a8
+bta_trunc adder output is 00001f64
+bta_rnd adder output is 00001f64
+acc adder output is 00001f64
+ 
+====================================
+input_a is 000020a9
+input_b is 00001365
+bta_trunc adder output is 0000340c
+bta_rnd adder output is 00003410
+acc adder output is 0000340e
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000004
+input_b is 000015b9
+bta_trunc adder output is 000015bc
+bta_rnd adder output is 000015be
+acc adder output is 000015bd
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001f6b
+input_b is 000007b5
+bta_trunc adder output is 0000271e
+bta_rnd adder output is 00002722
+acc adder output is 00002720
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffd9c
+input_b is 00000c30
+bta_trunc adder output is 000009cc
+bta_rnd adder output is 000009cc
+acc adder output is 000009cc
+ 
+====================================
+input_a is 000009ae
+input_b is 00002146
+bta_trunc adder output is 00002af4
+bta_rnd adder output is 00002af4
+acc adder output is 00002af4
+ 
+====================================
+input_a is 000024d7
+input_b is 00001bfc
+bta_trunc adder output is 000040d2
+bta_rnd adder output is 000040d4
+acc adder output is 000040d3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001bef
+input_b is fffffdc0
+bta_trunc adder output is 000019ae
+bta_rnd adder output is 000019b0
+acc adder output is 000019af
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000b2c
+input_b is 00000cf8
+bta_trunc adder output is 00001824
+bta_rnd adder output is 00001824
+acc adder output is 00001824
+ 
+====================================
+input_a is 00001178
+input_b is 00001629
+bta_trunc adder output is 000027a0
+bta_rnd adder output is 000027a2
+acc adder output is 000027a1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002247
+input_b is 00001534
+bta_trunc adder output is 0000377a
+bta_rnd adder output is 0000377c
+acc adder output is 0000377b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffcb9
+input_b is ffffff6f
+bta_trunc adder output is fffffc26
+bta_rnd adder output is fffffc2a
+acc adder output is fffffc28
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000073e
+input_b is 000011ea
+bta_trunc adder output is 00001928
+bta_rnd adder output is 00001928
+acc adder output is 00001928
+ 
+====================================
+input_a is 00001685
+input_b is 000016fc
+bta_trunc adder output is 00002d80
+bta_rnd adder output is 00002d82
+acc adder output is 00002d81
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001715
+input_b is 0000224a
+bta_trunc adder output is 0000395e
+bta_rnd adder output is 00003960
+acc adder output is 0000395f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000005ae
+input_b is 0000137c
+bta_trunc adder output is 0000192a
+bta_rnd adder output is 0000192a
+acc adder output is 0000192a
+ 
+====================================
+input_a is 00001fe2
+input_b is 00000c1f
+bta_trunc adder output is 00002c00
+bta_rnd adder output is 00002c02
+acc adder output is 00002c01
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is ffffff9b
+input_b is 00000e47
+bta_trunc adder output is 00000de0
+bta_rnd adder output is 00000de4
+acc adder output is 00000de2
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffca5
+input_b is 000006a4
+bta_trunc adder output is 00000348
+bta_rnd adder output is 0000034a
+acc adder output is 00000349
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000091
+input_b is 00000d75
+bta_trunc adder output is 00000e04
+bta_rnd adder output is 00000e08
+acc adder output is 00000e06
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000cf5
+input_b is 00001518
+bta_trunc adder output is 0000220c
+bta_rnd adder output is 0000220e
+acc adder output is 0000220d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000fd3
+input_b is 00000d00
+bta_trunc adder output is 00001cd2
+bta_rnd adder output is 00001cd4
+acc adder output is 00001cd3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000c59
+input_b is 000009bd
+bta_trunc adder output is 00001614
+bta_rnd adder output is 00001618
+acc adder output is 00001616
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001c5c
+input_b is 00000965
+bta_trunc adder output is 000025c0
+bta_rnd adder output is 000025c2
+acc adder output is 000025c1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001085
+input_b is 000025ce
+bta_trunc adder output is 00003652
+bta_rnd adder output is 00003654
+acc adder output is 00003653
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000000f8
+input_b is 00000a18
+bta_trunc adder output is 00000b10
+bta_rnd adder output is 00000b10
+acc adder output is 00000b10
+ 
+====================================
+input_a is 000021b2
+input_b is 00000db3
+bta_trunc adder output is 00002f64
+bta_rnd adder output is 00002f66
+acc adder output is 00002f65
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000924
+input_b is 00000b8e
+bta_trunc adder output is 000014b2
+bta_rnd adder output is 000014b2
+acc adder output is 000014b2
+ 
+====================================
+input_a is 00001356
+input_b is 00001608
+bta_trunc adder output is 0000295e
+bta_rnd adder output is 0000295e
+acc adder output is 0000295e
+ 
+====================================
+input_a is 00001dfd
+input_b is 00001829
+bta_trunc adder output is 00003624
+bta_rnd adder output is 00003628
+acc adder output is 00003626
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000014f3
+input_b is 00000385
+bta_trunc adder output is 00001876
+bta_rnd adder output is 0000187a
+acc adder output is 00001878
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000010d6
+input_b is 00000289
+bta_trunc adder output is 0000135e
+bta_rnd adder output is 00001360
+acc adder output is 0000135f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000023a6
+input_b is 000008a7
+bta_trunc adder output is 00002c4c
+bta_rnd adder output is 00002c4e
+acc adder output is 00002c4d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000dfb
+input_b is fffffe22
+bta_trunc adder output is 00000c1c
+bta_rnd adder output is 00000c1e
+acc adder output is 00000c1d
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001ecb
+input_b is 00000277
+bta_trunc adder output is 00002140
+bta_rnd adder output is 00002144
+acc adder output is 00002142
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is fffffed7
+input_b is 000016ba
+bta_trunc adder output is 00001590
+bta_rnd adder output is 00001592
+acc adder output is 00001591
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000006cb
+input_b is 00001253
+bta_trunc adder output is 0000191c
+bta_rnd adder output is 00001920
+acc adder output is 0000191e
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000245e
+input_b is 00000dea
+bta_trunc adder output is 00003248
+bta_rnd adder output is 00003248
+acc adder output is 00003248
+ 
+====================================
+input_a is 0000003e
+input_b is 000014f7
+bta_trunc adder output is 00001534
+bta_rnd adder output is 00001536
+acc adder output is 00001535
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000178c
+input_b is 00000347
+bta_trunc adder output is 00001ad2
+bta_rnd adder output is 00001ad4
+acc adder output is 00001ad3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001301
+input_b is 000025c2
+bta_trunc adder output is 000038c2
+bta_rnd adder output is 000038c4
+acc adder output is 000038c3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000026da
+input_b is 000021ff
+bta_trunc adder output is 000048d8
+bta_rnd adder output is 000048da
+acc adder output is 000048d9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000011a9
+input_b is 00000a52
+bta_trunc adder output is 00001bfa
+bta_rnd adder output is 00001bfc
+acc adder output is 00001bfb
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000007ac
+input_b is fffffddc
+bta_trunc adder output is 00000588
+bta_rnd adder output is 00000588
+acc adder output is 00000588
+ 
+====================================
+input_a is 000000e6
+input_b is 000021a5
+bta_trunc adder output is 0000228a
+bta_rnd adder output is 0000228c
+acc adder output is 0000228b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000f28
+input_b is 000009ee
+bta_trunc adder output is 00001916
+bta_rnd adder output is 00001916
+acc adder output is 00001916
+ 
+====================================
+input_a is 00001104
+input_b is 0000208f
+bta_trunc adder output is 00003192
+bta_rnd adder output is 00003194
+acc adder output is 00003193
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000011
+input_b is 00000769
+bta_trunc adder output is 00000778
+bta_rnd adder output is 0000077c
+acc adder output is 0000077a
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000021e7
+input_b is 00000cf1
+bta_trunc adder output is 00002ed6
+bta_rnd adder output is 00002eda
+acc adder output is 00002ed8
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000000cb
+input_b is 0000015b
+bta_trunc adder output is 00000224
+bta_rnd adder output is 00000228
+acc adder output is 00000226
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000a3d
+input_b is 00000c7f
+bta_trunc adder output is 000016ba
+bta_rnd adder output is 000016be
+acc adder output is 000016bc
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 000023aa
+input_b is 00001542
+bta_trunc adder output is 000038ec
+bta_rnd adder output is 000038ec
+acc adder output is 000038ec
+ 
+====================================
+input_a is 00000954
+input_b is fffffee5
+bta_trunc adder output is 00000838
+bta_rnd adder output is 0000083a
+acc adder output is 00000839
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000bef
+input_b is 000020c4
+bta_trunc adder output is 00002cb2
+bta_rnd adder output is 00002cb4
+acc adder output is 00002cb3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001835
+input_b is 00002445
+bta_trunc adder output is 00003c78
+bta_rnd adder output is 00003c7c
+acc adder output is 00003c7a
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001838
+input_b is 000009c4
+bta_trunc adder output is 000021fc
+bta_rnd adder output is 000021fc
+acc adder output is 000021fc
+ 
+====================================
+input_a is 00000de5
+input_b is 0000085c
+bta_trunc adder output is 00001640
+bta_rnd adder output is 00001642
+acc adder output is 00001641
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000248b
+input_b is 0000248d
+bta_trunc adder output is 00004916
+bta_rnd adder output is 0000491a
+acc adder output is 00004918
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001805
+input_b is fffffd03
+bta_trunc adder output is 00001506
+bta_rnd adder output is 0000150a
+acc adder output is 00001508
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000074c
+input_b is 000021e5
+bta_trunc adder output is 00002930
+bta_rnd adder output is 00002932
+acc adder output is 00002931
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000b38
+input_b is fffffe08
+bta_trunc adder output is 00000940
+bta_rnd adder output is 00000940
+acc adder output is 00000940
+ 
+====================================
+input_a is 00002170
+input_b is 00001618
+bta_trunc adder output is 00003788
+bta_rnd adder output is 00003788
+acc adder output is 00003788
+ 
+====================================
+input_a is 000018d8
+input_b is 000009fb
+bta_trunc adder output is 000022d2
+bta_rnd adder output is 000022d4
+acc adder output is 000022d3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000133
+input_b is 000022a0
+bta_trunc adder output is 000023d2
+bta_rnd adder output is 000023d4
+acc adder output is 000023d3
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001baa
+input_b is 000020b5
+bta_trunc adder output is 00003c5e
+bta_rnd adder output is 00003c60
+acc adder output is 00003c5f
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001cc6
+input_b is fffffd01
+bta_trunc adder output is 000019c6
+bta_rnd adder output is 000019c8
+acc adder output is 000019c7
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000151
+input_b is 00000e18
+bta_trunc adder output is 00000f68
+bta_rnd adder output is 00000f6a
+acc adder output is 00000f69
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00002006
+input_b is 00000994
+bta_trunc adder output is 0000299a
+bta_rnd adder output is 0000299a
+acc adder output is 0000299a
+ 
+====================================
+input_a is 000021e9
+input_b is 00000b2b
+bta_trunc adder output is 00002d12
+bta_rnd adder output is 00002d16
+acc adder output is 00002d14
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001dd1
+input_b is 00001d4a
+bta_trunc adder output is 00003b1a
+bta_rnd adder output is 00003b1c
+acc adder output is 00003b1b
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000469
+input_b is 00000570
+bta_trunc adder output is 000009d8
+bta_rnd adder output is 000009da
+acc adder output is 000009d9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00001a52
+input_b is 00000087
+bta_trunc adder output is 00001ad8
+bta_rnd adder output is 00001ada
+acc adder output is 00001ad9
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000098c
+input_b is 00000115
+bta_trunc adder output is 00000aa0
+bta_rnd adder output is 00000aa2
+acc adder output is 00000aa1
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 0000133c
+input_b is 000021b9
+bta_trunc adder output is 000034f4
+bta_rnd adder output is 000034f6
+acc adder output is 000034f5
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+====================================
+input_a is 00000901
+input_b is 000009fa
+bta_trunc adder output is 000012fa
+bta_rnd adder output is 000012fc
+acc adder output is 000012fb
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+@@@@@@@@@@ASSERTION FAILED in test_bench_tb: signal != value
+ 
+Simulation complete via $finish(1) at time 2 MS + 0
+./test_apx_int_adder.v:84       $finish;
+ncsim> exit
+TOOL:	ncverilog(64)	06.10-s002: Exiting on Oct 28, 2016 at 12:45:25 CDT  (total: 00:00:01)

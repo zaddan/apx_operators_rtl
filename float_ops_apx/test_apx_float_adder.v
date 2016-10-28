@@ -6,6 +6,8 @@ if (signal !== value) begin \
     //$finish; \
 end
 
+
+`define BT_RND
 module test_bench_tb;
   reg  clk;
   reg  rst;

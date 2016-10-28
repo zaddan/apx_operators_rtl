@@ -56,7 +56,8 @@ module apx_float_multiplier(
   reg       a_s, b_s, z_s;
   reg       guard, round_bit, sticky;
   reg       [49-2*NAB_M:0] product;
-
+  reg result_sign;
+  
   always @(posedge clk)
   begin
 
@@ -67,7 +68,7 @@ module apx_float_multiplier(
         z <= 0;
         s_input_a_ack <= 1;
         if (s_input_a_ack && input_a_stb) begin
-          a <= input_a;
+          a <= input_a[31] ? -input_a : input_a;
           s_input_a_ack <= 0;
           state <= get_b;
         end
@@ -77,16 +78,22 @@ module apx_float_multiplier(
       begin
         s_input_b_ack <= 1;
         if (s_input_b_ack && input_b_stb) begin
-          b <= input_b;
+          b <= input_b[31] ? -input_b : input_b;
           s_input_b_ack <= 0;
           state <= unpack;
-        end
+          result_sign <= (input_b[31] == input_a[31]);
       end
+     end
 
       unpack:
       begin
-        a_m <= a[22 : NAB_M];
-        b_m <= b[22 : NAB_M];
+        `ifdef BT_RND 
+            a_m <= a[22 : NAB_M];
+            b_m <= b[22 : NAB_M];
+        `else
+            a_m <= a[22 : NAB_M];
+            b_m <= b[22 : NAB_M];
+        `endif
         a_e <= a[30 : 23] - 127;
         b_e <= b[30 : 23] - 127;
         a_s <= a[31];
@@ -240,8 +247,9 @@ module apx_float_multiplier(
         if ($signed(z_e) > 127) begin
           z[22 : 0] <= 0;
           z[30 : 23] <= 255;
-          z[31] <= z_s;
-        end
+          //z[31] <= z_s;
+          z[31] <= result_sign ? 0: 1;
+      end
         state <= put_z;
       end
 
