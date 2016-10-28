@@ -21,7 +21,7 @@ module test_bench_tb;
   // initialize the hexadecimal reads from the vectors.txt file
   initial $readmemh("int_values_in_hex.txt", data);
   integer i;
-  parameter NAB = 1;  
+  parameter NAB = 0;  
   parameter BT_RND = 0;
 
 
@@ -71,10 +71,10 @@ end
            $display("bta_rnd adder output is %x", output_c_bta_rnd);
            $display("acc adder output is %x", output_c_acc);
            if (BT_RND == 1) begin 
-               $fwrite(f,"%x %x %x\n",input_a, input_b , output_c_bta_rnd);
+               $fwrite(f,"%d %d %d\n",$signed(input_a), $signed(input_b) , $signed(output_c_bta_rnd));
            end
            else begin
-               $fwrite(f,"%x %x %x\n",input_a, input_b, output_c_bta_trunc);
+               $fwrite(f,"%d %d %d\n",$signed(input_a), $signed(input_b), $signed(output_c_bta_trunc));
            end
            if (NAB == 0)begin
            `assert(output_c_acc, output_c_bta_trunc)
