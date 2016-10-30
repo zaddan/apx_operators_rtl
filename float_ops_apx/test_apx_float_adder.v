@@ -3,11 +3,11 @@
 `define assert(signal, value) \
 if (signal !== value) begin \
     $display("@@@@@@@@@@ASSERTION FAILED in %m: signal != value"); \
-    //$finish; \
+    $finish; \
 end
 
 
-`define BT_RND
+//`define BT_RND
 module test_bench_tb;
   reg  clk;
   reg  rst;
@@ -34,7 +34,7 @@ module test_bench_tb;
   wire   output_z_ack_apx;
   reg output_z_ack_apx_reg;
   
-  parameter number_of_input_pairs = 8; 
+  parameter number_of_input_pairs = 1; 
   //variables to read from a file 
   reg [31:0] data [0:2*number_of_input_pairs - 1];
   // initialize the hexadecimal reads from the vectors.txt file
@@ -129,7 +129,7 @@ module test_bench_tb;
     .output_z_ack(output_z_ack_acc_reg));
 
 
-  apx_float_adder #(3) adder_39759952_apx(
+  apx_float_adder #(0) adder_39759952_apx(
     .clk(clk),
     .rst(rst),
     .input_a(input_a),

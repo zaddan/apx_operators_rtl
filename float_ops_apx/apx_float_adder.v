@@ -98,11 +98,13 @@ module apx_float_adder(
         b_e <= b[30 : 23] - 127;
         a_s <= a[31];
         b_s <= b[31];
+        
         state <= special_cases;
       end
 
       special_cases:
       begin
+         
         //if a is NaN or b is NaN return NaN 
         if ((a_e == 128 && a_m != 0) || (b_e == 128 && b_m != 0)) begin
           z[31] <= 1;
@@ -241,7 +243,10 @@ module apx_float_adder(
 
       round:
       begin
-        if (guard && (round_bit | sticky | z_m[0])) begin
+        
+       
+          
+          if (guard && (round_bit | sticky | z_m[0])) begin
           z_m <= z_m + 1;
           if (z_m == 24'hffffff) begin
             z_e <=z_e + 1;
