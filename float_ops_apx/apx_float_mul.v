@@ -68,7 +68,7 @@ module apx_float_multiplier(
         z <= 0;
         s_input_a_ack <= 1;
         if (s_input_a_ack && input_a_stb) begin
-          a <= input_a[31] ? -input_a : input_a;
+          a <= input_a;
           s_input_a_ack <= 0;
           state <= get_b;
         end
@@ -78,7 +78,7 @@ module apx_float_multiplier(
       begin
         s_input_b_ack <= 1;
         if (s_input_b_ack && input_b_stb) begin
-          b <= input_b[31] ? -input_b : input_b;
+          b <= input_b;
           s_input_b_ack <= 0;
           state <= unpack;
           result_sign <= (input_b[31] == input_a[31]);
