@@ -3,16 +3,22 @@
 `define assert(signal, value) \
 if (signal !== value) begin \
     $display("@@@@@@@@@@ASSERTION FAILED in %m: signal != value"); \
-    //$finish; \
+    $finish; \
 end
 
-`define BT_RND
+//`define BT_RND
 
 module test_bench_tb;
   reg  clk;
   reg  rst;
   reg [31:0] input_a; //input_a
   
+  reg [63:0] double_input_a;//this is necessary b/c bitstoreal get a 64 bit, which means we need to convert all the 32 bit values we want to write as float to double
+  reg [63:0] double_input_b;//this is necessary b/c bitstoreal get a 64 bit, which means we need to convert all the 32 bit values we want to write as float to double
+  reg [63:0] double_output_z_apx;//this is necessary b/c bitstoreal get a 64 bit, which means we need to convert all the 32 bit values we want to write as float to double
+
+
+
   //real input_a; //input_a
  
   reg input_a_stb;  //input_a_stb
@@ -34,14 +40,24 @@ module test_bench_tb;
   wire   output_z_ack_apx;
   reg output_z_ack_apx_reg;
   
-  parameter number_of_input_pairs = 50; 
+  parameter number_of_input_pairs = 5000; 
+  parameter NAB = 20; 
+  parameter BT_RND = 0; 
   //variables to read from a file 
   reg [31:0] data [0:2*number_of_input_pairs - 1];
   // initialize the hexadecimal reads from the vectors.txt file
   initial $readmemh("float_values_in_hex.txt", data);
   integer i;
   
-  
+  integer f;
+  initial begin
+      if (BT_RND == 1) begin
+          f = $fopen("BT_RND.txt","w");
+      end
+      else begin
+          f = $fopen("TRUNCATION.txt","w");
+      end
+  end
   //reset 
   initial
   begin
@@ -80,7 +96,7 @@ module test_bench_tb;
            #100 
            input_a_stb <= 1;
            input_b_stb <= 1;
-           #2000 
+           #2500 
            $display("====================================");
            $display("input_a is %x", input_a);
            $display("input_b is %x", input_b);
@@ -89,10 +105,18 @@ module test_bench_tb;
            $display(" ");
            output_z_ack_apx_reg <= 1;
            output_z_ack_acc_reg <= 1;
-           #10           
-           `assert(output_z_acc, output_z_apx)
+          /* 
+           double_input_a = {input_a[31], input_a[30], {3{~input_a[30]}}, input_a[29:23], input_a[22:0], {29{1'b0}}};
+           double_input_b = {input_b[31], input_b[30], {3{~input_b[30]}}, input_b[29:23], input_b[22:0], {29{1'b0}}};
+           double_output_z_apx = {output_z_apx[31], output_z_apx[30], {3{~output_z_apx[30]}}, output_z_apx[29:23], output_z_apx[22:0], {29{1'b0}}};
            
-
+           $fwrite(f,"%f %f %f \n",$bitstoreal(double_input_a), $bitstoreal(double_input_b) , $bitstoreal(double_output_z_apx));
+           */
+           
+          $fwrite(f,"%x %x %x\n",input_a, input_b , output_z_apx);
+          if (NAB == 0)begin
+               `assert(output_z_acc, output_z_apx)
+            end
       end
   end
   
@@ -109,8 +133,8 @@ module test_bench_tb;
   //finish
   initial
   begin
-      #2000000
-
+      #15000000
+      $fclose(f); 
       $finish;
   end
 
@@ -129,7 +153,7 @@ module test_bench_tb;
     .output_z_ack(output_z_ack_acc_reg));
 
 
-  apx_float_multiplier #(0) multiplier_39759952_apx(
+  apx_float_multiplier #(NAB) multiplier_39759952_apx(
     .clk(clk),
     .rst(rst),
     .input_a(input_a),
