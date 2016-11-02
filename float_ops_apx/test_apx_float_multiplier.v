@@ -40,7 +40,7 @@ module test_bench_tb;
   wire   output_z_ack_apx;
   reg output_z_ack_apx_reg;
   
-  parameter number_of_input_pairs = 5000; 
+  parameter number_of_input_pairs = 50000; 
   parameter NAB = 20; 
   parameter BT_RND = 0; 
   //variables to read from a file 
@@ -50,12 +50,15 @@ module test_bench_tb;
   integer i;
   
   integer f;
+  integer f2; //file 2 identiier (to write)
   initial begin
       if (BT_RND == 1) begin
           f = $fopen("BT_RND.txt","w");
+          f2 = $fopen("BT_RND_acc_vs_apx.txt","w");
       end
       else begin
           f = $fopen("TRUNCATION.txt","w");
+          f2 = $fopen("TRUNCATION_acc_vs_apx.txt","w");
       end
   end
   //reset 
@@ -96,16 +99,11 @@ module test_bench_tb;
            #100 
            input_a_stb <= 1;
            input_b_stb <= 1;
-           #2500 
-           $display("====================================");
-           $display("input_a is %x", input_a);
-           $display("input_b is %x", input_b);
-           $display("accurate multiplier output is %x", output_z_acc);
-           $display("apx multiplier output is %x", output_z_apx);
-           $display(" ");
+           #2600 
            output_z_ack_apx_reg <= 1;
            output_z_ack_acc_reg <= 1;
-          /* 
+           #2
+           /* 
            double_input_a = {input_a[31], input_a[30], {3{~input_a[30]}}, input_a[29:23], input_a[22:0], {29{1'b0}}};
            double_input_b = {input_b[31], input_b[30], {3{~input_b[30]}}, input_b[29:23], input_b[22:0], {29{1'b0}}};
            double_output_z_apx = {output_z_apx[31], output_z_apx[30], {3{~output_z_apx[30]}}, output_z_apx[29:23], output_z_apx[22:0], {29{1'b0}}};
@@ -113,7 +111,10 @@ module test_bench_tb;
            $fwrite(f,"%f %f %f \n",$bitstoreal(double_input_a), $bitstoreal(double_input_b) , $bitstoreal(double_output_z_apx));
            */
            
+          //$fwrite(f,"%x %x %x\n",input_a, input_b , output_z_apx);
+          $fwrite(f2,"%x %x %x %x \n",input_a, input_b, output_z_acc, output_z_apx);
           $fwrite(f,"%x %x %x\n",input_a, input_b , output_z_apx);
+          
           if (NAB == 0)begin
                `assert(output_z_acc, output_z_apx)
             end
@@ -133,8 +134,9 @@ module test_bench_tb;
   //finish
   initial
   begin
-      #15000000
+      #170000000
       $fclose(f); 
+      $fclose(f2); 
       $finish;
   end
 
@@ -153,7 +155,7 @@ module test_bench_tb;
     .output_z_ack(output_z_ack_acc_reg));
 
 
-  apx_float_multiplier #(NAB) multiplier_39759952_apx(
+  apx_float_multiplier #(NAB, BT_RND) multiplier_39759952_apx(
     .clk(clk),
     .rst(rst),
     .input_a(input_a),

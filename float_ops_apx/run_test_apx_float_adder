@@ -1,0 +1,2 @@
+#!/bin/bash
+ncverilog test_apx_float_adder.v apx_float_adder.v apx_float_adder_inef.v ../../fpu_dawsongon/adder/adder.v  +access+rw

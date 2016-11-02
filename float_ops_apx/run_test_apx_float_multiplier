@@ -1,0 +1,2 @@
+#!/bin/bash
+ncverilog test_apx_float_multiplier.v apx_float_mul.v ../../fpu_dawsongon/multiplier/multiplier.v +access+rw

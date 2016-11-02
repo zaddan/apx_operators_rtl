@@ -36,6 +36,8 @@ module apx_float_multiplier(
 
   reg       [3:0] state;
   parameter NAB_M = 5'd10; 
+  parameter BT_RND = 3'd0;
+  parameter z_m_rounding =  {(24-NAB_M){1'b1}};
   parameter get_a         = 4'd0,
             get_b         = 4'd1,
             unpack        = 4'd2,
@@ -48,7 +50,8 @@ module apx_float_multiplier(
             normalise_2   = 4'd9,
             round         = 4'd10,
             pack          = 4'd11,
-            put_z         = 4'd12;
+            put_z         = 4'd12,
+            bt_rnd = 4'd13;
 
   reg       [31:0] a, b, z;
   reg       [23-NAB_M:0] a_m, b_m, z_m;
@@ -80,9 +83,24 @@ module apx_float_multiplier(
         if (s_input_b_ack && input_b_stb) begin
           b <= input_b;
           s_input_b_ack <= 0;
-          state <= unpack;
+          state <= bt_rnd;
           result_sign <= (input_b[31] == input_a[31]);
       end
+     end
+
+     bt_rnd:
+     begin
+         if (BT_RND == 1)begin
+             if (NAB_M != 0)begin 
+                 if(a[NAB_M -1] == 1'b1) begin
+                     a <= a + (1<<(NAB_M));
+                 end
+                 if(b[NAB_M -1] == 1'b1) begin
+                     b <= (b+ (1<<NAB_M));
+                 end
+             end
+         end
+         state <= unpack;
      end
 
       unpack:
@@ -196,9 +214,10 @@ module apx_float_multiplier(
         state <= normalise_1;
       end
 
+
       normalise_1:
       begin
-        if (z_m[23-NAB_M] == 0) begin
+          if (z_m[23-NAB_M] == 0) begin
           z_e <= z_e - 1;
           z_m <= z_m << 1;
           z_m[0] <= guard;
@@ -211,7 +230,7 @@ module apx_float_multiplier(
 
       normalise_2:
       begin
-        if ($signed(z_e) < -126) begin
+          if ($signed(z_e) < -126) begin
           z_e <= z_e + 1;
           z_m <= z_m >> 1;
           guard <= z_m[0];
@@ -220,13 +239,13 @@ module apx_float_multiplier(
         end else begin
           state <= round;
         end
-      end
+    end
 
       round:
       begin
         if (guard && (round_bit | sticky | z_m[0])) begin
           z_m <= z_m + 1;
-          if (z_m == 24'hffffff) begin
+          if (z_m == z_m_rounding) begin
             z_e <=z_e + 1;
           end
         end
@@ -235,7 +254,7 @@ module apx_float_multiplier(
 
       pack:
       begin
-        z[22 : NAB_M] <= z_m[22-NAB_M:0];
+          z[22 : NAB_M] <= z_m[22-NAB_M:0];
         //z[NAB_M -1: 0] <= {NAB_M{1'b0}}; //might be difference for rounding
         
         z[30 : 23] <= z_e[7:0] + 127;

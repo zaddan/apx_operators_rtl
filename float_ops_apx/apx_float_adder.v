@@ -38,6 +38,9 @@ module apx_float_adder(
   reg       [3:0] state;
   
   parameter NAB_M = 5'd23; //Num of Apx Bits for Mantisa
+  parameter BT_RND = 1'd0;
+  
+  parameter z_m_rounding =  {(24-NAB_M){1'b1}};
   parameter get_a         = 4'd0,
             get_b         = 4'd1,
             unpack        = 4'd2,
@@ -49,8 +52,8 @@ module apx_float_adder(
             normalise_2   = 4'd8,
             round         = 4'd9,
             pack          = 4'd10,
-            put_z         = 4'd11;
-
+            put_z         = 4'd11,
+            bt_rnd = 4'd12;
   reg       [31:0] a, b, z;
   //reg       [26:0] a_m, b_m;
   reg       [26-NAB_M:0] a_m, b_m;
@@ -81,19 +84,31 @@ module apx_float_adder(
         if (s_input_b_ack && input_b_stb) begin
           b <= input_b;
           s_input_b_ack <= 0;
-          state <= unpack;
+          state <= bt_rnd;
         end
+      end
+
+      bt_rnd:
+      begin
+          if (BT_RND == 1)begin
+              if (NAB_M != 0)begin 
+                  if(a[NAB_M -1] == 1'b1) begin
+                      //a[23:0] <= (a[23:0] + (1<<NAB_M));
+                      a <= a + (1<<NAB_M);
+                  end
+                  if(b[NAB_M -1] == 1'b1) begin
+                      b <= b + (1<<NAB_M);
+                      //b[23:0] <= (b[23:0] + (1<<NAB_M));
+                  end
+              end
+          end
+          state <= unpack;
       end
 
       unpack:
       begin
-        `ifdef BT_RND 
-            a_m <= {a[22 : 0+NAB_M], 3'd0};
-            b_m <= {b[22 : 0+NAB_M], 3'd0};
-        `else 
-            a_m <= {a[22 : 0+NAB_M], 3'd0};
-            b_m <= {b[22 : 0+NAB_M], 3'd0};
-        `endif
+        a_m <= {a[22 : 0+NAB_M], 3'd0};
+        b_m <= {b[22 : 0+NAB_M], 3'd0};
         a_e <= a[30 : 23] - 127;
         b_e <= b[30 : 23] - 127;
         a_s <= a[31];
@@ -211,7 +226,7 @@ module apx_float_adder(
           guard <= sum[2];
           round_bit <= sum[1];
           sticky <= sum[0];
-        end
+      end
         state <= normalise_1;
       end
 
@@ -243,14 +258,13 @@ module apx_float_adder(
 
       round:
       begin
-        
-       
-          
           if (guard && (round_bit | sticky | z_m[0])) begin
           z_m <= z_m + 1;
-          if (z_m == 24'hffffff) begin
-            z_e <=z_e + 1;
+          if (z_m == z_m_rounding) begin
+              z_e <=z_e + 1;
           end
+          else begin
+         end
         end
         state <= pack;
       end
