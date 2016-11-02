@@ -42,7 +42,7 @@ module test_bench_tb;
   
   parameter number_of_input_pairs = 50000; 
   parameter NAB = 20; 
-  parameter BT_RND = 0; 
+  parameter BT_RND = 1; 
   //variables to read from a file 
   reg [31:0] data [0:2*number_of_input_pairs - 1];
   // initialize the hexadecimal reads from the vectors.txt file

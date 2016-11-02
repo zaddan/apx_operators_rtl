@@ -45,8 +45,8 @@ reg [63:0] double_output_z_apx;//this is necessary b/c bitstoreal get a 64 bit, 
 
 //--- parameters
 parameter number_of_input_pairs = 50000; 
-parameter BT_RND = 0; 
-parameter NAB = 10;  
+parameter BT_RND = 1; 
+parameter NAB = 20;
 
 //variables to read from a file 
 reg [31:0] data [0:2*number_of_input_pairs - 1];
