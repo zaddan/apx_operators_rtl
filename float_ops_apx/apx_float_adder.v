@@ -37,7 +37,7 @@ module apx_float_adder(
 
   reg       [3:0] state;
   
-  parameter NAB_M = 5'd23; //Num of Apx Bits for Mantisa
+  parameter NAB_M = 5'd0; //Num of Apx Bits for Mantisa
   parameter BT_RND = 1'd0;
   
   parameter z_m_rounding =  {(24-NAB_M){1'b1}};
