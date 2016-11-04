@@ -35,7 +35,7 @@ module apx_float_multiplier(
   reg       s_input_b_ack;
 
   reg       [3:0] state;
-  parameter NAB_M = 5'd10; 
+  parameter NAB_M = 5'd20; 
   parameter BT_RND = 3'd0;
   parameter z_m_rounding =  {(24-NAB_M){1'b1}};
   parameter get_a         = 4'd0,

@@ -41,7 +41,7 @@ module test_bench_tb;
   reg output_z_ack_apx_reg;
   
   parameter number_of_input_pairs = 50000; 
-  parameter NAB = 20; 
+  parameter NAB = 0; 
   parameter BT_RND = 1; 
   //variables to read from a file 
   reg [31:0] data [0:2*number_of_input_pairs - 1];
