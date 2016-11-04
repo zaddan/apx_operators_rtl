@@ -14,38 +14,27 @@ module bta (
   c
 );
 
-parameter DWA = 16;
-parameter DWB = 16;
-parameter DW_AC = 8;
-parameter DWO = DWA > DWB ? DWA : DWB;
 
-// generated parameter: precise bits
-// parameter DW_P = DW-DW_AC;
+parameter BWOP = 32; //operand width
+parameter NAB = 1;  //Number of Apx Bits
 
-input  [DWA-1:0]              a;
-input  [DWB-1:0]              b;
-output [DWO-1:0]              c;
-
-wire [DWA-DW_AC-1:0]          a_rc;
-wire [DWB-DW_AC-1:0]          b_rc;
-wire [DWO-DW_AC-1:0]          c_rc;
-
-// imprecise parts
-wire [DW_AC-1:0]              a_ip;
-wire [DW_AC-1:0]              b_ip;
-
-rnd #(DWA+2, DW_AC+2) u0_rnd_clp(
-  .i_din                   ({a, 2'b0}      ),
+input  [BWOP-1:0]                                   a;
+input  [BWOP-1:0]                                   b;
+output [BWOP-1:0]                                   c;
+wire   [BWOP-NAB-1:0]                               a_rc;
+wire   [BWOP-NAB-1:0]                               b_rc;
+wire   [BWOP- NAB :0]                           c_pre;
+wire overflow;
+rnd #(BWOP,  NAB) u0_rnd(
+  .i_din                   (a),
   .o_dout                  (a_rc              )
 );
 
-rnd #(DWB+2, DW_AC+2) u1_rnd_clp(
-  .i_din                   ({b, 2'b0}      ),
+rnd #(BWOP, NAB) u1_rnd(
+  .i_din                   (b),
   .o_dout                  (b_rc              )
 );
 
-assign c_rc = a_rc + b_rc;
-
-//assign c = {c_rc, {{DW_AC}{1'b0}}};
-assign c = (DW_AC == 0) ? c_rc: {c_rc, {{DW_AC}{1'b0}}};
+assign c_pre = a_rc + b_rc;
+assign c = (NAB == 0) ? c_pre[BWOP-1: 0]: {c_pre[BWOP-NAB - 1:0], {{NAB}{1'b0}}};
 endmodule

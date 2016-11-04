@@ -15,14 +15,14 @@ module test_bench_tb;
   wire [31:0] output_c_bta_rnd; 
   wire [31:0] output_c_acc; 
   
-  parameter number_of_input_pairs = 500; 
+  parameter number_of_input_pairs = 5000; 
   //variables to read from a file 
   reg [31:0] data [0:2*number_of_input_pairs - 1];
   // initialize the hexadecimal reads from the vectors.txt file
   initial $readmemh("int_values_in_hex.txt", data);
   integer i;
-  parameter NAB = 0;  
-  parameter BT_RND = 0;
+  parameter NAB = 1;  
+  parameter BT_RND = 1;
 
 
   //reset 
@@ -103,7 +103,7 @@ end
   end
 
 
-  bta_trunc #(32,32,NAB) bta_trunc_u(
+  bta_trunc #(32,NAB) bta_trunc_u(
     .a(input_a),
     .b(input_b),
     .c(output_c_bta_trunc));
@@ -113,7 +113,7 @@ end
     .b(input_b),
     .c(output_c_acc));
 
-  bta #(32,32,NAB) bta_rnd( 
+  bta #(32,NAB) bta_rnd( 
     .a(input_a),
     .b(input_b),
     .c(output_c_bta_rnd));
