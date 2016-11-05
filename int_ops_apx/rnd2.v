@@ -12,7 +12,6 @@ parameter DW_OUT = DW_IN-DW_RND;
 input  [DW_IN-1:0]           i_din;
 output [DW_OUT-1:0]          o_dout;
 
-wire   [DW_IN-1-DW_RND:0]    w_d_rnd_max;
 reg    [DW_IN-1-DW_RND:0]    w_d_rnd;
 
 // rounding

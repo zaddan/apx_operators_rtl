@@ -1,6 +1,0 @@
-test_apx_int_adder.v
-bta_trunc.v
-acc_adder.v
-bta.v
-rnd2.v
--ACCESS +rw
