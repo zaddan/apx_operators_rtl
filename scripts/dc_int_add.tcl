@@ -48,7 +48,9 @@ set verilogout_show_unconnected_pins "true"
 #read_file -format verilog loa.v 
 #read_file -format verilog -define DC_PARAM${BWAC} ${DESIGN_NAME}.v 
 #analyze -format verilog ${AC_NAME}.v 
-for { set NAB 0}  {$NAB < 15} {incr NAB 1} {
+
+#WARNING: NAB can not be less than one
+for { set NAB 21}  {$NAB < 22} {incr NAB 1} {
     analyze -format verilog [list add_out_ff.v bta.v rnd2.v bta_trunc.v]
     elaborate $my_toplevel -parameters $NAB,32
     #current_design $my_toplevel
@@ -73,9 +75,9 @@ for { set NAB 0}  {$NAB < 15} {incr NAB 1} {
     write -f verilog -hierarchy -output ${RESULTS_DIR}/${DESIGN_NAME}.v
     write_sdc ${RESULTS_DIR}/${DESIGN_NAME}.sdc
     #
-    report_timing -sort_by slack -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 1 -max_paths 1 > ${REPORTS_DIR}/${DESIGN_NAME}_${NAB}_timing.rpt
-    report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}_${NAB}_area.rpt
-    report_power > ${REPORTS_DIR}/${DESIGN_NAME}_${NAB}_power.rpt
+    report_timing -sort_by slack -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 1 -max_paths 1 > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing.rpt
+    report_area -hierarchy -nosplit > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_area.rpt
+    report_power > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_power.rpt
 
     remove_design -hierarchy
 }

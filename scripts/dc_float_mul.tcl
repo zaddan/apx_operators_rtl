@@ -46,8 +46,8 @@ set verilogout_show_unconnected_pins "true"
 #set hdlin_enable_vpp true
 
 
-
-for { set NAB 1}  {$NAB < 2} {incr NAB 1} {
+#WARNING: NAB must not be less than one
+for { set NAB 0}  {$NAB < 22} {incr NAB 1} {
     #read_file -format verilog loa.v 
     #read_file -format verilog -define DC_PARAM${BWAC} ${DESIGN_NAME}.v 
     #analyze -format verilog ${AC_NAME}.v 
@@ -57,8 +57,8 @@ for { set NAB 1}  {$NAB < 2} {incr NAB 1} {
     link
     create_clock -name clk -period 4.5 -waveform {0 0.5} [get_ports clk]
     set_ideal_network -no_propagate [get_ports clk]
-    set_input_delay -max 0 -clock clk [get_ports input_a*]                                          
     set_input_delay -max 0 -clock clk [get_ports input_b]     
+    set_input_delay -max 0 -clock clk [get_ports input_a]     
     set_dont_touch_network [get_clocks clk]
 
 

@@ -49,14 +49,19 @@ set verilogout_show_unconnected_pins "true"
 #read_file -format verilog -define DC_PARAM${BWAC} ${DESIGN_NAME}.v 
 #analyze -format verilog ${AC_NAME}.v 
 
-for { set NAB 1}  {$NAB < 15} {incr NAB 1} {
+#WARNING: NAB must not be less than one
+for { set NAB 1}  {$NAB < 2} {incr NAB 1} {
+    set_dynamic_optimization 
     analyze -format verilog [list apx_float_adder.v]
     elaborate $my_toplevel -parameters $NAB,1
     #current_design $my_toplevel
     link
-    create_clock -name clk -period 4.5 -waveform {0 0.5} [get_ports clk]
+    create_clock -name clk -period 4.5 -waveform {0 2.25} [get_ports clk]
     set_ideal_network -no_propagate [get_ports clk]
+    set_input_delay -max 0 -clock clk [get_ports input_b]     
+    set_input_delay -max 0 -clock clk [get_ports input_a]     
     set_dont_touch_network [get_clocks clk]
+
 
     #compile -area_effort low -power_effort low -map_effort low -exact_map
     #compile_ultra 
