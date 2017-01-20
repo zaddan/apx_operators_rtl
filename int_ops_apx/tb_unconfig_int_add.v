@@ -16,8 +16,12 @@ module test_bench_tb;
   reg clk;
   
   parameter number_of_input_pairs = 5000; 
-  parameter BWOP = 32;
-  
+  parameter OP_BITWIDTH = 16;
+  parameter DATA_PATH_BITWIDTH = 32;
+
+  parameter clk_period = 0.8;
+  parameter half_clk_period = clk_period/2;
+
   //variables to read from a file 
   reg [31:0] data [0:2*number_of_input_pairs - 1];
   // initialize the hexadecimal reads from the vectors.txt file
@@ -30,10 +34,10 @@ module test_bench_tb;
   initial
   begin
     rst <= 1'b1;
-    #30 
+    #(30*clk_period)
     rst <= 1'b0;
     apx_ctl <= 1'b1; 
-    #20 
+    #(20*clk_period) 
     rst <= 1'b1;
   end
 
@@ -43,7 +47,7 @@ module test_bench_tb;
   begin
     clk <= 1'b0;
     while (1) begin
-      #0.3 clk <= ~clk;
+      #(half_clk_period) clk <= ~clk;
     end
   end
 
@@ -56,12 +60,12 @@ end
 //sample input, generate results, compare results 
 initial
 begin
-    #60
+    #(60*clk_period)
     for (i=0; i < number_of_input_pairs; i = i + 1)begin
         input_a <= data[2*i];
         input_b <= data[2*i + 1];
         
-        #100 
+        #(100*clk_period)
         //$display("input_a: %d input_b %d\n", $signed(input_a), $signed(input_b));
         $fwrite(f,"%d %d %d\n",$signed(input_a), $signed(input_b), $signed(output_c_acc));
     end
@@ -80,13 +84,13 @@ end
 //finish
 initial
 begin
-    #20000
+    #200000
     $fclose(f); 
     $finish;
 end
 
 
-unconfig_int_add #(BWOP) add( 
+unconfig_int_add #(OP_BITWIDTH, DATA_PATH_BITWIDTH) add( 
     .clk(clk),
     .rst(rst),
     .a(input_a),

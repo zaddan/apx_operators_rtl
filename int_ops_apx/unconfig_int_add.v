@@ -10,32 +10,58 @@ module unconfig_int_add(
  c
 );
 
+//--- parameters
 //parameter BT_RND = 0
-parameter BWOP = 32;
+parameter OP_BITWIDTH = 32; //operator bit width
+parameter DATA_PATH_BITWIDTH = 32; //flip flop Bit width
+
+
+//--- input,outputs
 input clk;
 input rst;
-input [BWOP-1:0] a;
-input [BWOP-1:0] b;
-output [BWOP-1:0] c;
+input [DATA_PATH_BITWIDTH -1:0] a;
+input [DATA_PATH_BITWIDTH-1:0] b;
+output [DATA_PATH_BITWIDTH-1:0] c;
 
-reg [BWOP-1:0]  reg_c;
-wire [BWOP-1:0]  w_c;
 
-acc_int_add #(BWOP) u0_ac (a, b, w_c);
+//--- regs, wires
+reg [DATA_PATH_BITWIDTH-1:0]  reg_c;
+wire [OP_BITWIDTH -1 : 0]w_c;
+reg [DATA_PATH_BITWIDTH -1:0]  reg_a;
+reg [DATA_PATH_BITWIDTH -1:0]  reg_b;
+
+
+//--- design
+acc_int_add #(OP_BITWIDTH) u0_ac (reg_a[DATA_PATH_BITWIDTH -1: DATA_PATH_BITWIDTH - OP_BITWIDTH], reg_b[DATA_PATH_BITWIDTH -1: DATA_PATH_BITWIDTH - OP_BITWIDTH], w_c);
 
 always @(posedge clk or negedge rst)
 begin
   if (~rst)
   begin
-    reg_c <= #1 0;
+    reg_a <= #0.3 0;
+    reg_b <= #0.3 0;
   end
   else 
   begin
-    reg_c <= #1 w_c;
+      reg_a <= #0.1 a;
+      reg_b <= #0.1 b;
   end
 end
 
-assign c = reg_c;
+always @(posedge clk or negedge rst)
+begin
+  if (~rst)
+  begin
+    reg_c <= #0.1 0;
+  end
+  else 
+  begin
+    reg_c[DATA_PATH_BITWIDTH-1: DATA_PATH_BITWIDTH-OP_BITWIDTH] <= w_c;
+  end
+end
+
+assign c = reg_c; 
+
 
 endmodule
 

@@ -10,18 +10,16 @@ end
 module test_bench_tb;
   reg [31:0] input_a; //input_a
   reg [31:0] input_b; //input_b
-  reg apx_ctl; 
   wire [31:0] output_c_acc; 
+  reg reg_en; 
   reg rst;
   reg clk;
   
   parameter number_of_input_pairs = 5000; 
-  parameter HRDWIRED_BITWIDTH = 16;
+  parameter CLKGATED_BITWIDTH = 16;
   parameter DATA_PATH_BITWIDTH = 32;
-
-  parameter clk_period = 0.8;
+  parameter clk_period = 2.0;
   parameter half_clk_period = clk_period/2;
-
 
   //variables to read from a file 
   reg [31:0] data [0:2*number_of_input_pairs - 1];
@@ -35,11 +33,11 @@ module test_bench_tb;
   initial
   begin
     rst <= 1'b1;
-    #(30*clk_period)
+    #(30*clk_period) 
     rst <= 1'b0;
-    apx_ctl <= 1'b0; 
     #(20*clk_period) 
     rst <= 1'b1;
+    reg_en <= 1'b1; 
   end
 
   
@@ -67,6 +65,7 @@ begin
         input_b <= data[2*i + 1];
         
         #(100*clk_period)
+        reg_en <= 1'b1; 
         //$display("input_a: %d input_b %d\n", $signed(input_a), $signed(input_b));
         $fwrite(f,"%d %d %d\n",$signed(input_a), $signed(input_b), $signed(output_c_acc));
     end
@@ -91,19 +90,34 @@ begin
 end
 
 
-config_int_add_inMux_truncation #(DATA_PATH_BITWIDTH, HRDWIRED_BITWIDTH)apx_add_truncation( 
+
+//using the behavioral 
+
+config_int_add_clkGate #(DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH)apx_add_clkGate( 
     .clk(clk),
     .rst(rst),
-    .apx_ctl(apx_ctl),
+    .reg_en(reg_en),
     .a(input_a),
     .b(input_b),
     .c(output_c_acc));
 
+//using the synthesized
+/*
+// the following doesn't work anymore
+config_int_add_clkGate_DATA_PATH_BITWIDTH32_CLKGATED_BITWIDTH16_1
+apx_add_clkGate( 
+    .clk(clk),
+    .rst(rst),
+    .reg_en(reg_en),
+    .a(input_a),
+    .b(input_b),
+    .c(output_c_acc));
+*/
 
 initial begin
     $dumpfile("DUT.vcd");
     //$dumpvars(0,  test_bench_tb);
-    $dumpvars(0,  apx_add_truncation);
+    $dumpvars(0,  apx_add_clkGate);
 end
 
 
