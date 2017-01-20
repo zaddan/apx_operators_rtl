@@ -34,34 +34,7 @@ wire [DATA_PATH_BITWIDTH-1:0]  w_c;
 //--- design
 acc_int_add #(DATA_PATH_BITWIDTH) u0_ac (reg_a, reg_b, w_c);
 
-
-/*
-always @(posedge clk or negedge rst)
-begin
-  if (~rst)
-  begin
-    reg_c[DATA_PATH_BITWIDTH -1: CLKGATED_BITWIDTH] <= #0.1 0;
-  end
-  else 
-  begin
-    reg_c[DATA_PATH_BITWIDTH-1: CLKGATED_BITWIDTH] <= w_c[DATA_PATH_BITWIDTH-1:CLKGATED_BITWIDTH];
-  end
-end
-
-always @(posedge clk or negedge rst)
-begin
-  if (~rst)
-  begin
-    reg_c[CLKGATED_BITWIDTH-1:0] <= #0.1 0;
-  end
-  else if (rst && reg_en)
-  begin
-    reg_c[CLKGATED_BITWIDTH-1:0] <= w_c[CLKGATED_BITWIDTH-1:0];
-  end
-end
-*/
-
-//
+//--- clk gating inputs
 always @(posedge clk or negedge rst)
 begin
   if (~rst)
@@ -90,6 +63,35 @@ begin
   end
 end
 
+//--- clk gating output
+always @(posedge clk or negedge rst)
+begin
+  if (~rst)
+  begin
+    reg_c[DATA_PATH_BITWIDTH -1: CLKGATED_BITWIDTH] <= #0.1 0;
+  end
+  else 
+  begin
+    reg_c[DATA_PATH_BITWIDTH-1: CLKGATED_BITWIDTH] <= w_c[DATA_PATH_BITWIDTH-1:CLKGATED_BITWIDTH];
+  end
+end
+
+always @(posedge clk or negedge rst)
+begin
+  if (~rst)
+  begin
+    reg_c[CLKGATED_BITWIDTH-1:0] <= #0.1 0;
+  end
+  else if (rst && reg_en)
+  begin
+    reg_c[CLKGATED_BITWIDTH-1:0] <= w_c[CLKGATED_BITWIDTH-1:0];
+  end
+end
+
+
+
+
+/*
 always @(posedge clk or negedge rst)
 begin
   if (~rst)
@@ -101,7 +103,7 @@ begin
     reg_c <= w_c;
   end
 end
-
+*/
 assign c = reg_c;
 
 endmodule
