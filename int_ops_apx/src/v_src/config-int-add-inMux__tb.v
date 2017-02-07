@@ -79,13 +79,14 @@ end
 
 
 //generate waves
+/*
 initial
 begin
     $shm_open ("my_waves.shm"); //necessary to dump the signals
     //$Dumpvars(1,test_bench_tb );
     $shm_probe("AS"); //probing for all the signals 
 end
-
+*/
 
 //finish
 initial
@@ -112,12 +113,13 @@ config_int_add_inMux_truncation_DATA_PATH_BITWIDTH32_HRDWIRED_BITWIDTH16 apx_add
 //    .c(output_c_acc));
 //
 //
+/*
 initial begin
-    $dumpfile("DUT.vcd");
+    //$dumpfile("DUT.vcd");
     //$dumpvars(0,  test_bench_tb);
     $dumpvars(0,  apx_add_truncation);
 end
-
+*/
 
 endmodule
 

@@ -10,6 +10,9 @@ module unconfig_int_add(
  c
 );
 
+
+
+
 //--- parameters
 //parameter BT_RND = 0
 parameter OP_BITWIDTH = 32; //operator bit width
@@ -22,6 +25,9 @@ input rst;
 input [DATA_PATH_BITWIDTH -1:0] a;
 input [DATA_PATH_BITWIDTH-1:0] b;
 output [DATA_PATH_BITWIDTH-1:0] c;
+
+
+//assign c = a + b;
 
 
 //--- regs, wires

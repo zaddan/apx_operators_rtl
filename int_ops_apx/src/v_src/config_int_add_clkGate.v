@@ -34,10 +34,28 @@ wire [DATA_PATH_BITWIDTH-1:0]  w_c;
 //--- design
 acc_int_add #(DATA_PATH_BITWIDTH) u0_ac (reg_a, reg_b, w_c);
 
-//--- clk gating inputs
+
+reg reg_en_reg; 
+reg rst_reg;
 always @(posedge clk or negedge rst)
 begin
   if (~rst)
+  begin
+      reg_en_reg <= 0;
+      rst_reg <= 0;
+  end
+  else if (rst)
+  begin
+      reg_en_reg <= reg_en; 
+      rst_reg <= rst_reg;
+  end
+end
+
+
+//--- clk gating inputs
+always @(posedge clk or negedge rst_reg)
+begin
+  if (~rst_reg)
   begin
     reg_a[DATA_PATH_BITWIDTH -1: CLKGATED_BITWIDTH] <= #0.1 0;
     reg_b[DATA_PATH_BITWIDTH -1: CLKGATED_BITWIDTH] <= #0.1 0;
@@ -49,14 +67,15 @@ begin
   end
 end
 
-always @(posedge clk or negedge rst)
+
+always @(posedge clk or negedge rst_reg)
 begin
-  if (~rst)
+  if (~rst_reg)
   begin
     reg_a[CLKGATED_BITWIDTH-1:0] <= #0.1 0;
     reg_b[CLKGATED_BITWIDTH-1:0] <= #0.1 0;
   end
-  else if (rst && reg_en)
+  else if (rst_reg && reg_en_reg)
   begin
     reg_a[CLKGATED_BITWIDTH-1:0] <= a[CLKGATED_BITWIDTH-1:0];
     reg_b[CLKGATED_BITWIDTH-1:0] <= b[CLKGATED_BITWIDTH-1:0];
@@ -64,9 +83,9 @@ begin
 end
 
 //--- clk gating output
-always @(posedge clk or negedge rst)
+always @(posedge clk or negedge rst_reg)
 begin
-  if (~rst)
+  if (~rst_reg)
   begin
     reg_c[DATA_PATH_BITWIDTH -1: CLKGATED_BITWIDTH] <= #0.1 0;
   end
@@ -76,13 +95,13 @@ begin
   end
 end
 
-always @(posedge clk or negedge rst)
+always @(posedge clk or negedge rst_reg)
 begin
-  if (~rst)
+  if (~rst_reg)
   begin
     reg_c[CLKGATED_BITWIDTH-1:0] <= #0.1 0;
   end
-  else if (rst && reg_en)
+  else if (rst_reg && reg_en_reg)
   begin
     reg_c[CLKGATED_BITWIDTH-1:0] <= w_c[CLKGATED_BITWIDTH-1:0];
   end
@@ -107,4 +126,42 @@ end
 assign c = reg_c;
 
 endmodule
+
+/*
+module config_int_add_clkGate(
+ clk,
+ rst,
+ reg_en, 
+ a,
+ b,
+ c
+);
+ parameter DATA_PATH_BITWIDTH = 32;  //data path bits
+ parameter CLKGATED_BITWIDTH = 16; //number of clock gated bits
+ input clk;
+ input rst;
+ input [DATA_PATH_BITWIDTH-1:0] a;
+ input [DATA_PATH_BITWIDTH-1:0] b;
+ output [DATA_PATH_BITWIDTH-1:0] c;
+ input reg_en;
+ 
+ reg reg_en_reg; 
+always @(posedge clk)
+begin
+  if (~rst)
+  begin
+      reg_en_reg <= 0;
+  end
+  else if (rst)
+  begin
+      reg_en_reg <= reg_en; 
+  end
+end
+
+ 
+ 
+ config_int_add_clkGate_2 #(DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH) add_stuf(clk, rst, reg_en, a,b,c);
+endmodule
+*/
+
 

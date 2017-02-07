@@ -80,13 +80,14 @@ end
 
 
 //generate waves
+/*
 initial
 begin
     $shm_open ("my_waves.shm"); //necessary to dump the signals
     //$Dumpvars(1,test_bench_tb );
     $shm_probe("AS"); //probing for all the signals 
 end
-
+*/
 
 //finish
 initial
@@ -120,13 +121,13 @@ apx_add_clkGate(
     .b(input_b),
     .c(output_c_acc));
 */
-
+/*
 initial begin
     $dumpfile("DUT.vcd");
     //$dumpvars(0,  test_bench_tb);
     $dumpvars(0,  apx_add_clkGate);
 end
-
+*/
 
 endmodule
 

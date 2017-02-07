@@ -33,8 +33,8 @@ set AC_NAME config_int_add_inMux_truncation
 
 
 #--- specifying libraries 
-#set std_library "saed32rvt_tt1p05v25c.db"
-set std_library "saed32lvt_tt1p05v25c.db"; #the best(amon lvts)
+set std_library "saed32rvt_tt1p05v25c.db"
+#set std_library "saed32lvt_tt1p05v25c.db"; #the best(amon lvts)
 #set  std_library  "noAging.db" 
 
 set target_library "$std_library" 
@@ -58,7 +58,7 @@ check_design
 #--- define design environement (setting up the design environment such as external operating conditions (manufacturing process, temperature, and voltage), loads, drives, fanouts, and wire load models)
 
 
-set endpoints [add_to_collection [all_outputs] [all_registers -data_pins]]
+#set endpoints [add_to_collection [all_outputs] [all_registers -data_pins]]
 
 
 #--- linking to libraries
@@ -69,7 +69,7 @@ link
 
 
 #--- set the optimization constraints 
-create_clock -name clk -period .7 [get_ports clk]
+create_clock -name clk -period .6 [get_ports clk]
 set_ideal_network -no_propagate [get_ports clk]
 set_input_delay -max 0 -clock clk [get_ports b*]     
 set_input_delay -max 0 -clock clk [get_ports a*]     
@@ -80,12 +80,12 @@ set_dont_touch_network [get_clocks clk]
 #--- design rule constraints 
 #set_max_area 0
 
-foreach_in_collection endpt $endpoints { set pin [get_object_name $endpt] 
-    group_path -name $pin -to $pin
-}
+#foreach_in_collection endpt $endpoints { set pin [get_object_name $endpt] 
+#    group_path -name $pin -to $pin
+#}
 
 
-set_max_delay .50 -from {reg_b_reg[16] reg_b_reg[17] reg_b_reg[18] reg_b_reg[19] reg_b_reg[20] reg_b_reg[21] reg_b_reg[22] reg_b_reg[23] reg_b_reg[24] reg_b_reg[25] reg_b_reg[26] reg_b_reg[27] reg_b_reg[28] reg_b_reg[29] reg_b_reg[30] reg_b_reg[31] reg_a_reg[16] reg_a_reg[17] reg_a_reg[18] reg_a_reg[19] reg_a_reg[20] reg_a_reg[21] reg_a_reg[22] reg_a_reg[23] reg_a_reg[24] reg_a_reg[25] reg_a_reg[26] reg_a_reg[27] reg_a_reg[28] reg_a_reg[29] reg_a_reg[30] reg_a_reg[31]} -to {reg_c_reg[16] reg_c_reg[17] reg_c_reg[18] reg_c_reg[19] reg_c_reg[20] reg_c_reg[21] reg_c_reg[22] reg_c_reg[23] reg_c_reg[24] reg_c_reg[25] reg_c_reg[26] reg_c_reg[27] reg_c_reg[28] reg_c_reg[29] reg_c_reg[30] reg_c_reg[31]}
+set_max_delay .55 -from {reg_b_reg[16] reg_b_reg[17] reg_b_reg[18] reg_b_reg[19] reg_b_reg[20] reg_b_reg[21] reg_b_reg[22] reg_b_reg[23] reg_b_reg[24] reg_b_reg[25] reg_b_reg[26] reg_b_reg[27] reg_b_reg[28] reg_b_reg[29] reg_b_reg[30] reg_b_reg[31] reg_a_reg[16] reg_a_reg[17] reg_a_reg[18] reg_a_reg[19] reg_a_reg[20] reg_a_reg[21] reg_a_reg[22] reg_a_reg[23] reg_a_reg[24] reg_a_reg[25] reg_a_reg[26] reg_a_reg[27] reg_a_reg[28] reg_a_reg[29] reg_a_reg[30] reg_a_reg[31]} -to {reg_c_reg[16] reg_c_reg[17] reg_c_reg[18] reg_c_reg[19] reg_c_reg[20] reg_c_reg[21] reg_c_reg[22] reg_c_reg[23] reg_c_reg[24] reg_c_reg[25] reg_c_reg[26] reg_c_reg[27] reg_c_reg[28] reg_c_reg[29] reg_c_reg[30] reg_c_reg[31]}
 
 
 
@@ -93,7 +93,8 @@ set_max_delay .50 -from {reg_b_reg[16] reg_b_reg[17] reg_b_reg[18] reg_b_reg[19]
 #compile
 #compile -area_effort high -power_effort high 
 #compile -power_effort high
-compile_ultra 
+#compile_ultra 
+compile_ultra -timing_high_effort_script -incremental
 #compile_ultra
 
 #read_saif -auto_map_names -input ~/behzad_local/verilog_files/apx_operators/int_ops_apx/DUT.saif -instance test_bench_tb/acc_adder_u -verbose 
@@ -121,4 +122,5 @@ write_sdf ${RESULTS_DIR}/${DESIGN_NAME}_${HRDWIRED_BITWIDTH}Bit_synthesized.mapp
 
 
 remove_design -hierarchy
+exit
 #}
