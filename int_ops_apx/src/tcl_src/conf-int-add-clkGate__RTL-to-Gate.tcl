@@ -1,4 +1,19 @@
-cache_rm
+#---- making a list of register using reg_na (regname) and reg_lower_bound and reg_up_bound
+proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
+    set reg_l {}
+    set num_l {}
+    for {set a $reg_lower_bound} {$a < $reg_up_bound} {incr a} {
+        lappend num_l $a
+    }
+    foreach el $num_l {
+        #append concat_res reg_a_reg $el 
+        lappend reg_l  "${reg_na}\[${el}\]"
+        #reg_a_reg[${el}]
+    }
+    set reg_l_flattened [join $reg_l]
+    return $reg_l_flattened
+}
+
 set BWAC 1
 #set WDIR /home/unga/sglee/Share/ac_hw_syn
 set WDIR "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn"
@@ -22,6 +37,7 @@ set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/FreePDK
 
 #--- NOTE: I had to include *_rvt as well, cause ow the compiler was erroring out
 set search_path [concat  $search_path $lib_dir_1/stdcell_rvt/db_nldm $lib_dir_1/stdcell_lvt/db_nldm $lib_dir_2/germany_NanGate/db $lib_dir_3]
+#set search_path [concat $search_path $lib_dir_2/germany_NanGate/db]
 
 set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
 
@@ -47,11 +63,13 @@ define_design_lib WORK -path ./WORK
 
 set verilogout_show_unconnected_pins "true"
 
-
+#---- Parameters
 #DATA_PATH_WIDTH should most likely stay 32
-set DATA_PATH_WIDTH 32 
+set DATA_PATH_WIDTH 32
 #--- numebr of apx bits
 set CLKGATED_BITWIDTH 16    
+set clk_period .270
+set apx_optimal 0
 #for { set CLKGATED_BITWIDTH 0}  {$CLKGATED_BITWIDTH < 1} {incr CLKGATED_BITWIDTH 1} {
 
 
@@ -63,8 +81,8 @@ check_design
 #--- define design environement (setting up the design environment such as external operating conditions (manufacturing process, temperature, and voltage), loads, drives, fanouts, and wire load models)
 
 
-#set endpoints [add_to_collection [all_outputs] [all_registers -data_pins]]
-
+set endpoints [add_to_collection [all_outputs] [all_registers -data_pins]]
+set inputpoints [add_to_collection [all_inputs] [all_registers -data_pins]]
 
 #--- linking to libraries
 link
@@ -72,9 +90,8 @@ link
 
 #saif_map -start 
 
-
 #--- set the optimization constraints 
-create_clock -name clk -period .25 [get_ports clk]
+create_clock -name clk -period $clk_period [get_ports clk]
 set_ideal_network -no_propagate [get_ports clk]
 set_input_delay -max 0 -clock clk [get_ports b*]     
 set_input_delay -max 0 -clock clk [get_ports a*]     
@@ -84,16 +101,126 @@ set_dont_touch_network [get_clocks clk]
 #--- enable clock propagation of the related clocks
 
 #--- design rule constraints 
-#set_max_area 0
+#set_max_area 0'
 
 
 #foreach_in_collection endpt $endpoints { set pin [get_object_name $endpt] 
+#    puts "hello" 
+#    puts $pin   
 #    group_path -name $pin -to $pin
 #}
 
+set all_reg_a_l [make-reg_l "reg_a_reg" 0 $DATA_PATH_WIDTH]
+set all_reg_b_l [make-reg_l "reg_b_reg" 0 $DATA_PATH_WIDTH]
+set all_reg_c_l [make-reg_l "reg_c_reg" 0 $DATA_PATH_WIDTH]
+set all_reg_a_b_joined [concat $all_reg_a_l $all_reg_b_l]
 
-set_max_delay .20 -from {reg_b_reg[16] reg_b_reg[17] reg_b_reg[18] reg_b_reg[19] reg_b_reg[20] reg_b_reg[21] reg_b_reg[22] reg_b_reg[23] reg_b_reg[24] reg_b_reg[25] reg_b_reg[26] reg_b_reg[27] reg_b_reg[28] reg_b_reg[29] reg_b_reg[30] reg_b_reg[31] reg_a_reg[16] reg_a_reg[17] reg_a_reg[18] reg_a_reg[19] reg_a_reg[20] reg_a_reg[21] reg_a_reg[22] reg_a_reg[23] reg_a_reg[24] reg_a_reg[25] reg_a_reg[26] reg_a_reg[27] reg_a_reg[28] reg_a_reg[29] reg_a_reg[30] reg_a_reg[31]} -to {reg_c_reg[16] reg_c_reg[17] reg_c_reg[18] reg_c_reg[19] reg_c_reg[20] reg_c_reg[21] reg_c_reg[22] reg_c_reg[23] reg_c_reg[24] reg_c_reg[25] reg_c_reg[26] reg_c_reg[27] reg_c_reg[28] reg_c_reg[29] reg_c_reg[30] reg_c_reg[31]}
+set lsb_bits $CLKGATED_BITWIDTH
+set msb_bits [expr $DATA_PATH_WIDTH - $lsb_bits]
+#----------------------------------------------------
 
+
+#----------------------------------------------------
+#--- lab_1 ,1 means the superclass
+set lsb_1_reg_a_l [make-reg_l "reg_a_reg" 0 $lsb_bits]
+set lsb_1_reg_b_l [make-reg_l "reg_b_reg" 0 $lsb_bits]
+set lsb_1_reg_c_l [make-reg_l "reg_c_reg" 0 $lsb_bits]
+set lsb_1_reg_a_b_joined [concat $lsb_1_reg_a_l $lsb_1_reg_b_l]
+
+set msb_1_reg_a_l [make-reg_l "reg_a_reg" $lsb_bits $DATA_PATH_WIDTH]
+set msb_1_reg_b_l [make-reg_l "reg_b_reg" $lsb_bits $DATA_PATH_WIDTH]
+set msb_1_reg_c_l [make-reg_l "reg_c_reg" $lsb_bits $DATA_PATH_WIDTH]
+set msb_1_reg_a_b_joined [concat $msb_1_reg_a_l $msb_1_reg_b_l]
+
+
+set lsb_2_reg_a_l [make-reg_l "reg_a_reg" 0 $lsb_bits]
+set lsb_2_reg_b_l [make-reg_l "reg_b_reg" 0 $lsb_bits]
+set lsb_2_reg_c_l [make-reg_l "reg_c_reg" 0 $lsb_bits]
+set lsb_2_reg_a_b_joined [concat $lsb_2_reg_a_l $lsb_2_reg_b_l]
+
+set msb_2_reg_a_l [make-reg_l "reg_a_reg" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
+set msb_2_reg_b_l [make-reg_l "reg_b_reg" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
+set msb_2_reg_c_l [make-reg_l "reg_c_reg" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
+set msb_2_reg_a_b_joined [concat $msb_2_reg_a_l $msb_2_reg_b_l]
+
+
+set lsb_3_reg_a_l [make-reg_l "reg_a_reg" 0 $lsb_bits]
+set lsb_3_reg_b_l [make-reg_l "reg_b_reg" 0 $lsb_bits]
+set lsb_3_reg_c_l [make-reg_l "reg_c_reg" 0 $lsb_bits]
+set lsb_3_reg_a_b_joined [concat $lsb_3_reg_a_l $lsb_3_reg_b_l]
+
+set msb_3_reg_a_l [make-reg_l "reg_a_reg" [expr $lsb_bits + 8]  $DATA_PATH_WIDTH]
+set msb_3_reg_b_l [make-reg_l "reg_b_reg" [expr $lsb_bits + 8] $DATA_PATH_WIDTH]
+set msb_3_reg_c_l [make-reg_l "reg_c_reg" [expr $lsb_bits + 8] $DATA_PATH_WIDTH]
+set msb_3_reg_a_b_joined [concat $msb_3_reg_a_l $msb_3_reg_b_l]
+
+
+set lsb_4_reg_a_l [make-reg_l "reg_a_reg" 0 $lsb_bits]
+set lsb_4_reg_b_l [make-reg_l "reg_b_reg" 0 $lsb_bits]
+set lsb_4_reg_c_l [make-reg_l "reg_c_reg" 0 $lsb_bits]
+set lsb_4_reg_a_b_joined [concat $lsb_4_reg_a_l $lsb_4_reg_b_l]
+
+set msb_4_reg_a_l [make-reg_l "reg_a_reg" [expr $lsb_bits + 12] $DATA_PATH_WIDTH]
+set msb_4_reg_b_l [make-reg_l "reg_b_reg" [expr $lsb_bits + 12]  $DATA_PATH_WIDTH]
+set msb_4_reg_c_l [make-reg_l "reg_c_reg" [expr $lsb_bits + 12] $DATA_PATH_WIDTH]
+set msb_4_reg_a_b_joined [concat $msb_4_reg_a_l $msb_4_reg_b_l]
+
+
+puts "msb_1_reg_a_b_joined"
+puts $msb_1_reg_a_b_joined
+puts "--------------"
+puts "msb_2_reg_a_b_joined"
+puts $msb_2_reg_a_b_joined
+puts "--------------"
+puts "msb_3_reg_a_b_joined"
+puts $msb_3_reg_a_b_joined
+puts "--------------"
+puts "msb_4_reg_a_b_joined"
+puts $msb_4_reg_a_b_joined
+puts "--------------"
+#----------------------------------------------------
+
+#--- F: 1. enforcing total neg-slack
+#------ 2. enforcing priority
+#--- N: creating multiple paths usually adds alot 
+#------ to the compilation time
+if {optimal_apx == "1"} {
+    foreach pt $all_reg_a_b_joined { 
+        puts $pt   
+        if {[lsearch -exact $lsb_1_reg_a_b_joined $pt] >= 0} {
+            group_path -name lsb -from $pt -critical_range 0.5 -priority 100 -weight 100
+        } else {
+            group_path -name msb -from $pt -critical_range 0.5 -priority 1 -weight 1
+        }
+    }
+}
+
+
+#FROM HERE:
+#----- TODO: need to set a variabel that activates the following statements
+#----- figure out whether the number of clk gated register effect the optimal baseline
+#-------- if no, don't have to change the CLKGATED_BITWIDTH
+#-------- just need to activate one the followings to impose priority (only the following 
+#-------- not the above if statement
+if (
+set_max_delay .220 -from $msb_1_reg_a_b_joined -to $msb_1_reg_c_l
+set_max_delay .220 -from $msb_2_reg_a_b_joined -to $msb_1_reg_c_l
+set_max_delay .220 -from $msb_3_reg_a_b_joined -to $msb_3_reg_c_l
+set_max_delay .220 -from $msb_4_reg_a_b_joined -to $msb_4_reg_c_l
+
+
+
+#group_path -name rst_reg_reg -from rst_reg_reg -priority 11
+
+
+#set_max_delay .26 -from rst_reg_reg 
+
+
+#foreach_in_collection endpt $inputpoints { set pin [get_object_name $endpt] 
+#    puts "hello" 
+#    puts $pin   
+#    group_path -name $pin -from $pin
+#}
 
 
 #power_cg_derive_related_clock true 
@@ -105,7 +232,7 @@ set_max_delay .20 -from {reg_b_reg[16] reg_b_reg[17] reg_b_reg[18] reg_b_reg[19]
 #clock gating
 #compile_ultra -area_high_effort_script
 set_clock_gating_style  -sequential_cell none -positive_edge_logic {inv nand inv} -neg {inv nor}
-
+set_host_options -max_cores 5
 compile_ultra -timing_high_effort_script -incremental -gate_clock 
 #compile_ultra -area_high_effort_script -gate_clock 
 
@@ -117,11 +244,14 @@ check_design
 
 #--- analyze adn resolve design problems
 #report_timing -sort_by slack -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 1 -max_paths 1 > ${REPORTS_DIR}/int_${DESIGN_NAME}_${CLKGATED_BITWIDTH}_timing.rpt
-report_timing -path full -sort_by slack -nworst 1000000 -max_paths 1000000 >  ${REPORTS_DIR}/${DESIGN_NAME}_${CLKGATED_BITWIDTH}clkGatedBits_timing.rpt
+report_timing -path full -sort_by slack -nworst 1000000 -max_paths 1000000 -significant_digits 3 >  ${REPORTS_DIR}/${DESIGN_NAME}_${CLKGATED_BITWIDTH}clkGatedBits_timing.rpt
 #report_timing -path full -sort_by slack -from  $input_list -max_path 100 -nworst 2 >  ${REPORTS_DIR}/int_${DESIGN_NAME}_${CLKGATED_BITWIDTH}_timing1.rpt
+
+
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}_${CLKGATED_BITWIDTH}clkGatedBits_area.rpt
 report_power > ${REPORTS_DIR}/${DESIGN_NAME}_${CLKGATED_BITWIDTH}clkGatedBits_power.rpt
 report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}_${CLKGATED_BITWIDTH}clkGatedBits_constrain_violators.rpt
+report_path_group > ${REPORTS_DIR}/${DESIGN_NAME}_${CLKGATED_BITWIDTH}clkGatedBits_path_groups.rpt
 report_clock_gating > ${REPORTS_DIR}/${DESIGN_NAME}_${CLKGATED_BITWIDTH}clkGatedBits_clkGating.rpt
 
 
