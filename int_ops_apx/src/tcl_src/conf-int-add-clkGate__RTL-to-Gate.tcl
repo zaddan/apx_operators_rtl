@@ -65,11 +65,22 @@ set verilogout_show_unconnected_pins "true"
 
 #---- Parameters
 #DATA_PATH_WIDTH should most likely stay 32
-set DATA_PATH_WIDTH 32
+set DATA_PATH_WIDTH 16
 #--- numebr of apx bits
-set CLKGATED_BITWIDTH 16    
-set clk_period .270
+set CLKGATED_BITWIDTH 1    
+
 set apx_optimal 0
+set apx_optimal_mode(first) 0
+set apx_optimal_mode(second)  0
+set apx_optimal_mode(third)  0
+set apx_optimal_mode(fourth) 0
+
+set clk_period 0
+set msb_1_max_delay .220
+set msb_2_max_delay .220
+set msb_3_max_delay .220
+set msb_4_max_delay .220
+
 #for { set CLKGATED_BITWIDTH 0}  {$CLKGATED_BITWIDTH < 1} {incr CLKGATED_BITWIDTH 1} {
 
 
@@ -133,9 +144,9 @@ set msb_1_reg_c_l [make-reg_l "reg_c_reg" $lsb_bits $DATA_PATH_WIDTH]
 set msb_1_reg_a_b_joined [concat $msb_1_reg_a_l $msb_1_reg_b_l]
 
 
-set lsb_2_reg_a_l [make-reg_l "reg_a_reg" 0 $lsb_bits]
-set lsb_2_reg_b_l [make-reg_l "reg_b_reg" 0 $lsb_bits]
-set lsb_2_reg_c_l [make-reg_l "reg_c_reg" 0 $lsb_bits]
+set lsb_2_reg_a_l [make-reg_l "reg_a_reg" 0 [expr $lsb_bits + 4]]
+set lsb_2_reg_b_l [make-reg_l "reg_b_reg" 0 [expr $lsb_bits + 4]]
+set lsb_2_reg_c_l [make-reg_l "reg_c_reg" 0 [expr $lsb_bits + 4]]
 set lsb_2_reg_a_b_joined [concat $lsb_2_reg_a_l $lsb_2_reg_b_l]
 
 set msb_2_reg_a_l [make-reg_l "reg_a_reg" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
@@ -144,9 +155,9 @@ set msb_2_reg_c_l [make-reg_l "reg_c_reg" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
 set msb_2_reg_a_b_joined [concat $msb_2_reg_a_l $msb_2_reg_b_l]
 
 
-set lsb_3_reg_a_l [make-reg_l "reg_a_reg" 0 $lsb_bits]
-set lsb_3_reg_b_l [make-reg_l "reg_b_reg" 0 $lsb_bits]
-set lsb_3_reg_c_l [make-reg_l "reg_c_reg" 0 $lsb_bits]
+set lsb_3_reg_a_l [make-reg_l "reg_a_reg" 0 [expr $lsb_bits + 8]]
+set lsb_3_reg_b_l [make-reg_l "reg_b_reg" 0 [expr $lsb_bits + 8]]
+set lsb_3_reg_c_l [make-reg_l "reg_c_reg" 0 [expr $lsb_bits + 8]]
 set lsb_3_reg_a_b_joined [concat $lsb_3_reg_a_l $lsb_3_reg_b_l]
 
 set msb_3_reg_a_l [make-reg_l "reg_a_reg" [expr $lsb_bits + 8]  $DATA_PATH_WIDTH]
@@ -155,9 +166,9 @@ set msb_3_reg_c_l [make-reg_l "reg_c_reg" [expr $lsb_bits + 8] $DATA_PATH_WIDTH]
 set msb_3_reg_a_b_joined [concat $msb_3_reg_a_l $msb_3_reg_b_l]
 
 
-set lsb_4_reg_a_l [make-reg_l "reg_a_reg" 0 $lsb_bits]
-set lsb_4_reg_b_l [make-reg_l "reg_b_reg" 0 $lsb_bits]
-set lsb_4_reg_c_l [make-reg_l "reg_c_reg" 0 $lsb_bits]
+set lsb_4_reg_a_l [make-reg_l "reg_a_reg" 0 [expr $lsb_bits + 12]]
+set lsb_4_reg_b_l [make-reg_l "reg_b_reg" 0 [expr $lsb_bits + 12]]
+set lsb_4_reg_c_l [make-reg_l "reg_c_reg" 0 [expr $lsb_bits + 12]]
 set lsb_4_reg_a_b_joined [concat $lsb_4_reg_a_l $lsb_4_reg_b_l]
 
 set msb_4_reg_a_l [make-reg_l "reg_a_reg" [expr $lsb_bits + 12] $DATA_PATH_WIDTH]
@@ -165,29 +176,41 @@ set msb_4_reg_b_l [make-reg_l "reg_b_reg" [expr $lsb_bits + 12]  $DATA_PATH_WIDT
 set msb_4_reg_c_l [make-reg_l "reg_c_reg" [expr $lsb_bits + 12] $DATA_PATH_WIDTH]
 set msb_4_reg_a_b_joined [concat $msb_4_reg_a_l $msb_4_reg_b_l]
 
-
-puts "msb_1_reg_a_b_joined"
-puts $msb_1_reg_a_b_joined
+puts "^^^^^^^^^^^^^^^^^^^^^"
+puts "lsb_1_reg_a_b_joined"
+puts $lsb_1_reg_a_b_joined
 puts "--------------"
-puts "msb_2_reg_a_b_joined"
-puts $msb_2_reg_a_b_joined
+puts "lsb_2_reg_a_b_joined"
+puts $lsb_2_reg_a_b_joined
 puts "--------------"
-puts "msb_3_reg_a_b_joined"
-puts $msb_3_reg_a_b_joined
+puts "lsb_3_reg_a_b_joined"
+puts $lsb_3_reg_a_b_joined
 puts "--------------"
-puts "msb_4_reg_a_b_joined"
-puts $msb_4_reg_a_b_joined
+puts "lsb_4_reg_a_b_joined"
+puts $lsb_4_reg_a_b_joined
 puts "--------------"
 #----------------------------------------------------
-
 #--- F: 1. enforcing total neg-slack
 #------ 2. enforcing priority
 #--- N: creating multiple paths usually adds alot 
 #------ to the compilation time
-if {optimal_apx == "1"} {
+#---- if apx design should be optimized for:
+#------- set which bits should be optimize for
+if {$apx_optimal == 1} {
+    #--- F: decide which bits to prioritize 
+    if {$apx_optimal_mode(first) == 1} {
+       set priority_array = $lsb_1_reg_a_b_joined 
+    }else if { $apx_optimal_mode(second) == 1} {
+       set priority_array = $lsb_2_reg_a_b_joined 
+    }else if { $apx_optimal_mode(third) == 1} {
+       set priority_array = $lsb_3_reg_a_b_joined 
+    }else if { $apx_optimal_mode(fourth) == 1} {
+       set priority_array = $lsb_4_reg_a_b_joined 
+    }  
+    
     foreach pt $all_reg_a_b_joined { 
         puts $pt   
-        if {[lsearch -exact $lsb_1_reg_a_b_joined $pt] >= 0} {
+        if {[lsearch -exact $priority_array $pt] >= 0} {
             group_path -name lsb -from $pt -critical_range 0.5 -priority 100 -weight 100
         } else {
             group_path -name msb -from $pt -critical_range 0.5 -priority 1 -weight 1
@@ -202,11 +225,19 @@ if {optimal_apx == "1"} {
 #-------- if no, don't have to change the CLKGATED_BITWIDTH
 #-------- just need to activate one the followings to impose priority (only the following 
 #-------- not the above if statement
-if (
-set_max_delay .220 -from $msb_1_reg_a_b_joined -to $msb_1_reg_c_l
-set_max_delay .220 -from $msb_2_reg_a_b_joined -to $msb_1_reg_c_l
-set_max_delay .220 -from $msb_3_reg_a_b_joined -to $msb_3_reg_c_l
-set_max_delay .220 -from $msb_4_reg_a_b_joined -to $msb_4_reg_c_l
+if {$apx_optimal_mode(first) == 1} {
+    set_max_delay $msb_1_max_delay -from $msb_1_reg_a_b_joined -to $msb_1_reg_c_l
+}
+if {$apx_optimal_mode(second) == 1} {
+    set_max_delay $msb_2_max_delay -from $msb_2_reg_a_b_joined -to $msb_1_reg_c_l
+}
+if {$apx_optimal_mode(third) == 1} {
+    set_max_delay $msb_3_max_delay -from $msb_3_reg_a_b_joined -to $msb_3_reg_c_l
+}
+if {$apx_optimal_mode(fourth) == 1} {
+    set_max_delay $msb_4_max_delay -from $msb_4_reg_a_b_joined -to $msb_4_reg_c_l
+}
+
 
 
 
