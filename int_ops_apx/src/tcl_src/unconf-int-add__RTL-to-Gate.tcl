@@ -1,4 +1,58 @@
 #set WDIR /home/unga/sglee/Share/ac_hw_syn
+proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
+    set reg_l {}
+    set num_l {}
+    for {set a $reg_lower_bound} {$a < $reg_up_bound} {incr a} {
+        lappend num_l $a
+    }
+    foreach el $num_l {
+        #append concat_res reg_a_reg $el 
+        lappend reg_l  "${reg_na}\[${el}\]"
+        #reg_a_reg[${el}]
+    }
+    set reg_l_flattened [join $reg_l]
+    return $reg_l_flattened
+}
+#----------------------------------------------------
+#---- Parameters
+#----------------------------------------------------
+#---- uncomment the following when you want to set these values manually
+set OP_BITWIDTH 32; #operator bitwidth
+#set DATA_PATH_WIDTH 32;
+#set CLKGATED_BITWIDTH 4; #numebr of apx bits
+#set clk_period 0
+###
+####---- apximation
+#set apx_optimal 0
+#set apx_optimal_mode(first) 1
+#set apx_optimal_mode(second) 0
+#set apx_optimal_mode(third)  0
+#set apx_optimal_mode(fourth) 0
+#set msb_1_max_delay .164;#.270 ideally
+#set msb_2_max_delay .210 ;#.261 ideally
+#set msb_3_max_delay .249 ;#.249 ideally
+#set msb_4_max_delay 0 ;#.242 ideally
+##
+
+#--- F: printing the parameters
+set parameter_log [open "parameter_log.txt" w]
+puts $parameter_log "--- TCL'S PARAMETER INFO"
+puts $parameter_log [concat "DATA_PATH_WIDTH:" $DATA_PATH_WIDTH]
+#puts $parameter_log [concat "CLKGATED_BITWIDTH:" $CLKGATED_BITWIDTH] 
+puts $parameter_log [concat "clk_period :" $clk_period] 
+puts $parameter_log [concat "apx_optimal:" $apx_optimal] 
+puts $parameter_log [concat "apx_optimal_mode(first):" $apx_optimal_mode(first)]
+puts $parameter_log [concat "apx_optimal_mode(second):" $apx_optimal_mode(second)]
+puts $parameter_log [concat "apx_optimal_mode(third):"  $apx_optimal_mode(third)]
+puts $parameter_log [concat "apx_optimal_mode(fourth):" $apx_optimal_mode(fourth)]
+puts $parameter_log [concat "msb_1_max_delay:" $msb_1_max_delay] 
+puts $parameter_log [concat "msb_2_max_delay:" $msb_2_max_delay] 
+puts $parameter_log [concat "msb_3_max_delay:" $msb_3_max_delay] 
+puts $parameter_log [concat "msb_4_max_delay:" $msb_4_max_delay] 
+close $parameter_log
+#----------------------------------------------------
+
+
 
 
 #--- variables
@@ -50,16 +104,12 @@ define_design_lib WORK -path ./WORK
 set verilogout_show_unconnected_pins "true"
 
 
-#--- parameters
-set OP_BITWIDTH 32; #operator bitwidth
-set DATA_PATH_BITWIDTH 32; #flipflop bitwidth
-
 #for { set NAB 0}  {$NAB < 1} {incr NAB 1} {
 
 
 #--- read the design 
 analyze -format verilog [list ${design_dir_addr}/unconfig_int_add.v ${design_dir_addr}/acc_int_add.v]
-elaborate $my_toplevel -parameters $OP_BITWIDTH,$DATA_PATH_BITWIDTH
+elaborate $my_toplevel -parameters $OP_BITWIDTH,$DATA_PATH_WIDTH
 check_design
 
 
@@ -77,7 +127,7 @@ link
 
 
 #--- set the optimization constraints 
-create_clock -name clk -period .25 [get_ports clk]
+create_clock -name clk -period $clk_period [get_ports clk]
 set_ideal_network -no_propagate [get_ports clk]
 set_input_delay -max 0 -clock clk [get_ports b*]     
 set_input_delay -max 0 -clock clk [get_ports a*]     
@@ -85,7 +135,7 @@ set_dont_touch_network [get_clocks clk]
 
 #--- use the following rule if you don't want to use the clock and 
 #------ you are only having combination logic for the addition
-#set_max_delay .25 -to [all_outputs]
+#set_max_delay  -to [all_outputs]
 
 #--- design rule constraints 
 #set_max_area 0
@@ -97,10 +147,154 @@ set_dont_touch_network [get_clocks clk]
 #}
 
 
-set_max_delay .2 -from {reg_b_reg[16] reg_b_reg[17] reg_b_reg[18] reg_b_reg[19] reg_b_reg[20] reg_b_reg[21] reg_b_reg[22] reg_b_reg[23] reg_b_reg[24] reg_b_reg[25] reg_b_reg[26] reg_b_reg[27] reg_b_reg[28] reg_b_reg[29] reg_b_reg[30] reg_b_reg[31] reg_a_reg[16] reg_a_reg[17] reg_a_reg[18] reg_a_reg[19] reg_a_reg[20] reg_a_reg[21] reg_a_reg[22] reg_a_reg[23] reg_a_reg[24] reg_a_reg[25] reg_a_reg[26] reg_a_reg[27] reg_a_reg[28] reg_a_reg[29] reg_a_reg[30] reg_a_reg[31]} -to {reg_c_reg[16] reg_c_reg[17] reg_c_reg[18] reg_c_reg[19] reg_c_reg[20] reg_c_reg[21] reg_c_reg[22] reg_c_reg[23] reg_c_reg[24] reg_c_reg[25] reg_c_reg[26] reg_c_reg[27] reg_c_reg[28] reg_c_reg[29] reg_c_reg[30] reg_c_reg[31]}
+#set_max_delay .2 -from {reg_b_reg[16] reg_b_reg[17] reg_b_reg[18] reg_b_reg[19] reg_b_reg[20] reg_b_reg[21] reg_b_reg[22] reg_b_reg[23] reg_b_reg[24] reg_b_reg[25] reg_b_reg[26] reg_b_reg[27] reg_b_reg[28] reg_b_reg[29] reg_b_reg[30] reg_b_reg[31] reg_a_reg[16] reg_a_reg[17] reg_a_reg[18] reg_a_reg[19] reg_a_reg[20] reg_a_reg[21] reg_a_reg[22] reg_a_reg[23] reg_a_reg[24] reg_a_reg[25] reg_a_reg[26] reg_a_reg[27] reg_a_reg[28] reg_a_reg[29] reg_a_reg[30] reg_a_reg[31]} -to {reg_c_reg[16] reg_c_reg[17] reg_c_reg[18] reg_c_reg[19] reg_c_reg[20] reg_c_reg[21] reg_c_reg[22] reg_c_reg[23] reg_c_reg[24] reg_c_reg[25] reg_c_reg[26] reg_c_reg[27] reg_c_reg[28] reg_c_reg[29] reg_c_reg[30] reg_c_reg[31]}
 
 
 #set_max_delay .15 -from {b[16] b[17] b[18] b[19] b[20] b[21] b[22] b[23] b[24] b[25] b[26] b[27] b[28] b[29] b[30] b[31] a[16] a[17] a[18] a[19] a[20] a[21] a[22] a[23] a[24] a[25] a[26] a[27] a[28] a[29] a[30] a[31]} -to {c[16] c[17] c[18] c[19] c[20] c[21] c[22] c[23] c[24] c[25] c[26] c[27] c[28] c[29] c[30] c[31]}
+
+set all_reg_a_l [make-reg_l "a" 0 $DATA_PATH_WIDTH]
+set all_reg_b_l [make-reg_l "b" 0 $DATA_PATH_WIDTH]
+set all_reg_c_l [make-reg_l "c" 0 $DATA_PATH_WIDTH]
+set all_reg_a_b_joined [concat $all_reg_a_l $all_reg_b_l]
+
+set lsb_bits 4
+#$CLKGATED_BITWIDTH
+set msb_bits [expr $DATA_PATH_WIDTH - $lsb_bits]
+#----------------------------------------------------
+
+
+#----------------------------------------------------
+#--- lab_1 ,1 means the superclass
+set lsb_1_reg_a_l [make-reg_l "a" 0 $lsb_bits]
+set lsb_1_reg_b_l [make-reg_l "b" 0 $lsb_bits]
+set lsb_1_reg_c_l [make-reg_l "c" 0 $lsb_bits]
+set lsb_1_reg_a_b_joined [concat $lsb_1_reg_a_l $lsb_1_reg_b_l]
+
+set msb_1_reg_a_l [make-reg_l "a" $lsb_bits $DATA_PATH_WIDTH]
+set msb_1_reg_b_l [make-reg_l "b" $lsb_bits $DATA_PATH_WIDTH]
+set msb_1_reg_c_l [make-reg_l "c" $lsb_bits $DATA_PATH_WIDTH]
+set msb_1_reg_a_b_joined [concat $msb_1_reg_a_l $msb_1_reg_b_l]
+
+
+set lsb_2_reg_a_l [make-reg_l "a" 0 [expr $lsb_bits + 4]]
+set lsb_2_reg_b_l [make-reg_l "b" 0 [expr $lsb_bits + 4]]
+set lsb_2_reg_c_l [make-reg_l "c" 0 [expr $lsb_bits + 4]]
+set lsb_2_reg_a_b_joined [concat $lsb_2_reg_a_l $lsb_2_reg_b_l]
+
+set msb_2_reg_a_l [make-reg_l "a" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
+set msb_2_reg_b_l [make-reg_l "b" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
+set msb_2_reg_c_l [make-reg_l "c" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
+set msb_2_reg_a_b_joined [concat $msb_2_reg_a_l $msb_2_reg_b_l]
+
+
+set lsb_3_reg_a_l [make-reg_l "a" 0 [expr $lsb_bits + 8]]
+set lsb_3_reg_b_l [make-reg_l "b" 0 [expr $lsb_bits + 8]]
+set lsb_3_reg_c_l [make-reg_l "c" 0 [expr $lsb_bits + 8]]
+set lsb_3_reg_a_b_joined [concat $lsb_3_reg_a_l $lsb_3_reg_b_l]
+
+set msb_3_reg_a_l [make-reg_l "a" [expr $lsb_bits + 8]  $DATA_PATH_WIDTH]
+set msb_3_reg_b_l [make-reg_l "b" [expr $lsb_bits + 8] $DATA_PATH_WIDTH]
+set msb_3_reg_c_l [make-reg_l "c" [expr $lsb_bits + 8] $DATA_PATH_WIDTH]
+set msb_3_reg_a_b_joined [concat $msb_3_reg_a_l $msb_3_reg_b_l]
+
+
+set lsb_4_reg_a_l [make-reg_l "a" 0 [expr $lsb_bits + 12]]
+set lsb_4_reg_b_l [make-reg_l "b" 0 [expr $lsb_bits + 12]]
+set lsb_4_reg_c_l [make-reg_l "c" 0 [expr $lsb_bits + 12]]
+set lsb_4_reg_a_b_joined [concat $lsb_4_reg_a_l $lsb_4_reg_b_l]
+
+set msb_4_reg_a_l [make-reg_l "a" [expr $lsb_bits + 12] $DATA_PATH_WIDTH]
+set msb_4_reg_b_l [make-reg_l "b" [expr $lsb_bits + 12]  $DATA_PATH_WIDTH]
+set msb_4_reg_c_l [make-reg_l "c" [expr $lsb_bits + 12] $DATA_PATH_WIDTH]
+set msb_4_reg_a_b_joined [concat $msb_4_reg_a_l $msb_4_reg_b_l]
+
+puts "^^^^^^^^^^^^^^^^^^^^^"
+puts "msb_1_reg_a_b_joined"
+puts $msb_1_reg_a_b_joined
+puts "--------------"
+puts "msb_2_reg_a_b_joined"
+puts $msb_2_reg_a_b_joined
+puts "--------------"
+puts "msb_3_reg_a_b_joined"
+puts  "msb_3_reg_a_b_joined"
+puts $msb_3_reg_c_l
+puts $msb_3_reg_a_b_joined
+puts "--------------"
+puts "msb_4_reg_a_b_joined"
+puts $msb_4_reg_a_b_joined
+puts "--------------"
+
+
+
+set_max_delay $clk_period -from $all_reg_a_b_joined -to $all_reg_c_l 
+
+#----------------------------------------------------
+#--- F: 1. enforcing total neg-slack
+#------ 2. enforcing priority
+#--- N: creating multiple paths usually adds alot 
+#------ to the compilation time
+#---- if apx design should be optimized for:
+#------- set which bits should be optimize for
+if {$apx_optimal == 1} {
+    #--- F: decide which bits to prioritize 
+    if {$apx_optimal_mode(first) == 1} {
+       set priority_array  $lsb_1_reg_a_b_joined 
+    } elseif { $apx_optimal_mode(second) == 1} {
+       set priority_array  $lsb_2_reg_a_b_joined 
+    } elseif { $apx_optimal_mode(third) == 1} {
+       set priority_array  $lsb_3_reg_a_b_joined 
+    } elseif { $apx_optimal_mode(fourth) == 1} {
+       set priority_array  $lsb_4_reg_a_b_joined 
+    }  
+    
+    foreach pt $all_reg_a_b_joined { 
+        puts $pt   
+        if {[lsearch -exact $priority_array $pt] >= 0} {
+            group_path -name lsb -from $pt -critical_range 0.5 -priority 3 -weight 3
+        } else {
+            group_path -name msb -from $pt -critical_range 0.5 -priority 5 -weight 5
+        }
+    }
+} else {
+    #group_path -name clk -from clk -critical_range 0.5 -priority 100 -weight 100
+    group_path -name clk -from clk
+}
+
+#FROM HERE:
+#----- TODO: need to set a variabel that activates the following statements
+#----- figure out whether the number of clk gated register effect the optimal baseline
+#-------- if no, don't have to change the CLKGATED_BITWIDTH
+#-------- just need to activate one the followings to impose priority (only the following 
+#-------- not the above if statement
+if {$apx_optimal == 1} {
+    if {$apx_optimal_mode(first) == 1} {
+        puts "optimal first" 
+        set_max_delay $msb_1_max_delay -from $msb_1_reg_a_b_joined -to $msb_1_reg_c_l
+    }
+    if {$apx_optimal_mode(second) == 1} {
+        puts "optimal second" 
+        set_max_delay $msb_2_max_delay -from $msb_2_reg_a_b_joined -to $msb_1_reg_c_l
+    }
+    if {$apx_optimal_mode(third) == 1} {
+        set_max_delay $msb_3_max_delay -from $msb_3_reg_a_b_joined -to $msb_3_reg_c_l
+    }
+    if {$apx_optimal_mode(fourth) == 1} {
+        set_max_delay $msb_4_max_delay -from $msb_4_reg_a_b_joined -to $msb_4_reg_c_l
+    }
+}
+
+#group_path -name rst_reg_reg -from rst_reg_reg -priority 11
+
+
+#set_max_delay .26 -from rst_reg_reg 
+
+#foreach_in_collection endpt $inputpoints { set pin [get_object_name $endpt] 
+#    puts "hello" 
+#    puts $pin   
+#    group_path -name $pin -from $pin
+#}
+
+
 
 
 #--- compile (symthesize  to gate level and optimize design)
@@ -108,6 +302,8 @@ set_max_delay .2 -from {reg_b_reg[16] reg_b_reg[17] reg_b_reg[18] reg_b_reg[19] 
 #compile -map_effort high -area_effort high -power_effort high 
 #compile -power_effort high
 #compile_ultra
+#compile_ultra -timing_high_effort_script -incremental
+compile_ultra -timing_high_effort_script 
 compile_ultra -timing_high_effort_script -incremental
 #compile_ultra
 
@@ -115,22 +311,22 @@ compile_ultra -timing_high_effort_script -incremental
 
 #--- analyze adn resolve design problems
 #report_timing -sort_by slack -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 1 -max_paths 1 > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing.rpt
-report_timing -path full -sort_by slack -nworst 1000000 -max_paths 1000000 >  ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_BITWIDTH}Bit_timing.rpt
+report_timing -path full -sort_by slack -nworst 100000 -max_paths 100000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #report_timing -path full -sort_by slack -from  $input_list -max_path 100 -nworst 2 >  ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing1.rpt
-report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_BITWIDTH}Bit_area.rpt
-report_power > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_BITWIDTH}Bit_power.rpt
-report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_BITWIDTH}Bit_constrain_violators.rpt
+report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_area.rpt
+report_power > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_power.rpt
+report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_constrain_violators.rpt
 #report_qor > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_qor.rpt
 #report 
 
 
 #--- save the design
 #the following generates ddc files 
-write -format ddc -hierarchy -output ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_BITWIDTH}Bit_synthesized.ddc 
+write -format ddc -hierarchy -output ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.ddc 
 #the following generates the gatelevel netlist 
-write -f verilog -hierarchy -output ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_BITWIDTH}Bit_synthesized.v
-write_sdc ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_BITWIDTH}Bit_synthesized.sdc; #constraint file
-write_sdf ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_BITWIDTH}Bit_synthesized.mapped.sdf; #switching activity file
+write -f verilog -hierarchy -output ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.v
+write_sdc ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.sdc; #constraint file
+write_sdf ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.mapped.sdf; #switching activity file
 
 
 remove_design -hierarchy

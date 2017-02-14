@@ -18,7 +18,7 @@ module test_bench_tb;
   parameter number_of_input_pairs = 5000; 
   parameter CLKGATED_BITWIDTH = 16;
   parameter DATA_PATH_BITWIDTH = 32;
-  parameter clk_period = 2.0;
+  parameter clk_period = 2;
   parameter half_clk_period = clk_period/2;
 
   `define input_addr "../../build/functional/int_values_in_hex.txt"
@@ -43,7 +43,7 @@ module test_bench_tb;
     rst <= 1'b0;
     #(20*clk_period) 
     rst <= 1'b1;
-    reg_en <= 1'b1; 
+    reg_en <= 1'b0; 
   end
 
   
@@ -70,11 +70,13 @@ begin
     for (i=0; i < number_of_input_pairs; i = i + 1)begin
         input_a <= data[2*i];
         input_b <= data[2*i + 1];
-        
-        #(100*clk_period)
-        reg_en <= 1'b0; 
+        #(clk_period)
+        //#(100*clk_period)
+        //reg_en <= 1'b1; 
         //$display("input_a: %d input_b %d\n", $signed(input_a), $signed(input_b));
-        $fwrite(f,"%d %d %d\n",$signed(input_a), $signed(input_b), $signed(output_c_acc));
+         if (2*i - 2 >= 0)begin
+            $fwrite(f,"%d %d %d\n",$signed(data[2*i-2]), $signed(data[2*i + 1 -2]), $signed(output_c_acc));
+         end
     end
 end
 

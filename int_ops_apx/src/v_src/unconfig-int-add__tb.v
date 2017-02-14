@@ -19,7 +19,7 @@ module test_bench_tb;
   parameter OP_BITWIDTH = 32;
   parameter DATA_PATH_BITWIDTH = 32;
 
-  parameter clk_period = 0.7;
+  parameter clk_period = 2;
   parameter half_clk_period = clk_period/2;
   //reg [100*8:0] base_folder_str;
   //base_folder_str = "../../build/functional";

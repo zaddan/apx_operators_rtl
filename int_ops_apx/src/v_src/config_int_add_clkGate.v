@@ -1,7 +1,5 @@
 `timescale 1ns/1ps
 
-//--- the following configuratble adder uses input Mux
-//for the purpose of truncation
 module config_int_add_clkGate(
  clk,
  rst,
@@ -11,7 +9,6 @@ module config_int_add_clkGate(
  c
 );
 
-//parameter BT_RND = 0
 //--- parameters
 parameter DATA_PATH_BITWIDTH = 32;  //data path bits
 parameter CLKGATED_BITWIDTH = 16; //number of clock gated bits
@@ -28,15 +25,14 @@ input reg_en;
 reg [DATA_PATH_BITWIDTH-1:0]  reg_a;
 reg [DATA_PATH_BITWIDTH-1:0]  reg_b;
 reg [DATA_PATH_BITWIDTH-1:0]  reg_c;
+reg reg_en_reg; 
+reg rst_reg;
 wire [DATA_PATH_BITWIDTH-1:0]  w_c;
 
 
 //--- design
-acc_int_add #(DATA_PATH_BITWIDTH) u0_ac (reg_a, reg_b, w_c);
+acc_int_add #(DATA_PATH_BITWIDTH) u0_ac (reg_a, reg_b, w_c); //this is a simple adder
 
-
-reg reg_en_reg; 
-reg rst_reg;
 always @(posedge clk or negedge rst)
 begin
   if (~rst)
@@ -47,10 +43,9 @@ begin
   else if (rst)
   begin
       reg_en_reg <= reg_en; 
-      rst_reg <= rst_reg;
+      rst_reg <= rst;
   end
 end
-
 
 //--- clk gating inputs
 always @(posedge clk or negedge rst_reg)
@@ -66,7 +61,6 @@ begin
     reg_b[DATA_PATH_BITWIDTH-1: CLKGATED_BITWIDTH] <= b[DATA_PATH_BITWIDTH-1:CLKGATED_BITWIDTH];
   end
 end
-
 
 always @(posedge clk or negedge rst_reg)
 begin
@@ -106,9 +100,6 @@ begin
     reg_c[CLKGATED_BITWIDTH-1:0] <= w_c[CLKGATED_BITWIDTH-1:0];
   end
 end
-
-
-
 
 /*
 always @(posedge clk or negedge rst)
