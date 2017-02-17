@@ -13,9 +13,14 @@ CLKGATED_BITWIDTH = 1
 explore_clk = True #--- when exploring the best clock for certain word length
 
 in_unison = False #--- if set, all the msb_?_max_delays are set to the same value
-msb_max_delay_in_unison_l = [.475]#, .45, .44, .43, .42, .41, .350, .340, .300,
+msb_max_delay_in_unison_l = [.510, .505, .500, .495, .490, .480, .475,.470, \
+        .465, .460, .455, .450, .445, .430, .400, .250, 200, 175, 100, 0]#, .45, .44, .43, .42, .41, .350, .340, .300,
         #.200, .150, 100, 50, 0]#, .45, .44]
-clk_period__l = [.493]
+clk_period__l = [.493] #clock period (most likely the best possible or a little
+#bit loosened
+decided_delay__l = [.1,.2,.3,.4]
+
+
 
 explore_scenario_manual = False
 knob__l = [[.517,.465, .465 , .465, .465]]#, [.49, .49, .46, .46, .46], [.49, \
@@ -33,7 +38,9 @@ global data_path_width__l
 data_path_width__l = [32]
 
 global clk_value__possibly_best__l #found by setting clock to zero
-clk_value__possibly_best__l = [.45]
+clk_value__possibly_best__l = [.200]
+
+
 assert len(data_path_width__l) == len(clk_value__possibly_best__l) , \
         "data_path_width_l and clk_value__possibly_best_l should have the \
         same length"
@@ -181,7 +188,7 @@ def main():
                 DATA_PATH_WIDTH = data_path_width__l[idx]
                 clk_value__possibly_best = clk_value__possibly_best__l[idx]
                 for clk_period_el in pylab.frange(clk_value__possibly_best, \
-                        clk_value__possibly_best + .05, .01):
+                        clk_value__possibly_best + .300, .01):
                     clk_period = clk_period_el 
                     run_tool_chain()
             break 
@@ -196,10 +203,27 @@ def main():
             for clk_period__el  in  clk_period__l:
                 clk_period = clk_period__el 
                 for msb_max_delay in msb_max_delay_in_unison_l:
-                    msb_1_max_delay = msb_max_delay
+                    if (apx_optimal_mode[0] == 1) :
+                        msb_1_max_delay = msb_max_delay
+                    else:
+                        msb_1_max_delay = decided_delay__l[0]
+                    if (apx_optimal_mode[1] == 1) :
+                        msb_2_max_delay = msb_max_delay
+                    else:
+                        msb_2_max_delay = decided_delay__l[1]
+                    if (apx_optimal_mode[2] == 1) :
+                        msb_3_max_delay = msb_max_delay
+                    else:
+                        msb_3_max_delay = decided_delay__l[2]
+                    if (apx_optimal_mode[3] == 1) :
+                        msb_4_max_delay = msb_max_delay
+                    else:
+                        msb_4_max_delay = decided_delay__l[3]
+                    """
                     msb_2_max_delay = msb_max_delay
                     msb_3_max_delay = msb_max_delay
                     msb_4_max_delay = msb_max_delay
+                    """ 
                     run_tool_chain()
             continue 
 

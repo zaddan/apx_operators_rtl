@@ -13,28 +13,32 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
     set reg_l_flattened [join $reg_l]
     return $reg_l_flattened
 }
+
+
 #----------------------------------------------------
 #---- Parameters
 #----------------------------------------------------
-#---- uncomment the following when you want to set these values manually
-set OP_BITWIDTH 32; #operator bitwidth
+#---- N: the following should be commented out if the tcl file is invoked by 
+#-----   a python function
 #set DATA_PATH_WIDTH 32;
 #set CLKGATED_BITWIDTH 4; #numebr of apx bits
-#set clk_period 0
-###
-####---- apximation
+#set clk_period .57
+###--- F: apximation
 #set apx_optimal 0
 #set apx_optimal_mode(first) 1
-#set apx_optimal_mode(second) 0
-#set apx_optimal_mode(third)  0
-#set apx_optimal_mode(fourth) 0
-#set msb_1_max_delay .164;#.270 ideally
-#set msb_2_max_delay .210 ;#.261 ideally
-#set msb_3_max_delay .249 ;#.249 ideally
-#set msb_4_max_delay 0 ;#.242 ideally
-##
+#set apx_optimal_mode(second) 1
+#set apx_optimal_mode(third)  1
+#set apx_optimal_mode(fourth) 1
+#set msb_1_max_delay .46;#.270 ideally
+#set msb_2_max_delay .46 ;#.261 ideally
+#set msb_3_max_delay .46 ;#.249 ideally
+#set msb_4_max_delay .46 ;#.242 ideally
+#----------------------------------------------------
+set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
 
-#--- F: printing the parameters
+
+
+#--- F: printing the parameters into a file
 set parameter_log [open "parameter_log.txt" w]
 puts $parameter_log "--- TCL'S PARAMETER INFO"
 puts $parameter_log [concat "DATA_PATH_WIDTH:" $DATA_PATH_WIDTH]
@@ -53,9 +57,9 @@ close $parameter_log
 #----------------------------------------------------
 
 
-
-
+#----------------------------------------------------
 #--- variables
+#----------------------------------------------------
 set WDIR "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn"
 #~/behzad_local/verilog_files/synthesis
 set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
@@ -87,7 +91,7 @@ set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operato
 #set std_library "saed32lvt_tt1p05vn40c.db"; #did the same as 25c 
 #set std_library "saed32lvt_tt0p85v25c.db"; #did worst that 1.05
 #set  std_library  "saed32lvt_ulvl_ff1p16v25c_i0p85v.db" 
-set  std_library  "noAging.db" 
+set  std_library  "noAging__modified.db" 
 #set std_library "gscl45nm.db"; #PDK45 themselves
 
 set target_library $std_library; #$std_library_2" 
@@ -250,7 +254,7 @@ if {$apx_optimal == 1} {
     foreach pt $all_reg_a_b_joined { 
         puts $pt   
         if {[lsearch -exact $priority_array $pt] >= 0} {
-            group_path -name lsb -from $pt -critical_range 0.5 -priority 3 -weight 3
+            group_path -name lsb -from $pt -critical_range 0.5 -priority 2 -weight 2
         } else {
             group_path -name msb -from $pt -critical_range 0.5 -priority 5 -weight 5
         }
@@ -311,7 +315,7 @@ compile_ultra -timing_high_effort_script -incremental
 
 #--- analyze adn resolve design problems
 #report_timing -sort_by slack -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 1 -max_paths 1 > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing.rpt
-report_timing -path full -sort_by slack -nworst 100000 -max_paths 100000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #report_timing -path full -sort_by slack -from  $input_list -max_path 100 -nworst 2 >  ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing1.rpt
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_area.rpt
 report_power > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_power.rpt
