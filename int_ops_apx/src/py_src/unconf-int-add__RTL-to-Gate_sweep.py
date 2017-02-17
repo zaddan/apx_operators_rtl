@@ -1,3 +1,8 @@
+#----------------------------------------------------
+# --- use this file for sweeping the clock and also imposing of different
+# constrains on various bits 
+#----------------------------------------------------
+
 import os
 import pylab
 
@@ -9,8 +14,21 @@ global DATA_PATH_WIDTH
 DATA_PATH_WIDTH = 32
 CLKGATED_BITWIDTH = 1
 
+#--- F: To apx or not to apx        
+apx_optimal = 0
+global apx_optimal_mode
+apx_optimal_mode = {} #a dictionary
+#--- F: apx_mode
+#apx_optimal_mode_l =['1000','1100','1110','1111','0100','0110','0111','0010','0011','0001']
+#apx_optimal_mode_l =['0100','0110','0111','0010','0011','0001']
+#apx_optimal_mode_l =['1000', '0100','0010','0001']
+apx_optimal_mode_l =['1111']
+
+#--- F: different modes of exploration
 #explore_clk = True #---- used for finding the best clock possible for certain # of bits
 explore_clk = True #--- when exploring the best clock for certain word length
+global clk_value__possibly_best__l #found by setting clock to zero
+clk_value__possibly_best__l = [.200]
 
 in_unison = False #--- if set, all the msb_?_max_delays are set to the same value
 msb_max_delay_in_unison_l = [.510, .505, .500, .495, .490, .480, .475,.470, \
@@ -20,36 +38,22 @@ clk_period__l = [.493] #clock period (most likely the best possible or a little
 #bit loosened
 decided_delay__l = [.1,.2,.3,.4]
 
-
-
-explore_scenario_manual = False
+explore_scenario_manual = False #if set to true, the following values are
+                                #adopted  as knobs
 knob__l = [[.517,.465, .465 , .465, .465]]#, [.49, .49, .46, .46, .46], [.49, \
     #.48,.46,.46,.46]]
-#--- F: apx_mode
-#apx_optimal_mode_l =['1000','1100','1110','1111','0100','0110','0111','0010','0011','0001']
-#apx_optimal_mode_l =['0100','0110','0111','0010','0011','0001']
-#apx_optimal_mode_l =['1000', '0100','0010','0001']
-apx_optimal_mode_l =['1111']
-#----------------------------------------------------
-#----------------------------------------------------
+
 
 global data_path_width__l
 #data_path_width__l = [16,20, 24,28]#,32]
 data_path_width__l = [32]
-
-global clk_value__possibly_best__l #found by setting clock to zero
-clk_value__possibly_best__l = [.200]
-
+#----------------------------------------------------
+#----------------------------------------------------
 
 assert len(data_path_width__l) == len(clk_value__possibly_best__l) , \
         "data_path_width_l and clk_value__possibly_best_l should have the \
         same length"
 
-#--- F: To apx or not to apx        
-apx_optimal = 0
-global apx_optimal_mode
-apx_optimal_mode = {} #a dictionary
-#
 
 #--- F: upper bound on the delay for certain number of apxation
 msb_1_max_delay_optimal =  .43 #ideal: .436 imposed by .42
@@ -199,6 +203,12 @@ def main():
         #--- F: only when you want to assign one value to all the msb_max delays
         #----   Note: this is usefull when trying to find the bounds on the best
         #----   possible for certain number of bits
+        #---- if anyof the apx_optimal_mode bits are 1, the constrain is picked
+        #---- from the saem value (i.e msb_max_delay), otherwise, they will be
+        #---- adopting a value from decided_delay__l
+        #---- Note: this only make sense for the following scenarios
+        #----   1111, 0111, 0011, 0001. This is b/c we want to incrementally
+        #---- figure out the best possible clock for a certain number of bit
         if (in_unison):
             for clk_period__el  in  clk_period__l:
                 clk_period = clk_period__el 

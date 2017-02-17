@@ -1,5 +1,8 @@
 `timescale 1ns/1ps
 
+
+
+
 //--- the following configuratble adder uses input Mux
 //for the purpose of truncation
 module unconfig_int_add(
@@ -27,7 +30,46 @@ input [DATA_PATH_BITWIDTH-1:0] b;
 output [DATA_PATH_BITWIDTH-1:0] c;
 
 
-assign c = a * b;
+////---F: Ripple Cary Adder deisng
+////module test ripple_adder_4bit; 
+//wire Cout;
+// // Instantiate the Unit Under Test (UUT)
+//ripple_adder_4bit uut (
+//  .Sum(c[3:0]), 
+//  .Cout(Cout), 
+//  .A(a[3:0]), 
+//  .B(b[3:0]), 
+//  .Cin(a[0])
+// );
+
+
+//--- F: simple design
+wire o_temp_1, o_temp_2, o_temp_3;
+
+//and(o_temp_1, a[0], b[0]);
+nand(nand_a, a[0], a[1]);
+nand(nand_b, b[0], b[1]);
+nor(c[0], nand_a, nand_b);
+
+//not(a_not_0, a[0]);
+//not(a_not_1, a[1]);
+//not(b_not_0, b[0]);
+//not(b_not_1, b[1]);
+//or(ors_a, a_not_0, a_not_1);
+//or(ors_b, b_not_0, b_not_1);
+//nor(c[0], ors_a, ors_b);
+
+//not(a_not, a);
+//not(b_not, b);
+//or(c[0], a_not, b_not);
+
+//not(o_temp_2, o_temp_1);
+//t(c[0], o_temp_2);
+//or(c[0], o_temp_1, o_temp_2);
+
+
+//--- no flop design
+//assign c = a * b;
 
 /*
 //--- regs, wires

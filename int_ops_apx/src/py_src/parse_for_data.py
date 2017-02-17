@@ -1,3 +1,11 @@
+#----------------------------------------------------
+# --- F: use this to read timing.rpt files within a directory and collect reg
+# information
+#--- set the folder_addr (the folder you want the module to go through to
+#--- collect ino
+#----------------------------------------------------
+
+
 import os
 import glob
 def getNameOfFilesInAFolder(folderAddress):
@@ -12,8 +20,8 @@ def getNameOfFilesInAFolder(folderAddress):
 def parse_for_data(sourceFileName):
     start_sampling = False
     stop_sampling = False
-    
-    
+   
+
     print "----------------------------------------------------"
     print "----------------------------------------------------"
     try:                                                                        
@@ -43,12 +51,19 @@ def parse_for_data(sourceFileName):
 
 
 def main():
+    #---------------------------------------------------- 
+    #--- F: Parameters 
+    #---------------------------------------------------- 
     folder_addr = \
     "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/minimal_multiply/1111/" 
+    
+    #---------------------------------------------------- 
+    #--- F: Body
+    #---------------------------------------------------- 
     for file_na in getNameOfFilesInAFolder(folder_addr):
         if not("py" in file_na) and not("01_data_collected" in file_na) and \
         not("results_gathered" in file_na):
             parse_for_data(file_na)
 
-main()
 
+main()
