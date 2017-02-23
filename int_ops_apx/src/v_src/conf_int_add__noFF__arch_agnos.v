@@ -1,21 +1,6 @@
-`timescale 1ns/1ps
 
-
-
-
-//--- the following configuratble adder uses input Mux
-//for the purpose of truncation
-module unconfig_int_add(
- clk,
- rst,
- a,
- b,
- c
-);
-
-
-
-
+module conf_int_add__noFF__arch_agnos( clk, rst, a, b, c
+ );
 //--- parameters
 //parameter BT_RND = 0
 parameter OP_BITWIDTH = 16; //operator bit width
@@ -45,7 +30,7 @@ output [DATA_PATH_BITWIDTH-1:0] c;
 
 
 //--- no flop design
-assign c = a * b;
+assign c = a + b;
 
 /*
 //--- regs, wires
@@ -88,4 +73,3 @@ assign c = reg_c;
 
 */
 endmodule
-

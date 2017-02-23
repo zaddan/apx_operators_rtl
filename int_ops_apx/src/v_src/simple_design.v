@@ -1,8 +1,5 @@
 `timescale 1ns/1ps
 
-
-
-
 //--- the following configuratble adder uses input Mux
 //for the purpose of truncation
 module unconfig_int_add(
@@ -30,21 +27,6 @@ input [DATA_PATH_BITWIDTH-1:0] b;
 output [DATA_PATH_BITWIDTH-1:0] c;
 
 
-////---F: Ripple Cary Adder deisng
-////module test ripple_adder_4bit; 
-//wire Cout;
-// // Instantiate the Unit Under Test (UUT)
-//ripple_adder_4bit uut (
-//  .Sum(c[3:0]), 
-//  .Cout(Cout), 
-//  .A(a[3:0]), 
-//  .B(b[3:0]), 
-//  .Cin(a[0])
-// );
-
-
-
-//--- no flop design
 assign c = a * b;
 
 /*
