@@ -1,3 +1,12 @@
+#-----------------------------------------------------------------
+# ---- F: This file is to show an example where we prevent DC to modify the 
+ #-----   The structure of the design. Note that if the structrual description 
+    #of the program is in "mapped gate", the DC won't event touch those, otherwise
+    # a mapping is picked
+#-----------------------------------------------------------------
+
+
+
 #set WDIR /home/unga/sglee/Share/ac_hw_syn
 proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
     set reg_l {}
@@ -20,19 +29,19 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #----------------------------------------------------
 #---- N: the following should be commented out if the tcl file is invoked by 
 #-----   a python function
-#set DATA_PATH_WIDTH 32;
-#set CLKGATED_BITWIDTH 4; #numebr of apx bits
-#set clk_period 0
-###--- F: apximation
-#set apx_optimal 0
-#set apx_optimal_mode(first) 1
-#set apx_optimal_mode(second) 1
-#set apx_optimal_mode(third)  1
-#set apx_optimal_mode(fourth) 1
-#set msb_1_max_delay .46;#.270 ideally
-#set msb_2_max_delay .46 ;#.261 ideally
-#set msb_3_max_delay .46 ;#.249 ideally
-#set msb_4_max_delay .46 ;#.242 ideally
+set DATA_PATH_WIDTH 32;
+set CLKGATED_BITWIDTH 4; #numebr of apx bits
+set clk_period .57
+##--- F: apximation
+set apx_optimal 0
+set apx_optimal_mode(first) 1
+set apx_optimal_mode(second) 1
+set apx_optimal_mode(third)  1
+set apx_optimal_mode(fourth) 1
+set msb_1_max_delay .46;#.270 ideally
+set msb_2_max_delay .46 ;#.261 ideally
+set msb_3_max_delay .46 ;#.249 ideally
+set msb_4_max_delay .46 ;#.242 ideally
 #----------------------------------------------------
 set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
 
@@ -66,7 +75,7 @@ set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_o
 set REPORTS_DIR ${WDIR}/reports
 
 
-set DESIGN_NAME conf_int_add__noFF__arch_agnos
+set DESIGN_NAME unconfig_int_add
 #set DESIGN_NAME unconfig_int_add
 #set DESIGN_NAME unconfig_int_add
 
@@ -105,7 +114,7 @@ set compile_delete_unloaded_sequential_cells false
 set compile_seqmap_propagate_constants false
 set compile_enable_register_merging false
 set compile_seqmap_enable_output_inversion false
-set AC_NAME $DESIGN_NAME
+set AC_NAME unconfig_int_add
 
 #--- specifying libraries 
 define_design_lib WORK -path ./WORK
@@ -114,15 +123,14 @@ set verilogout_show_unconnected_pins "true"
 
 #for { set NAB 0}  {$NAB < 1} {incr NAB 1} {
 
-#set enable_keep_signal_dt_net true
-#set enable_keep_signal true
+set enable_keep_signal_dt_net true
+set enable_keep_signal true
 #--- read the design 
 #analyze -format verilog [list  ${design_dir_addr}/ripple_carry_adder.v ${design_dir_addr}/unconfig_int_add.v ${design_dir_addr}/acc_int_add.v ]
 #analyze -format verilog [list  ${design_dir_addr}/unconfig_int_add.v]
-analyze -format verilog [list  ${design_dir_addr}/${DESIGN_NAME}.v]
-elaborate $my_toplevel -parameters $OP_BITWIDTH,$DATA_PATH_WIDTH
-#${design_dir_addr}/ripple_carry_adder.v] ;# this one is for a simple unstructured example
-#elaborate $my_toplevel 
+#elaborate $my_toplevel -parameters $OP_BITWIDTH,$DATA_PATH_WIDTH
+elaborate $my_toplevel 
+analyze -format verilog [list  ${design_dir_addr}/unconfig_int_add__structure_preserved.v ${design_dir_addr}/ripple_carry_adder.v] ;# this one is for a simple unstructured example
 
 check_design
 
@@ -147,12 +155,12 @@ set_input_delay -max 0 -clock clk [get_ports b*]
 set_input_delay -max 0 -clock clk [get_ports a*]     
 set_dont_touch_network [get_clocks clk]
 
-#set_dont_touch_network [get_net o_temp_1]
-#set_dont_touch_network [get_ports a[0]]
-#set_dont_touch_network [get_ports a[1]]
-#set_dont_touch_network [get_ports b[0]]
-#set_dont_touch_network [get_ports b[1]]
-#set_dont_touch_network [get_port c*]
+#----- the following line prevents DC to touch the following ports 
+set_dont_touch_network [get_ports a[0]]
+set_dont_touch_network [get_ports a[1]]
+set_dont_touch_network [get_ports b[0]]
+set_dont_touch_network [get_ports b[1]]
+set_dont_touch_network [get_port c*]
 #
 
 
@@ -334,11 +342,11 @@ compile_ultra -timing_high_effort_script -incremental
 
 #--- analyze adn resolve design problems
 #report_timing -sort_by slack -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 1 -max_paths 1 > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing.rpt
-report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #report_timing -path full -sort_by slack -from  $input_list -max_path 100 -nworst 2 >  ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing1.rpt
-report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_area.rpt
-report_power > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_power.rpt
-report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_constrain_violators.rpt
+report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_area.rpt
+report_power > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_power.rpt
+report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_constrain_violators.rpt
 
 report_net
 #report_qor > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_qor.rpt
@@ -347,13 +355,11 @@ report_net
 
 #--- save the design
 #the following generates ddc files 
-set syn_name  ${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit
-
-write -format ddc -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.ddc
+write -format ddc -hierarchy -output ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.ddc 
 #the following generates the gatelevel netlist 
-write -f verilog -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.v
-write_sdc ${RESULTS_DIR}/${syn_name}_synthesized.sdc
-write_sdf ${RESULTS_DIR}/${syn_name}_synthesized.mapped.sdf; #switching activity file
+write -f verilog -hierarchy -output ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.v
+write_sdc ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.sdc; #constraint file
+write_sdf ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.mapped.sdf; #switching activity file
 
 
 remove_design -hierarchy
