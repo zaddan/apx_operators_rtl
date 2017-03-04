@@ -1,3 +1,10 @@
+//-----------------------------------------------------------------
+//*** F:D this file is RTL for multiple_add where the default for 
+//        the bits are first add (note that there is no sharing at the moment
+//        . Now, that can be b/c of the way I wrote the RTL (or the tcl script)
+//        . hence, I started conf_int_add__noFF__multiple_add__resource_sharing to
+//        investigate this
+//-----------------------------------------------------------------
 
 module conf_int_add__noFF__multiple_add( clk, rst, a, b, c, conf_select
  );
@@ -46,26 +53,27 @@ assign c_4  = a[DATA_PATH_BITWIDTH-1: DATA_PATH_BITWIDTH -16] + b[DATA_PATH_BITW
 assign c[3:0] = c_0[3:0];
 assign c[7:4] = (conf_select == 3'd0) ? c_0[7:4] : 
                 (conf_select == 3'd1) ? c_1[3:0] :
-                3'bx;
+                c_0[7:4]; //*** F:AN I set the default to c_0, not sure if this
+                          //         has consequences
 
 assign c[11:8] = (conf_select == 3'd0) ? c_0[11:8] : 
                  (conf_select == 3'd1) ? c_1[7:4] :
                  (conf_select == 3'd2) ? c_2[3:0] :
-                 3'bx;
+                 c_0[11:8];
  
 
 assign c[15:12] = (conf_select == 3'd0) ? c_0[15:12] : 
                   (conf_select == 3'd1) ? c_1[11:8] :
                   (conf_select == 3'd2) ? c_2[7:4] :
                   (conf_select == 3'd3) ? c_3[3:0] :
-                  3'bx;
+                  c_0[15:12];
  
 assign c[31:16] = (conf_select == 3'd0) ? c_0[31:16] : 
                   (conf_select == 3'd1) ? c_1[27:12] :
                   (conf_select == 3'd2) ? c_1[23:8] :
                   (conf_select == 3'd3) ? c_1[19:4] :
                   (conf_select == 3'd4) ? c_1[15:0] :
-                  16'bx;
+                  c_0[31:16];
  
 
 /*

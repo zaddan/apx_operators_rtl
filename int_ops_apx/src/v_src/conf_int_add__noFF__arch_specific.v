@@ -33,14 +33,14 @@ reg [DATA_PATH_BITWIDTH-1:0] c_reg;
   //--- no flop design
   wire cout;
   // synopsys dc_script_begin 
-  // set_implementation cla U1 
-  // set_dont_touch U1 
+  // set_implementation rpl U1 
   // synopsys dc_script_end
   // instantiate DW01_add
   // set_dont_use dw_foundation.sldb/DW01_add/apparch
   // set_dont_use dw_foundation.sldb/DW01_add/pparch
   DW01_add #(DATA_PATH_BITWIDTH) U1(.A(a), .B(b), .CI(1'b0), .SUM(c), .CO(cout));
   
+  //// set_dont_touch U1 
 //  
 //  always @(*) begin
 //      /* synopsys resource r0: 

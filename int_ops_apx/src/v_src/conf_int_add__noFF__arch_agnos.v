@@ -30,7 +30,7 @@ output [DATA_PATH_BITWIDTH-1:0] c;
 
 
 //--- no flop design
-assign c = a * b;
+assign c = a + b;
 
 /*
 //--- regs, wires
