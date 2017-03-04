@@ -19,19 +19,20 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #---- Parameters
 #----------------------------------------------------
 #---- N: the following should be commented out if the tcl file is invoked by 
+#-----   a python function
 set DATA_PATH_WIDTH 32;
 set CLKGATED_BITWIDTH 4; #numebr of apx bits
-set clk_period 210;#.220;#.230;#.240
+set clk_period 0
 ##--- F: apximation
-set apx_optimal 1
+set apx_optimal 0
 set apx_optimal_mode(first) 1
 set apx_optimal_mode(second) 1
 set apx_optimal_mode(third)  1
 set apx_optimal_mode(fourth) 1
-set msb_1_max_delay .19;#.2;#.209;#.218
-set msb_2_max_delay .175;#.183;#.191 ;#.2
-set msb_3_max_delay .161;#.169;#.176 ;#.184
-set msb_4_max_delay .140;#.149;#.153 ;#.160
+set msb_1_max_delay .46;#.270 ideally
+set msb_2_max_delay .46 ;#.261 ideally
+set msb_3_max_delay .46 ;#.249 ideally
+set msb_4_max_delay .46 ;#.242 ideally
 #----------------------------------------------------
 set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
 
@@ -65,7 +66,7 @@ set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_o
 set REPORTS_DIR ${WDIR}/reports
 
 
-set DESIGN_NAME conf_int_add__noFF__arch_agnos
+set DESIGN_NAME conf_int_mac__noFF__designWare_mac
 #set DESIGN_NAME unconfig_int_add
 #set DESIGN_NAME unconfig_int_add
 
@@ -78,13 +79,13 @@ set search_path "${RTLDIR}"
 set my_toplevel ${DESIGN_NAME}
 
 #--- libraries
-set lib_dir_1 "/usr/local/packages/synopsys_32.28_07292013/SAED32_EDK/lib"
-set lib_dir_2 "/home/polaris/behzad/behzad_local/verilog_files/libraries"
-set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"
+set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"; #technology library
+set synth_lib "/usr/local/packages/synopsys_2016/syn/libraries/syn"
+set synth_lib_ver "/usr/local/packages/synopsys_2016/syn/dw/sim_ver"
 #set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/FreePDK45/osu_soc/lib/files"
 #--- NOTE: I had to include *_rvt as well, cause ow the compiler was erroring out
 #set search_path [concat  $search_path $lib_dir_1/stdcell_rvt/db_nldm $lib_dir_1/stdcell_lvt/db_nldm $lib_dir_2/germany_NanGate/db $lib_dir_3]
-set search_path [concat  $search_path $lib_dir_3]
+set search_path [concat  $search_path $lib_dir_3 $synth_lib $synth_lib_ver] 
 #--- design dir
 set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
 
@@ -97,8 +98,12 @@ set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operato
 set  std_library  "noAging.db" 
 #set std_library "gscl45nm.db"; #PDK45 themselves
 
-set target_library $std_library; #$std_library_2" 
-set link_library $std_library; #$std_library_2"
+set synth_library_1 "/usr/local/packages/synopsys_2016/syn/libraries/syn/standard.sldb"
+set synth_library_2 "/usr/local/packages/synopsys_2016/syn/libraries/syn/dw_foundation.sldb"
+set target_library $std_library; #std cells for mapping
+set synthetic_library [list $synth_library_1 $synth_library_2]
+
+set link_library [list $std_library $synth_library_1 $synth_library_2] 
 
 set compile_delete_unloaded_sequential_cells false
 set compile_seqmap_propagate_constants false
@@ -177,7 +182,9 @@ set_dont_touch_network [get_clocks clk]
 set all_reg_a_l [make-reg_l "a" 0 $DATA_PATH_WIDTH]
 set all_reg_b_l [make-reg_l "b" 0 $DATA_PATH_WIDTH]
 set all_reg_c_l [make-reg_l "c" 0 $DATA_PATH_WIDTH]
+set all_reg_d_l [make-reg_l "d" 0 $DATA_PATH_WIDTH]
 set all_reg_a_b_joined [concat $all_reg_a_l $all_reg_b_l]
+set all_reg_a_b_c_joined [concat $all_reg_a_b_joined]
 
 set lsb_bits 4
 #$CLKGATED_BITWIDTH
@@ -246,35 +253,10 @@ puts "msb_4_reg_a_b_joined"
 puts $msb_4_reg_a_b_joined
 puts "--------------"
 
-#---    ---      ---       ---       ---       ---
-set reg_0_4__a [make-reg_l "a" 0 [expr 0 + $lsb_bits]]
-set reg_0_4__b [make-reg_l "b" 0 [expr 0 + $lsb_bits]]
-set reg_0_4__a_b_joined [concat $reg_0_4__b $reg_0_4__a]
 
-set reg_4_8__a [make-reg_l "a" $lsb_bits [expr $lsb_bits+4]]
-set reg_4_8__b [make-reg_l "b" $lsb_bits [expr $lsb_bits+4]]
-set reg_4_8__a_b_joined [concat $reg_4_8__b $reg_4_8__a]
 
-set reg_8_12__a [make-reg_l "a" [expr $lsb_bits+4] [expr $lsb_bits+8]] 
-set reg_8_12__b [make-reg_l "b"  [expr $lsb_bits+4] [expr $lsb_bits+8]]
-set reg_8_12__a_b_joined [concat $reg_8_12__b $reg_8_12__a]
+set_max_delay $clk_period -from $all_reg_a_b_c_joined -to $all_reg_d_l 
 
-set reg_12_16__a [make-reg_l "a"  [expr $lsb_bits+8] [expr $lsb_bits+12]]
-set reg_12_16__b [make-reg_l "b" [expr $lsb_bits+8] [expr $lsb_bits+12]]
-set reg_12_16__a_b_joined [concat $reg_12_16__b $reg_12_16__a]
-
-set reg_16_32__a [make-reg_l "a"  [expr $lsb_bits+12] [expr $lsb_bits+28]]
-set reg_16_32__b [make-reg_l "b" [expr $lsb_bits+12] [expr $lsb_bits+28]]
-set reg_16_32__a_b_joined [concat $reg_16_32__b $reg_16_32__a]
-
-puts $reg_0_4__a_b_joined
-puts $reg_4_8__a_b_joined
-puts $reg_8_12__a_b_joined
-puts $reg_12_16__a_b_joined
-puts $reg_16_32__a_b_joined
-#---    ---      ---       ---       ---       ---
-
-set_max_delay $clk_period -from $all_reg_a_b_joined -to $all_reg_c_l 
 #----------------------------------------------------
 #--- F: 1. enforcing total neg-slack
 #------ 2. enforcing priority
@@ -350,7 +332,7 @@ if {$apx_optimal == 1} {
 #compile -power_effort high
 #compile_ultra
 #compile_ultra -timing_high_effort_script -incremental
-#set_dp_smartgen_options -all_options false -carry_select_adder_cell true
+#set_dp_smartgen_options -carry_select_adder_cell true
 compile_ultra -timing_high_effort_script 
 compile_ultra -timing_high_effort_script -incremental
 #compile_ultra
@@ -359,16 +341,7 @@ compile_ultra -timing_high_effort_script -incremental
 
 #--- analyze adn resolve design problems
 #report_timing -sort_by slack -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 1 -max_paths 1 > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing.rpt
-
-#---    ---      ---       ---       ---       ---
-report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing_ref.rpt
-report_timing -path full -from $reg_0_4__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_4_8__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_8_12__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_12_16__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_16_32__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-#---    ---      ---       ---       ---       ---
-
+report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #report_timing -path full -sort_by slack -from  $input_list -max_path 100 -nworst 2 >  ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing1.rpt
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_area.rpt
 report_power > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_power.rpt

@@ -15,23 +15,28 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 }
 
 
+set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results" 
 #----------------------------------------------------
-#---- Parameters
+#*** F:DN Parameters
 #----------------------------------------------------
 #---- N: the following should be commented out if the tcl file is invoked by 
+set DESIGN_NAME conf_int_add__noFF__arch_specific_OP_BITWIDTH32_DATA_PATH_BITWIDTH32; #top modules name
+set synth__file ${design_dir_addr}/conf_int_add__noFF__arch_specific_32Bit_32Bit_synthesized.v;#the synthesized verilog file
+
+
 set DATA_PATH_WIDTH 32;
 set CLKGATED_BITWIDTH 4; #numebr of apx bits
-set clk_period 210;#.220;#.230;#.240
+set clk_period 0
 ##--- F: apximation
-set apx_optimal 1
+set apx_optimal 0
 set apx_optimal_mode(first) 1
 set apx_optimal_mode(second) 1
 set apx_optimal_mode(third)  1
 set apx_optimal_mode(fourth) 1
-set msb_1_max_delay .19;#.2;#.209;#.218
-set msb_2_max_delay .175;#.183;#.191 ;#.2
-set msb_3_max_delay .161;#.169;#.176 ;#.184
-set msb_4_max_delay .140;#.149;#.153 ;#.160
+set msb_1_max_delay .46;#.270 ideally
+set msb_2_max_delay .46 ;#.261 ideally
+set msb_3_max_delay .46 ;#.249 ideally
+set msb_4_max_delay .46 ;#.242 ideally
 #----------------------------------------------------
 set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
 
@@ -52,23 +57,16 @@ puts $parameter_log [concat "msb_2_max_delay:" $msb_2_max_delay]
 puts $parameter_log [concat "msb_3_max_delay:" $msb_3_max_delay] 
 puts $parameter_log [concat "msb_4_max_delay:" $msb_4_max_delay] 
 close $parameter_log
-#----------------------------------------------------
-
 
 #----------------------------------------------------
 #--- variables
 #----------------------------------------------------
 set WDIR "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn"
 #~/behzad_local/verilog_files/synthesis
-set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
-#~/behzad_local/verilog_files/apx_operators/int_ops_apx
+set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
 set REPORTS_DIR ${WDIR}/reports
 
-
-set DESIGN_NAME conf_int_add__noFF__arch_agnos
 #set DESIGN_NAME unconfig_int_add
-#set DESIGN_NAME unconfig_int_add
-
 
 set RESULTS_DIR ${WDIR}/results
 set DCRM_FINAL_TIMING_REPORT timing.rpt
@@ -78,15 +76,16 @@ set search_path "${RTLDIR}"
 set my_toplevel ${DESIGN_NAME}
 
 #--- libraries
-set lib_dir_1 "/usr/local/packages/synopsys_32.28_07292013/SAED32_EDK/lib"
-set lib_dir_2 "/home/polaris/behzad/behzad_local/verilog_files/libraries"
-set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"
+#set lib_dir_1 "/usr/local/packages/synopsys_32.28_07292013/SAED32_EDK/lib"
+#set lib_dir_2 "/home/polaris/behzad/behzad_local/verilog_files/libraries"
+set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"; #technology library
+set synth_lib "/usr/local/packages/synopsys_2016/syn/libraries/syn"
+set synth_lib_ver "/usr/local/packages/synopsys_2016/syn/dw/sim_ver"
 #set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/FreePDK45/osu_soc/lib/files"
 #--- NOTE: I had to include *_rvt as well, cause ow the compiler was erroring out
 #set search_path [concat  $search_path $lib_dir_1/stdcell_rvt/db_nldm $lib_dir_1/stdcell_lvt/db_nldm $lib_dir_2/germany_NanGate/db $lib_dir_3]
-set search_path [concat  $search_path $lib_dir_3]
+set search_path [concat  $search_path $lib_dir_3 $synth_lib $synth_lib_ver] 
 #--- design dir
-set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
 
 #--- library
 #set std_library "saed32rvt_tt1p05v25c.db"
@@ -97,8 +96,12 @@ set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operato
 set  std_library  "noAging.db" 
 #set std_library "gscl45nm.db"; #PDK45 themselves
 
-set target_library $std_library; #$std_library_2" 
-set link_library $std_library; #$std_library_2"
+set synth_library_1 "/usr/local/packages/synopsys_2016/syn/libraries/syn/standard.sldb"
+set synth_library_2 "/usr/local/packages/synopsys_2016/syn/libraries/syn/dw_foundation.sldb"
+set target_library $std_library; #std cells for mapping
+set synthetic_library [list $synth_library_1 $synth_library_2]
+
+set link_library [list $std_library $synth_library_1 $synth_library_2] 
 
 set compile_delete_unloaded_sequential_cells false
 set compile_seqmap_propagate_constants false
@@ -107,72 +110,29 @@ set compile_seqmap_enable_output_inversion false
 set AC_NAME $DESIGN_NAME
 
 #--- specifying libraries 
-define_design_lib WORK -path ./WORK
+#define_design_lib WORK -path ./WORK
 set verilogout_show_unconnected_pins "true"
 
-
-#for { set NAB 0}  {$NAB < 1} {incr NAB 1} {
-
-#set enable_keep_signal_dt_net true
+#set enable_keep_signal_dt_net true; #*** F:TN if we want to keep the net name (helpful
+                                     # for set_dont_touch
 #set enable_keep_signal true
+#set_dont_use dw_foundation.sldb/DW01_add/apparch ;#*** F:TN to not use this arch
+#set_dont_use dw_foundation.sldb/DW01_add/clf
+#set_dont_use dw_foundation.sldb/DW01/pparch; #*** F:CN can not get it to "not use" this arch
+
+#report_synlib dw_foundation.sldb DW01_add; #*** F:TN reporting info about DW01_add module
+#                                           #         within the dw_foundation lib
 #--- read the design 
-#analyze -format verilog [list  ${design_dir_addr}/ripple_carry_adder.v ${design_dir_addr}/unconfig_int_add.v ${design_dir_addr}/acc_int_add.v ]
-#analyze -format verilog [list  ${design_dir_addr}/unconfig_int_add.v]
-analyze -format verilog [list  ${design_dir_addr}/${DESIGN_NAME}.v]
-elaborate $my_toplevel -parameters $OP_BITWIDTH,$DATA_PATH_WIDTH
-#${design_dir_addr}/ripple_carry_adder.v] ;# this one is for a simple unstructured example
+#analyze -format verilog [list  ${design_dir_addr}/conf_int_mac__noFF__arch_specific_32Bit_32Bit_synthesized.v] 
 #elaborate $my_toplevel 
-
-check_design
-
-
-#--- define design environement (setting up the design environment such as external operating conditions (manufacturing process, temperature, and voltage), loads, drives, fanouts, and wire load models)
-
-
-set endpoints [add_to_collection [all_outputs] [all_registers -data_pins]]
-
-
-#--- linking to libraries
-link
-#uniquify
-
-#saif_map -start 
-
-
-#--- set the optimization constraints 
-create_clock -name clk -period $clk_period [get_ports clk]
-set_ideal_network -no_propagate [get_ports clk]
-set_input_delay -max 0 -clock clk [get_ports b*]     
-set_input_delay -max 0 -clock clk [get_ports a*]     
-set_dont_touch_network [get_clocks clk]
-
-#set_dont_touch_network [get_net o_temp_1]
-#set_dont_touch_network [get_ports a[0]]
-#set_dont_touch_network [get_ports a[1]]
-#set_dont_touch_network [get_ports b[0]]
-#set_dont_touch_network [get_ports b[1]]
-#set_dont_touch_network [get_port c*]
 #
 
+read_file  $synth__file -autoread -top $my_toplevel
+check_design
 
-#--- use the following rule if you don't want to use the clock and 
-#------ you are only having combination logic for the addition
-#set_max_delay  -to [all_outputs]
+#--- define design environement (setting up the design environment such as external operating conditions (manufacturing process, temperature, and voltage), loads, drives, fanouts, and wire load models)
+link
 
-#--- design rule constraints 
-#set_max_area 0
-
-#---- don't need this, if we add it the combination logic case would be different
-#-------- comparing to the german people
-#foreach_in_collection endpt $endpoints { set pin [get_object_name $endpt] 
-#    group_path -name $pin -to $pin
-#}
-
-
-#set_max_delay .2 -from {reg_b_reg[16] reg_b_reg[17] reg_b_reg[18] reg_b_reg[19] reg_b_reg[20] reg_b_reg[21] reg_b_reg[22] reg_b_reg[23] reg_b_reg[24] reg_b_reg[25] reg_b_reg[26] reg_b_reg[27] reg_b_reg[28] reg_b_reg[29] reg_b_reg[30] reg_b_reg[31] reg_a_reg[16] reg_a_reg[17] reg_a_reg[18] reg_a_reg[19] reg_a_reg[20] reg_a_reg[21] reg_a_reg[22] reg_a_reg[23] reg_a_reg[24] reg_a_reg[25] reg_a_reg[26] reg_a_reg[27] reg_a_reg[28] reg_a_reg[29] reg_a_reg[30] reg_a_reg[31]} -to {reg_c_reg[16] reg_c_reg[17] reg_c_reg[18] reg_c_reg[19] reg_c_reg[20] reg_c_reg[21] reg_c_reg[22] reg_c_reg[23] reg_c_reg[24] reg_c_reg[25] reg_c_reg[26] reg_c_reg[27] reg_c_reg[28] reg_c_reg[29] reg_c_reg[30] reg_c_reg[31]}
-
-
-#set_max_delay .15 -from {b[16] b[17] b[18] b[19] b[20] b[21] b[22] b[23] b[24] b[25] b[26] b[27] b[28] b[29] b[30] b[31] a[16] a[17] a[18] a[19] a[20] a[21] a[22] a[23] a[24] a[25] a[26] a[27] a[28] a[29] a[30] a[31]} -to {c[16] c[17] c[18] c[19] c[20] c[21] c[22] c[23] c[24] c[25] c[26] c[27] c[28] c[29] c[30] c[31]}
 
 set all_reg_a_l [make-reg_l "a" 0 $DATA_PATH_WIDTH]
 set all_reg_b_l [make-reg_l "b" 0 $DATA_PATH_WIDTH]
@@ -245,36 +205,47 @@ puts "--------------"
 puts "msb_4_reg_a_b_joined"
 puts $msb_4_reg_a_b_joined
 puts "--------------"
-
 #---    ---      ---       ---       ---       ---
 set reg_0_4__a [make-reg_l "a" 0 [expr 0 + $lsb_bits]]
 set reg_0_4__b [make-reg_l "b" 0 [expr 0 + $lsb_bits]]
+set reg_0_4__c [make-reg_l "c" 0 [expr 0 + $lsb_bits]]
 set reg_0_4__a_b_joined [concat $reg_0_4__b $reg_0_4__a]
+
 
 set reg_4_8__a [make-reg_l "a" $lsb_bits [expr $lsb_bits+4]]
 set reg_4_8__b [make-reg_l "b" $lsb_bits [expr $lsb_bits+4]]
+set reg_4_8__c [make-reg_l "c" $lsb_bits [expr $lsb_bits+4]]
 set reg_4_8__a_b_joined [concat $reg_4_8__b $reg_4_8__a]
 
 set reg_8_12__a [make-reg_l "a" [expr $lsb_bits+4] [expr $lsb_bits+8]] 
 set reg_8_12__b [make-reg_l "b"  [expr $lsb_bits+4] [expr $lsb_bits+8]]
+set reg_8_12__c [make-reg_l "c"  [expr $lsb_bits+4] [expr $lsb_bits+8]]
 set reg_8_12__a_b_joined [concat $reg_8_12__b $reg_8_12__a]
 
 set reg_12_16__a [make-reg_l "a"  [expr $lsb_bits+8] [expr $lsb_bits+12]]
 set reg_12_16__b [make-reg_l "b" [expr $lsb_bits+8] [expr $lsb_bits+12]]
+set reg_12_16__c [make-reg_l "c" [expr $lsb_bits+8] [expr $lsb_bits+12]]
 set reg_12_16__a_b_joined [concat $reg_12_16__b $reg_12_16__a]
 
 set reg_16_32__a [make-reg_l "a"  [expr $lsb_bits+12] [expr $lsb_bits+28]]
 set reg_16_32__b [make-reg_l "b" [expr $lsb_bits+12] [expr $lsb_bits+28]]
+set reg_16_32__c [make-reg_l "c" [expr $lsb_bits+12] [expr $lsb_bits+28]]
 set reg_16_32__a_b_joined [concat $reg_16_32__b $reg_16_32__a]
 
+puts "-----  -----    -----     -----     -----     -----"
 puts $reg_0_4__a_b_joined
 puts $reg_4_8__a_b_joined
 puts $reg_8_12__a_b_joined
-puts $reg_12_16__a_b_joined
 puts $reg_16_32__a_b_joined
 #---    ---      ---       ---       ---       ---
+puts "----------------------------------------------------"
+puts "----------------------------------------------------"
 
-set_max_delay $clk_period -from $all_reg_a_b_joined -to $all_reg_c_l 
+
+#set_max_delay $clk_period -from $all_reg_a_b_joined -to $all_reg_c_l 
+set_max_delay $clk_period -from a -to d
+set_max_delay $clk_period -from b -to d
+set_max_delay $clk_period -from c -to d
 #----------------------------------------------------
 #--- F: 1. enforcing total neg-slack
 #------ 2. enforcing priority
@@ -330,43 +301,26 @@ if {$apx_optimal == 1} {
     }
 }
 
-#group_path -name rst_reg_reg -from rst_reg_reg -priority 11
 
-
-#set_max_delay .26 -from rst_reg_reg 
-
-#foreach_in_collection endpt $inputpoints { set pin [get_object_name $endpt] 
-#    puts "hello" 
-#    puts $pin   
-#    group_path -name $pin -from $pin
-#}
-
-
-
-
-#--- compile (symthesize  to gate level and optimize design)
-#compile
-#compile -map_effort high -area_effort high -power_effort high 
-#compile -power_effort high
-#compile_ultra
-#compile_ultra -timing_high_effort_script -incremental
-#set_dp_smartgen_options -all_options false -carry_select_adder_cell true
-compile_ultra -timing_high_effort_script 
-compile_ultra -timing_high_effort_script -incremental
-#compile_ultra
-
-#read_saif -auto_map_names -input ~/behzad_local/verilog_files/apx_operators/int_ops_apx/DUT.saif -instance test_bench_tb/acc_adder_u -verbose 
-
-#--- analyze adn resolve design problems
-#report_timing -sort_by slack -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 1 -max_paths 1 > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing.rpt
+#--- set the optimization constraints 
+create_clock -name clk -period $clk_period [get_ports clk]
+set_ideal_network -no_propagate [get_ports clk]
+set_input_delay -max 0 -clock clk [get_ports b*]     
+set_input_delay -max 0 -clock clk [get_ports a*]     
+set_dont_touch_network [get_clocks clk]
 
 #---    ---      ---       ---       ---       ---
-report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing_ref.rpt
 report_timing -path full -from $reg_0_4__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 report_timing -path full -from $reg_4_8__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 report_timing -path full -from $reg_8_12__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 report_timing -path full -from $reg_12_16__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 report_timing -path full -from $reg_16_32__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+
+#report_timing -path full -sort_by slack -slack_greater_than "-.100" -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#set A_0_12 [make-reg_l "A" 0 14]
+#report_timing -path full -sort_by slack -through [get_nets $A_0_12 -hierarchical] >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -from c -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -to d -nworst 100 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #---    ---      ---       ---       ---       ---
 
 #report_timing -path full -sort_by slack -from  $input_list -max_path 100 -nworst 2 >  ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing1.rpt
@@ -384,13 +338,13 @@ report_net
 #the following generates ddc files 
 set syn_name  ${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit
 
-write -format ddc -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.ddc
+#write -format ddc -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.ddc
 #the following generates the gatelevel netlist 
-write -f verilog -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.v
+#redirect change_names { change_names -rules verilog -hierarchy -
+#    verbose }
+#write -f verilog -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.v
 write_sdc ${RESULTS_DIR}/${syn_name}_synthesized.sdc
 write_sdf ${RESULTS_DIR}/${syn_name}_synthesized.mapped.sdf; #switching activity file
-
-
 remove_design -hierarchy
 exit
 

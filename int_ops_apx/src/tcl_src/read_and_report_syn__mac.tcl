@@ -15,24 +15,27 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 }
 
 
+set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results" 
 #----------------------------------------------------
 #---- Parameters
 #----------------------------------------------------
-#---- N: the following should be commented out if the tcl file is invoked by 
+
+set DESIGN_NAME conf_int_mac__noFF__arch_agnos_OP_BITWIDTH32_DATA_PATH_BITWIDTH32
+set synth__file ${design_dir_addr}/conf_int_mac__noFF__arch_agnos_32Bit_32Bit_synthesized.v;#the synthesized verilog file
 set DATA_PATH_WIDTH 32;
 set CLKGATED_BITWIDTH 4; #numebr of apx bits
-set clk_period 210;#.220;#.230;#.240
-##--- F: apximation
+set clk_period .5
+###--- F: apximation
 set apx_optimal 1
 set apx_optimal_mode(first) 1
 set apx_optimal_mode(second) 1
 set apx_optimal_mode(third)  1
 set apx_optimal_mode(fourth) 1
-set msb_1_max_delay .19;#.2;#.209;#.218
-set msb_2_max_delay .175;#.183;#.191 ;#.2
-set msb_3_max_delay .161;#.169;#.176 ;#.184
-set msb_4_max_delay .140;#.149;#.153 ;#.160
-#----------------------------------------------------
+set msb_1_max_delay .42;#.270 ideally
+set msb_2_max_delay .42 ;#.261 ideally
+set msb_3_max_delay .42 ;#.249 ideally
+set msb_4_max_delay .42 ;#.242 ideally
+puts "----------------------------------------------------"
 set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
 
 
@@ -60,12 +63,12 @@ close $parameter_log
 #----------------------------------------------------
 set WDIR "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn"
 #~/behzad_local/verilog_files/synthesis
-set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
+set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
 #~/behzad_local/verilog_files/apx_operators/int_ops_apx
 set REPORTS_DIR ${WDIR}/reports
 
 
-set DESIGN_NAME conf_int_add__noFF__arch_agnos
+#set DESIGN_NAME conf_int_mac__noFF__arch_specific
 #set DESIGN_NAME unconfig_int_add
 #set DESIGN_NAME unconfig_int_add
 
@@ -97,8 +100,12 @@ set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operato
 set  std_library  "noAging.db" 
 #set std_library "gscl45nm.db"; #PDK45 themselves
 
-set target_library $std_library; #$std_library_2" 
-set link_library $std_library; #$std_library_2"
+set synth_library_1 "/usr/local/packages/synopsys_2016/syn/libraries/syn/standard.sldb"
+set synth_library_2 "/usr/local/packages/synopsys_2016/syn/libraries/syn/dw_foundation.sldb"
+set target_library $std_library; #std cells for mapping
+set synthetic_library [list $synth_library_1 $synth_library_2]
+
+set link_library [list $std_library $synth_library_1 $synth_library_2] 
 
 set compile_delete_unloaded_sequential_cells false
 set compile_seqmap_propagate_constants false
@@ -110,34 +117,19 @@ set AC_NAME $DESIGN_NAME
 define_design_lib WORK -path ./WORK
 set verilogout_show_unconnected_pins "true"
 
-
-#for { set NAB 0}  {$NAB < 1} {incr NAB 1} {
-
 #set enable_keep_signal_dt_net true
 #set enable_keep_signal true
 #--- read the design 
 #analyze -format verilog [list  ${design_dir_addr}/ripple_carry_adder.v ${design_dir_addr}/unconfig_int_add.v ${design_dir_addr}/acc_int_add.v ]
 #analyze -format verilog [list  ${design_dir_addr}/unconfig_int_add.v]
-analyze -format verilog [list  ${design_dir_addr}/${DESIGN_NAME}.v]
-elaborate $my_toplevel -parameters $OP_BITWIDTH,$DATA_PATH_WIDTH
-#${design_dir_addr}/ripple_carry_adder.v] ;# this one is for a simple unstructured example
-#elaborate $my_toplevel 
-
+read_file  $synth__file -autoread -top $my_toplevel
 check_design
 
-
-#--- define design environement (setting up the design environment such as external operating conditions (manufacturing process, temperature, and voltage), loads, drives, fanouts, and wire load models)
-
-
-set endpoints [add_to_collection [all_outputs] [all_registers -data_pins]]
-
-
+#set endpoints [add_to_collection [all_outputs] [all_registers -data_pins]]
 #--- linking to libraries
 link
 #uniquify
-
 #saif_map -start 
-
 
 #--- set the optimization constraints 
 create_clock -name clk -period $clk_period [get_ports clk]
@@ -168,113 +160,170 @@ set_dont_touch_network [get_clocks clk]
 #    group_path -name $pin -to $pin
 #}
 
-
-#set_max_delay .2 -from {reg_b_reg[16] reg_b_reg[17] reg_b_reg[18] reg_b_reg[19] reg_b_reg[20] reg_b_reg[21] reg_b_reg[22] reg_b_reg[23] reg_b_reg[24] reg_b_reg[25] reg_b_reg[26] reg_b_reg[27] reg_b_reg[28] reg_b_reg[29] reg_b_reg[30] reg_b_reg[31] reg_a_reg[16] reg_a_reg[17] reg_a_reg[18] reg_a_reg[19] reg_a_reg[20] reg_a_reg[21] reg_a_reg[22] reg_a_reg[23] reg_a_reg[24] reg_a_reg[25] reg_a_reg[26] reg_a_reg[27] reg_a_reg[28] reg_a_reg[29] reg_a_reg[30] reg_a_reg[31]} -to {reg_c_reg[16] reg_c_reg[17] reg_c_reg[18] reg_c_reg[19] reg_c_reg[20] reg_c_reg[21] reg_c_reg[22] reg_c_reg[23] reg_c_reg[24] reg_c_reg[25] reg_c_reg[26] reg_c_reg[27] reg_c_reg[28] reg_c_reg[29] reg_c_reg[30] reg_c_reg[31]}
-
-
-#set_max_delay .15 -from {b[16] b[17] b[18] b[19] b[20] b[21] b[22] b[23] b[24] b[25] b[26] b[27] b[28] b[29] b[30] b[31] a[16] a[17] a[18] a[19] a[20] a[21] a[22] a[23] a[24] a[25] a[26] a[27] a[28] a[29] a[30] a[31]} -to {c[16] c[17] c[18] c[19] c[20] c[21] c[22] c[23] c[24] c[25] c[26] c[27] c[28] c[29] c[30] c[31]}
-
 set all_reg_a_l [make-reg_l "a" 0 $DATA_PATH_WIDTH]
 set all_reg_b_l [make-reg_l "b" 0 $DATA_PATH_WIDTH]
 set all_reg_c_l [make-reg_l "c" 0 $DATA_PATH_WIDTH]
+set all_reg_d_l [make-reg_l "d" 0 $DATA_PATH_WIDTH]
 set all_reg_a_b_joined [concat $all_reg_a_l $all_reg_b_l]
+set all_reg_a_b_c_joined [concat $all_reg_a_b_joined]
 
 set lsb_bits 4
 #$CLKGATED_BITWIDTH
 set msb_bits [expr $DATA_PATH_WIDTH - $lsb_bits]
 #----------------------------------------------------
 
-
 #----------------------------------------------------
-#--- lab_1 ,1 means the superclass
+#----------------------------------------------------
+#--- lab_1 ,[lsb: 0]
 set lsb_1_reg_a_l [make-reg_l "a" 0 $lsb_bits]
 set lsb_1_reg_b_l [make-reg_l "b" 0 $lsb_bits]
 set lsb_1_reg_c_l [make-reg_l "c" 0 $lsb_bits]
+set lsb_1_reg_d_l [make-reg_l "d" 0 $lsb_bits]
 set lsb_1_reg_a_b_joined [concat $lsb_1_reg_a_l $lsb_1_reg_b_l]
+set lsb_1_reg_a_b_c_joined [concat $lsb_1_reg_a_b_joined $lsb_1_reg_c_l]
 
 set msb_1_reg_a_l [make-reg_l "a" $lsb_bits $DATA_PATH_WIDTH]
 set msb_1_reg_b_l [make-reg_l "b" $lsb_bits $DATA_PATH_WIDTH]
 set msb_1_reg_c_l [make-reg_l "c" $lsb_bits $DATA_PATH_WIDTH]
+set msb_1_reg_d_l [make-reg_l "d" $lsb_bits $DATA_PATH_WIDTH]
 set msb_1_reg_a_b_joined [concat $msb_1_reg_a_l $msb_1_reg_b_l]
-
-
+set msb_1_reg_a_b_c_joined [concat $msb_1_reg_a_b_joined $msb_1_reg_c_l]
+#-----  -----    -----     -----     -----     -----
 set lsb_2_reg_a_l [make-reg_l "a" 0 [expr $lsb_bits + 4]]
 set lsb_2_reg_b_l [make-reg_l "b" 0 [expr $lsb_bits + 4]]
 set lsb_2_reg_c_l [make-reg_l "c" 0 [expr $lsb_bits + 4]]
+set lsb_2_reg_d_l [make-reg_l "d" 0 [expr $lsb_bits + 4]]
 set lsb_2_reg_a_b_joined [concat $lsb_2_reg_a_l $lsb_2_reg_b_l]
+set lsb_2_reg_a_b_c_joined [concat $lsb_2_reg_a_b_joined $lsb_2_reg_c_l]
 
 set msb_2_reg_a_l [make-reg_l "a" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
 set msb_2_reg_b_l [make-reg_l "b" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
 set msb_2_reg_c_l [make-reg_l "c" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
+set msb_2_reg_d_l [make-reg_l "d" [expr $lsb_bits + 4] $DATA_PATH_WIDTH]
 set msb_2_reg_a_b_joined [concat $msb_2_reg_a_l $msb_2_reg_b_l]
-
-
+set msb_2_reg_a_b_c_joined [concat $msb_2_reg_a_b_joined $msb_2_reg_c_l]
+#-----  -----    -----     -----     -----     -----
 set lsb_3_reg_a_l [make-reg_l "a" 0 [expr $lsb_bits + 8]]
 set lsb_3_reg_b_l [make-reg_l "b" 0 [expr $lsb_bits + 8]]
 set lsb_3_reg_c_l [make-reg_l "c" 0 [expr $lsb_bits + 8]]
+set lsb_3_reg_d_l [make-reg_l "d" 0 [expr $lsb_bits + 8]]
 set lsb_3_reg_a_b_joined [concat $lsb_3_reg_a_l $lsb_3_reg_b_l]
+set lsb_3_reg_a_b_c_joined [concat $lsb_3_reg_a_b_joined $lsb_3_reg_c_l]
 
 set msb_3_reg_a_l [make-reg_l "a" [expr $lsb_bits + 8]  $DATA_PATH_WIDTH]
 set msb_3_reg_b_l [make-reg_l "b" [expr $lsb_bits + 8] $DATA_PATH_WIDTH]
 set msb_3_reg_c_l [make-reg_l "c" [expr $lsb_bits + 8] $DATA_PATH_WIDTH]
+set msb_3_reg_d_l [make-reg_l "d" [expr $lsb_bits + 8] $DATA_PATH_WIDTH]
 set msb_3_reg_a_b_joined [concat $msb_3_reg_a_l $msb_3_reg_b_l]
-
-
+set msb_3_reg_a_b_c_joined [concat $msb_3_reg_a_b_joined $msb_3_reg_c_l]
+#-----  -----    -----     -----     -----     -----
 set lsb_4_reg_a_l [make-reg_l "a" 0 [expr $lsb_bits + 12]]
 set lsb_4_reg_b_l [make-reg_l "b" 0 [expr $lsb_bits + 12]]
 set lsb_4_reg_c_l [make-reg_l "c" 0 [expr $lsb_bits + 12]]
+set lsb_4_reg_d_l [make-reg_l "d" 0 [expr $lsb_bits + 12]]
 set lsb_4_reg_a_b_joined [concat $lsb_4_reg_a_l $lsb_4_reg_b_l]
+set lsb_4_reg_a_b_c_joined [concat $lsb_4_reg_a_b_joined $lsb_4_reg_c_l]
 
 set msb_4_reg_a_l [make-reg_l "a" [expr $lsb_bits + 12] $DATA_PATH_WIDTH]
 set msb_4_reg_b_l [make-reg_l "b" [expr $lsb_bits + 12]  $DATA_PATH_WIDTH]
 set msb_4_reg_c_l [make-reg_l "c" [expr $lsb_bits + 12] $DATA_PATH_WIDTH]
+set msb_4_reg_d_l [make-reg_l "d" [expr $lsb_bits + 12] $DATA_PATH_WIDTH]
 set msb_4_reg_a_b_joined [concat $msb_4_reg_a_l $msb_4_reg_b_l]
-
-puts "^^^^^^^^^^^^^^^^^^^^^"
-puts "msb_1_reg_a_b_joined"
-puts $msb_1_reg_a_b_joined
+set msb_4_reg_a_b_c_joined [concat $msb_4_reg_a_b_joined $msb_4_reg_c_l]
+#----------------------------------------------------
+#----------------------------------------------------
+puts "----------------------------------------------------"
+puts "----------------------------------------------------"
+puts "msb_1_reg_a_b_c_joined"
+puts $msb_1_reg_a_b_c_joined
 puts "--------------"
-puts "msb_2_reg_a_b_joined"
-puts $msb_2_reg_a_b_joined
+puts "msb_2_reg_a_b_c_joined"
+puts $msb_2_reg_a_b_c_joined
 puts "--------------"
-puts "msb_3_reg_a_b_joined"
-puts  "msb_3_reg_a_b_joined"
-puts $msb_3_reg_c_l
-puts $msb_3_reg_a_b_joined
+puts "msb_3_reg_a_b_c_joined"
+puts $msb_3_reg_a_b_c_joined
 puts "--------------"
-puts "msb_4_reg_a_b_joined"
-puts $msb_4_reg_a_b_joined
+puts "msb_4_reg_a_b_c_joined"
+puts $msb_4_reg_a_b_c_joined
+puts "-----  -----    -----     -----     -----     -----"
+puts "lsb_1_reg_a_b_c_joined"
+puts $lsb_1_reg_a_b_c_joined
 puts "--------------"
-
+puts "lsb_2_reg_a_b_c_joined"
+puts $lsb_2_reg_a_b_c_joined
+puts "--------------"
+puts "lsb_3_reg_a_b_c_joined"
+puts $lsb_3_reg_a_b_c_joined
+puts "--------------"
+puts "lsb_4_reg_a_b_c_joined"
+puts $lsb_4_reg_a_b_c_joined
+puts "-----  -----    -----     -----     -----     -----"
+puts "lsb_1_reg_d_l"
+puts $lsb_1_reg_d_l 
+puts "lsb_2_reg_d_l"
+puts $lsb_2_reg_d_l 
+puts "lsb_3_reg_d_l"
+puts $lsb_3_reg_d_l 
+puts "lsb_4_reg_d_l"
+puts $lsb_4_reg_d_l 
+puts "-----  -----    -----     -----     -----     -----"
+puts "msb_1_reg_d_l"
+puts $msb_1_reg_d_l 
+puts "msb_2_reg_d_l"
+puts $msb_2_reg_d_l 
+puts "msb_3_reg_d_l"
+puts $msb_3_reg_d_l 
+puts "msb_4_reg_d_l"
+puts $msb_4_reg_d_l 
 #---    ---      ---       ---       ---       ---
 set reg_0_4__a [make-reg_l "a" 0 [expr 0 + $lsb_bits]]
 set reg_0_4__b [make-reg_l "b" 0 [expr 0 + $lsb_bits]]
+set reg_0_4__c [make-reg_l "c" 0 [expr 0 + $lsb_bits]]
+set reg_0_4__d [make-reg_l "d" 0 [expr 0 + $lsb_bits]]
 set reg_0_4__a_b_joined [concat $reg_0_4__b $reg_0_4__a]
+set reg_0_4__a_b_c_joined [concat $reg_0_4__c $reg_0_4__a_b_joined]
+
 
 set reg_4_8__a [make-reg_l "a" $lsb_bits [expr $lsb_bits+4]]
 set reg_4_8__b [make-reg_l "b" $lsb_bits [expr $lsb_bits+4]]
+set reg_4_8__c [make-reg_l "c" $lsb_bits [expr $lsb_bits+4]]
+set reg_4_8__d [make-reg_l "d" $lsb_bits [expr $lsb_bits+4]]
 set reg_4_8__a_b_joined [concat $reg_4_8__b $reg_4_8__a]
+set reg_4_8__a_b_c_joined [concat $reg_4_8__c $reg_4_8__a_b_joined]
 
 set reg_8_12__a [make-reg_l "a" [expr $lsb_bits+4] [expr $lsb_bits+8]] 
 set reg_8_12__b [make-reg_l "b"  [expr $lsb_bits+4] [expr $lsb_bits+8]]
+set reg_8_12__c [make-reg_l "c"  [expr $lsb_bits+4] [expr $lsb_bits+8]]
+set reg_8_12__d [make-reg_l "d"  [expr $lsb_bits+4] [expr $lsb_bits+8]]
 set reg_8_12__a_b_joined [concat $reg_8_12__b $reg_8_12__a]
+set reg_8_12__a_b_c_joined [concat $reg_8_12__c $reg_8_12__a_b_joined]
 
 set reg_12_16__a [make-reg_l "a"  [expr $lsb_bits+8] [expr $lsb_bits+12]]
 set reg_12_16__b [make-reg_l "b" [expr $lsb_bits+8] [expr $lsb_bits+12]]
+set reg_12_16__c [make-reg_l "c" [expr $lsb_bits+8] [expr $lsb_bits+12]]
+set reg_12_16__d [make-reg_l "d" [expr $lsb_bits+8] [expr $lsb_bits+12]]
 set reg_12_16__a_b_joined [concat $reg_12_16__b $reg_12_16__a]
+set reg_12_16__a_b_c_joined [concat $reg_12_16__c $reg_12_16__a_b_joined]
 
 set reg_16_32__a [make-reg_l "a"  [expr $lsb_bits+12] [expr $lsb_bits+28]]
 set reg_16_32__b [make-reg_l "b" [expr $lsb_bits+12] [expr $lsb_bits+28]]
+set reg_16_32__c [make-reg_l "c" [expr $lsb_bits+12] [expr $lsb_bits+28]]
+set reg_16_32__d [make-reg_l "d" [expr $lsb_bits+12] [expr $lsb_bits+28]]
 set reg_16_32__a_b_joined [concat $reg_16_32__b $reg_16_32__a]
+set reg_16_32__a_b_c_joined [concat $reg_16_32__c $reg_16_32__a_b_joined]
 
-puts $reg_0_4__a_b_joined
-puts $reg_4_8__a_b_joined
-puts $reg_8_12__a_b_joined
-puts $reg_12_16__a_b_joined
-puts $reg_16_32__a_b_joined
+puts "-----  -----    -----     -----     -----     -----"
+puts $reg_0_4__a_b_c_joined
+puts $reg_4_8__a_b_c_joined
+puts $reg_8_12__a_b_c_joined
+puts $reg_16_32__a_b_c_joined
+puts $all_reg_d_l
 #---    ---      ---       ---       ---       ---
+puts "----------------------------------------------------"
+puts "----------------------------------------------------"
 
-set_max_delay $clk_period -from $all_reg_a_b_joined -to $all_reg_c_l 
+set_max_delay $clk_period -from $all_reg_a_b_c_joined -to $all_reg_d_l 
+
 #----------------------------------------------------
 #--- F: 1. enforcing total neg-slack
 #------ 2. enforcing priority
@@ -285,13 +334,13 @@ set_max_delay $clk_period -from $all_reg_a_b_joined -to $all_reg_c_l
 if {$apx_optimal == 1} {
     #--- F: decide which bits to prioritize 
     if {$apx_optimal_mode(first) == 1} {
-       set priority_array  $lsb_1_reg_a_b_joined 
+       set priority_array  $lsb_1_reg_a_b_c_joined 
     } elseif { $apx_optimal_mode(second) == 1} {
-       set priority_array  $lsb_2_reg_a_b_joined 
+       set priority_array  $lsb_2_reg_a_b_c_joined 
     } elseif { $apx_optimal_mode(third) == 1} {
-       set priority_array  $lsb_3_reg_a_b_joined 
+       set priority_array  $lsb_3_reg_a_b_c_joined 
     } elseif { $apx_optimal_mode(fourth) == 1} {
-       set priority_array  $lsb_4_reg_a_b_joined 
+       set priority_array  $lsb_4_reg_a_b_c_joined 
     }  
     
     foreach pt $all_reg_a_b_joined { 
@@ -316,17 +365,17 @@ if {$apx_optimal == 1} {
 if {$apx_optimal == 1} {
     if {$apx_optimal_mode(first) == 1} {
         puts "optimal first" 
-        set_max_delay $msb_1_max_delay -from $msb_1_reg_a_b_joined -to $msb_1_reg_c_l
+        set_max_delay $msb_1_max_delay -from $msb_1_reg_a_b_c_joined -to $msb_1_reg_d_l
     }
     if {$apx_optimal_mode(second) == 1} {
         puts "optimal second" 
-        set_max_delay $msb_2_max_delay -from $msb_2_reg_a_b_joined -to $msb_1_reg_c_l
+        set_max_delay $msb_2_max_delay -from $msb_2_reg_a_b_c_joined -to $msb_1_reg_d_l
     }
     if {$apx_optimal_mode(third) == 1} {
-        set_max_delay $msb_3_max_delay -from $msb_3_reg_a_b_joined -to $msb_3_reg_c_l
+        set_max_delay $msb_3_max_delay -from $msb_3_reg_a_b_c_joined -to $msb_3_reg_d_l
     }
     if {$apx_optimal_mode(fourth) == 1} {
-        set_max_delay $msb_4_max_delay -from $msb_4_reg_a_b_joined -to $msb_4_reg_c_l
+        set_max_delay $msb_4_max_delay -from $msb_4_reg_a_b_c_joined -to $msb_4_reg_d_l
     }
 }
 
@@ -350,9 +399,18 @@ if {$apx_optimal == 1} {
 #compile -power_effort high
 #compile_ultra
 #compile_ultra -timing_high_effort_script -incremental
-#set_dp_smartgen_options -all_options false -carry_select_adder_cell true
-compile_ultra -timing_high_effort_script 
-compile_ultra -timing_high_effort_script -incremental
+
+
+set_dp_smartgen_options -mult_radix4 true; #non_booth
+#set_dp_smartgen_options -mult_arch benc_radix8
+#set_dp_smartgen_options -mult_arch benc_radix8_mux
+#set_dp_smartgen_options -mult_arch benc_radix4
+#set_dp_smartgen_options -mult_arch benc_radix8
+#set_dp_smartgen_options -mult_arch nand_radix4
+#set_dp_smartgen_options -mult_arch and_radix4
+
+#compile_ultra -timing_high_effort_script 
+#compile_ultra -timing_high_effort_script -incremental
 #compile_ultra
 
 #read_saif -auto_map_names -input ~/behzad_local/verilog_files/apx_operators/int_ops_apx/DUT.saif -instance test_bench_tb/acc_adder_u -verbose 
@@ -361,15 +419,16 @@ compile_ultra -timing_high_effort_script -incremental
 #report_timing -sort_by slack -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 1 -max_paths 1 > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing.rpt
 
 #---    ---      ---       ---       ---       ---
-report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing_ref.rpt
-report_timing -path full -from $reg_0_4__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_4_8__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_8_12__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_12_16__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_16_32__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -sort_by slack -nworst 5000000 -max_paths 5000000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing_ref.rpt
+report_timing -path full -from $reg_0_4__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_4_8__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #---    ---      ---       ---       ---       ---
 
-#report_timing -path full -sort_by slack -from  $input_list -max_path 100 -nworst 2 >  ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing1.rpt
+
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_area.rpt
 report_power > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_power.rpt
 report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_constrain_violators.rpt
@@ -384,10 +443,10 @@ report_net
 #the following generates ddc files 
 set syn_name  ${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit
 
-write -format ddc -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.ddc
+#write -format ddc -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.ddc
 #the following generates the gatelevel netlist 
-write -f verilog -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.v
-write_sdc ${RESULTS_DIR}/${syn_name}_synthesized.sdc
+#write -f verilog -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.v
+#write_sdc ${RESULTS_DIR}/${syn_name}_synthesized.sdc
 write_sdf ${RESULTS_DIR}/${syn_name}_synthesized.mapped.sdf; #switching activity file
 
 

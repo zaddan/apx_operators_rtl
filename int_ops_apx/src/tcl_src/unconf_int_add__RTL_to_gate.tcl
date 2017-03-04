@@ -19,19 +19,20 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #---- Parameters
 #----------------------------------------------------
 #---- N: the following should be commented out if the tcl file is invoked by 
+#-----   a python function
 set DATA_PATH_WIDTH 32;
 set CLKGATED_BITWIDTH 4; #numebr of apx bits
-set clk_period 210;#.220;#.230;#.240
+set clk_period .57
 ##--- F: apximation
-set apx_optimal 1
+set apx_optimal 0
 set apx_optimal_mode(first) 1
 set apx_optimal_mode(second) 1
 set apx_optimal_mode(third)  1
 set apx_optimal_mode(fourth) 1
-set msb_1_max_delay .19;#.2;#.209;#.218
-set msb_2_max_delay .175;#.183;#.191 ;#.2
-set msb_3_max_delay .161;#.169;#.176 ;#.184
-set msb_4_max_delay .140;#.149;#.153 ;#.160
+set msb_1_max_delay .46;#.270 ideally
+set msb_2_max_delay .46 ;#.261 ideally
+set msb_3_max_delay .46 ;#.249 ideally
+set msb_4_max_delay .46 ;#.242 ideally
 #----------------------------------------------------
 set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
 
@@ -65,7 +66,7 @@ set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_o
 set REPORTS_DIR ${WDIR}/reports
 
 
-set DESIGN_NAME conf_int_add__noFF__arch_agnos
+set DESIGN_NAME unconfig_int_add
 #set DESIGN_NAME unconfig_int_add
 #set DESIGN_NAME unconfig_int_add
 
@@ -104,7 +105,7 @@ set compile_delete_unloaded_sequential_cells false
 set compile_seqmap_propagate_constants false
 set compile_enable_register_merging false
 set compile_seqmap_enable_output_inversion false
-set AC_NAME $DESIGN_NAME
+set AC_NAME unconfig_int_add
 
 #--- specifying libraries 
 define_design_lib WORK -path ./WORK
@@ -117,10 +118,9 @@ set verilogout_show_unconnected_pins "true"
 #set enable_keep_signal true
 #--- read the design 
 #analyze -format verilog [list  ${design_dir_addr}/ripple_carry_adder.v ${design_dir_addr}/unconfig_int_add.v ${design_dir_addr}/acc_int_add.v ]
-#analyze -format verilog [list  ${design_dir_addr}/unconfig_int_add.v]
-analyze -format verilog [list  ${design_dir_addr}/${DESIGN_NAME}.v]
+analyze -format verilog [list  ${design_dir_addr}/unconfig_int_add.v]
 elaborate $my_toplevel -parameters $OP_BITWIDTH,$DATA_PATH_WIDTH
-#${design_dir_addr}/ripple_carry_adder.v] ;# this one is for a simple unstructured example
+#analyze -format verilog [list  ${design_dir_addr}/unconfig_int_add__structure_preserved.v ${design_dir_addr}/ripple_carry_adder.v] ;# this one is for a simple unstructured example
 #elaborate $my_toplevel 
 
 check_design
@@ -146,6 +146,7 @@ set_input_delay -max 0 -clock clk [get_ports b*]
 set_input_delay -max 0 -clock clk [get_ports a*]     
 set_dont_touch_network [get_clocks clk]
 
+#----- the following line prevents DC to touch the following ports 
 #set_dont_touch_network [get_net o_temp_1]
 #set_dont_touch_network [get_ports a[0]]
 #set_dont_touch_network [get_ports a[1]]
@@ -246,35 +247,10 @@ puts "msb_4_reg_a_b_joined"
 puts $msb_4_reg_a_b_joined
 puts "--------------"
 
-#---    ---      ---       ---       ---       ---
-set reg_0_4__a [make-reg_l "a" 0 [expr 0 + $lsb_bits]]
-set reg_0_4__b [make-reg_l "b" 0 [expr 0 + $lsb_bits]]
-set reg_0_4__a_b_joined [concat $reg_0_4__b $reg_0_4__a]
 
-set reg_4_8__a [make-reg_l "a" $lsb_bits [expr $lsb_bits+4]]
-set reg_4_8__b [make-reg_l "b" $lsb_bits [expr $lsb_bits+4]]
-set reg_4_8__a_b_joined [concat $reg_4_8__b $reg_4_8__a]
-
-set reg_8_12__a [make-reg_l "a" [expr $lsb_bits+4] [expr $lsb_bits+8]] 
-set reg_8_12__b [make-reg_l "b"  [expr $lsb_bits+4] [expr $lsb_bits+8]]
-set reg_8_12__a_b_joined [concat $reg_8_12__b $reg_8_12__a]
-
-set reg_12_16__a [make-reg_l "a"  [expr $lsb_bits+8] [expr $lsb_bits+12]]
-set reg_12_16__b [make-reg_l "b" [expr $lsb_bits+8] [expr $lsb_bits+12]]
-set reg_12_16__a_b_joined [concat $reg_12_16__b $reg_12_16__a]
-
-set reg_16_32__a [make-reg_l "a"  [expr $lsb_bits+12] [expr $lsb_bits+28]]
-set reg_16_32__b [make-reg_l "b" [expr $lsb_bits+12] [expr $lsb_bits+28]]
-set reg_16_32__a_b_joined [concat $reg_16_32__b $reg_16_32__a]
-
-puts $reg_0_4__a_b_joined
-puts $reg_4_8__a_b_joined
-puts $reg_8_12__a_b_joined
-puts $reg_12_16__a_b_joined
-puts $reg_16_32__a_b_joined
-#---    ---      ---       ---       ---       ---
 
 set_max_delay $clk_period -from $all_reg_a_b_joined -to $all_reg_c_l 
+
 #----------------------------------------------------
 #--- F: 1. enforcing total neg-slack
 #------ 2. enforcing priority
@@ -350,7 +326,6 @@ if {$apx_optimal == 1} {
 #compile -power_effort high
 #compile_ultra
 #compile_ultra -timing_high_effort_script -incremental
-#set_dp_smartgen_options -all_options false -carry_select_adder_cell true
 compile_ultra -timing_high_effort_script 
 compile_ultra -timing_high_effort_script -incremental
 #compile_ultra
@@ -359,22 +334,12 @@ compile_ultra -timing_high_effort_script -incremental
 
 #--- analyze adn resolve design problems
 #report_timing -sort_by slack -input_pins -capacitance -transition_time -nets -significant_digits 4 -nosplit -nworst 1 -max_paths 1 > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing.rpt
-
-#---    ---      ---       ---       ---       ---
-report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing_ref.rpt
-report_timing -path full -from $reg_0_4__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_4_8__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_8_12__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_12_16__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_16_32__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-#---    ---      ---       ---       ---       ---
-
+report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #report_timing -path full -sort_by slack -from  $input_list -max_path 100 -nworst 2 >  ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing1.rpt
-report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_area.rpt
-report_power > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_power.rpt
-report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_constrain_violators.rpt
-report_cell > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_cells.rpt
-report_resources > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_resources.rpt
+report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_area.rpt
+report_power > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_power.rpt
+report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_constrain_violators.rpt
+
 report_net
 #report_qor > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_qor.rpt
 #report 
@@ -382,13 +347,11 @@ report_net
 
 #--- save the design
 #the following generates ddc files 
-set syn_name  ${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit
-
-write -format ddc -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.ddc
+write -format ddc -hierarchy -output ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.ddc 
 #the following generates the gatelevel netlist 
-write -f verilog -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.v
-write_sdc ${RESULTS_DIR}/${syn_name}_synthesized.sdc
-write_sdf ${RESULTS_DIR}/${syn_name}_synthesized.mapped.sdf; #switching activity file
+write -f verilog -hierarchy -output ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.v
+write_sdc ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.sdc; #constraint file
+write_sdf ${RESULTS_DIR}/${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_synthesized.mapped.sdf; #switching activity file
 
 
 remove_design -hierarchy
