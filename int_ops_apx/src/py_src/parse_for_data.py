@@ -55,7 +55,7 @@ def main():
     #--- F: Parameters 
     #---------------------------------------------------- 
     folder_addr = \
-    "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/minimal_multiply/1111/" 
+    "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/noFF_mac/arch_specific/benc_radix4_mux/1111/" 
     
     #---------------------------------------------------- 
     #--- F: Body
