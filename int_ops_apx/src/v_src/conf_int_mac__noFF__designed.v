@@ -1,6 +1,7 @@
 //*** F:DN this file contains a mac where the multipliaction is split up to                                                                          
 //   inorder to minimize tq-n
 module shift(in, out);
+parameter Pn = 8; //lowest precision requrested
 input [31:0]in;
 output [31:0]out;
 assign out = in<<(2*Pn);
@@ -12,7 +13,9 @@ module conf_int_mac__noFF__designed( clk, rst, a, b, c, apx__p, d
 //parameter BT_RND = 0
 parameter OP_BITWIDTH = 16; //operator bit width
 parameter DATA_PATH_BITWIDTH = 16; //flip flop Bit width
-parameter Pn = 12; //lowest precision requrested
+
+//**** F:AN you should update the Pn in shift module aswell
+parameter Pn = 8; //lowest precision requrested
 
 //--- input,outputs
 input clk;
