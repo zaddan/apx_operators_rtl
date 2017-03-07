@@ -22,16 +22,16 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #-----   a python function
 set DATA_PATH_WIDTH 32;
 set CLKGATED_BITWIDTH 4; #numebr of apx bits
-set clk_period .46;#.63;#.68;#.7
+set clk_period .61;#.63;#.68;#.7
 
-set apx_optimal 0
+set apx_optimal 1
 set apx_optimal_mode(first) 1
 set apx_optimal_mode(second) 1
 set apx_optimal_mode(third)  1
 set apx_optimal_mode(fourth) 0
 
-set msb_1_max_delay .64;#.57;#.61;#.62;
-set msb_2_max_delay .64;#.48;#.52;#.53;
+set msb_1_max_delay .55;#.57;#.61;#.62;
+set msb_2_max_delay .46;#.48;#.52;#.53;
 set msb_3_max_delay .41;#.45;#.45;#.46;
 set msb_4_max_delay 0;#0;#0;#.42 
 #----------------------------------------------------
@@ -73,7 +73,7 @@ set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_o
 set REPORTS_DIR ${WDIR}/reports
 
 
-set DESIGN_NAME conf_int_mac__noFF__arch_agnos
+set DESIGN_NAME conf_int_mac__noFF__designed
 #set DESIGN_NAME unconfig_int_add
 #set DESIGN_NAME unconfig_int_add
 
@@ -356,7 +356,8 @@ if {$apx_optimal == 1} {
         if {[lsearch -exact $priority_array $pt] >= 0} {
             group_path -name lsb -from $pt -critical_range 0.5 -priority 2 -weight 2
         } else {
-            group_path -name msb -from $pt -critical_range 0.5 -priority 5 -weight 5
+            group_path -name msb_gen -from $pt -critical_range 0.5 -priority 5 -weight 5
+            group_path -name msb_spec -from $pt -through U_shift -critical_range 0.5 -priority 5 -weight 5
         }
     }
 } else {
@@ -382,7 +383,7 @@ if {$apx_optimal == 1} {
         set_min_delay $msb_2_min_delay -from $msb_2_reg_a_b_c_joined -to $msb_2_reg_d_l
     }
     if {$apx_optimal_mode(third) == 1} {
-        set_max_delay $msb_3_max_delay -from $msb_3_reg_a_b_c_joined -to $msb_3_reg_d_l
+        set_max_delay $msb_3_max_delay -from $msb_3_reg_a_b_c_joined -to $msb_3_reg_d_l -through U_shift
         set_min_delay $msb_3_min_delay -from $msb_3_reg_a_b_c_joined -to $msb_3_reg_d_l
     }
 #     
@@ -415,8 +416,8 @@ if {$apx_optimal == 1} {
 #set_dp_smartgen_options -carry_select_adder_cell true
 compile_ultra -timing_high_effort_script 
 compile_ultra -timing_high_effort_script -incremental
-compile_ultra -timing_high_effort_script -incremental
-compile_ultra -timing_high_effort_script -incremental
+#compile_ultra -timing_high_effort_script -incremental
+#compile_ultra -timing_high_effort_script -incremental
 #compile_ultra
 
 #read_saif -auto_map_names -input ~/behzad_local/verilog_files/apx_operators/int_ops_apx/DUT.saif -instance test_bench_tb/acc_adder_u -verbose 
@@ -430,14 +431,25 @@ compile_ultra -timing_high_effort_script -incremental
 report_timing -path full -from $reg_0_4__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
 report_timing -path full -from $reg_4_8__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
 report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
+report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -exclude U_shift -sort_by slack -significant_digits 4 
+report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -exclude U_shift -sort_by slack -significant_digits 4 
 report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
 report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
+report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by group -significant_digits 4 
+report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by group -significant_digits 4 
+
+
+
 
 report_timing -path full -from $reg_0_4__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 report_timing -path full -from $reg_4_8__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -exclude U_shift -sort_by slack -significant_digits 4  >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -exclude U_shift -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by group -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by group -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #---    ---      ---       ---       ---       ---
 
 

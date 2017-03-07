@@ -26,12 +26,12 @@ apx_optimal_mode_l =['1111']
 
 #--- F: different modes of exploration
 #explore_clk = True #---- used for finding the best clock possible for certain # of bits
-explore_clk = False#--- when exploring the best clock for certain word length
+explore_clk = False #--- when exploring the best clock for certain word length
 global clk_value__possibly_best__l #found by setting clock to zero
-clk_value__possibly_best__l = [.12, .13, .14, .15]
-clk_explore__upper_bound_delta = .01; #*** F:D when added to #clk_value__possibly_best__l, it sets the
+clk_value__possibly_best__l = [.41]
+clk_explore__upper_bound_delta = .05; #*** F:D when added to #clk_value__possibly_best__l, it sets the
                                      #upper bound for clk
-clk_explore__step_size = .005  #*** F:D step size for exploring each value 
+clk_explore__step_size = .01  #*** F:D step size for exploring each value 
                              #        of clk_value__possibly_best__l
 
 
@@ -45,18 +45,18 @@ clk_explore__step_size = .005  #*** F:D step size for exploring each value
 #msb_max_delay_in_unison_l = [.120, .13, .140, .150, .160]
 #
 #----------------------------------------------------
-in_unison = False#--- if set, all the msb_?_max_delays are set to the same value
+in_unison = True #--- if set, all the msb_?_max_delays are set to the same value
 #msb_max_delay_in_unison_l = [.510, .505, .500, .495, .490, .480, .475,.470, \
 #        .465, .460, .455, .450, .445, .430, .400, .250, 200, 175, 100, 0]#, .45, .44, .43, .42, .41, .350, .340, .300,
 #       #.200, .150, 100, 50, 0]#, .45, .44]
-clk_period__l = [.45, .46, .50, .55, .6, .65, .70] #clock period (most likely the best possible or a little
-msb_max_delay_in_unison_l = [.30, .35, .37, .40, .42, .43, .44]
+clk_period__l = [.65]#, .46, .50, .55, .6, .65, .70] #clock period (most likely the best possible or a little
+msb_max_delay_in_unison_l = [.43] #, .35, .37, .40, .42, .43, .44]
 
 
 #bit loosened
 decided_delay__l = [.1,.2,.3,.4]
 
-explore_scenario_manual = True#if set to true, the following values are
+explore_scenario_manual = False #if set to true, the following values are
                                 #adopted  as knobs
 #knob__l = [[.5,.42, .41 , .41, .41], [.5, .42, .40, .40, .40], [.5, \
 #    .42,.39,.39,.39]]
@@ -64,7 +64,7 @@ knob__l = [[.5,.44, .43 , .43, .43]]
 
 global data_path_width__l
 #data_path_width__l = [16,20, 24,28]#,32]
-data_path_width__l = [32, 32, 32, 32]
+data_path_width__l = [32]
 #----------------------------------------------------
 #----------------------------------------------------
 
