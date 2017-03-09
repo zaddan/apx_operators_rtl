@@ -18,7 +18,7 @@ module test_bench_tb;
   parameter number_of_input_pairs = 500; 
   parameter OP_BITWIDTH = 32;
   parameter DATA_PATH_BITWIDTH = 32;
-  parameter Pn = 12;
+  parameter NAB = 12;
 
   parameter clk_period = 5;
   parameter half_clk_period = clk_period/2;
@@ -104,15 +104,13 @@ end
 
 
 //--- behvarioal
-conf_int_mac__noFF__wrapper#(OP_BITWIDTH, DATA_PATH_BITWIDTH, Pn) mac( 
+conf_int_mac__noFF__truncated#(OP_BITWIDTH, DATA_PATH_BITWIDTH, NAB) mac( 
     .clk(clk),
     .rst(rst),
     .a(input_a),
     .b(input_b),
     .c(input_c), 
     .d(d));
-
-
 
 endmodule
 

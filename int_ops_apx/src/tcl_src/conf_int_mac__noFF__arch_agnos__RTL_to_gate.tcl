@@ -24,15 +24,15 @@ set DATA_PATH_WIDTH 32;
 set CLKGATED_BITWIDTH 4; #numebr of apx bits
 set clk_period .46;#.63;#.68;#.7
 
-set apx_optimal 0
+set apx_optimal 1
 set apx_optimal_mode(first) 1
 set apx_optimal_mode(second) 1
 set apx_optimal_mode(third)  1
 set apx_optimal_mode(fourth) 0
 
-set msb_1_max_delay .64;#.57;#.61;#.62;
-set msb_2_max_delay .64;#.48;#.52;#.53;
-set msb_3_max_delay .41;#.45;#.45;#.46;
+set msb_1_max_delay .46;#.57;#.61;#.62;
+set msb_2_max_delay .46;#.48;#.52;#.53;
+set msb_3_max_delay .46;#.45;#.45;#.46;
 set msb_4_max_delay 0;#0;#0;#.42 
 #----------------------------------------------------
 set msb_1_min_delay 0;#.55;#.59;#.58
@@ -394,7 +394,6 @@ if {$apx_optimal == 1} {
 
 #group_path -name rst_reg_reg -from rst_reg_reg -priority 11
 
-
 #set_max_delay .26 -from rst_reg_reg 
 
 #foreach_in_collection endpt $inputpoints { set pin [get_object_name $endpt] 
@@ -438,12 +437,17 @@ report_timing -path full -from $reg_4_8__a_b_c_joined -to $all_reg_d_l -sort_by 
 report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+
+
 #---    ---      ---       ---       ---       ---
 
 
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_area.rpt
 report_power > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_power.rpt
 report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_constrain_violators.rpt
+#*** F:AN erase the next two lines
+report_path_group > ${REPORTS_DIR}/path_groups__garbage_collect.rpt
+report_constraint > ${REPORTS_DIR}/constraint__garbage_collect.rpt
 report_cell > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_cells.rpt
 report_resources > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_resources.rpt
 report_net

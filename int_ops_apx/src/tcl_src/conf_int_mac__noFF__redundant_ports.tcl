@@ -22,17 +22,17 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #-----   a python function
 set DATA_PATH_WIDTH 32;
 set CLKGATED_BITWIDTH 4; #numebr of apx bits
-set clk_period .63;#.63;#.68;#.7
+set clk_period .57;#.55;#.55;#.63;#.68;#.7
 
 set apx_optimal 1
 set apx_optimal_mode(first) 1
 set apx_optimal_mode(second) 1
-set apx_optimal_mode(third)  0
+set apx_optimal_mode(third)  1
 set apx_optimal_mode(fourth) 0
 
 set msb_1_max_delay .54;#.57;#.61;#.62;
-set msb_2_max_delay .42;#.48;#.52;#.53;
-set msb_3_max_delay .41;#.45;#.45;#.46;
+set msb_2_max_delay .48;#.48;#.52;#.53;
+set msb_3_max_delay .37;#.37;#.45;#.45;#.46;
 set msb_4_max_delay 0;#0;#0;#.42 
 #----------------------------------------------------
 set msb_1_min_delay 0;#.55;#.59;#.58
@@ -73,7 +73,7 @@ set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_o
 set REPORTS_DIR ${WDIR}/reports
 
 
-set DESIGN_NAME conf_int_mac__noFF__designed
+set DESIGN_NAME conf_int_mac__noFF__redundant_ports
 #set DESIGN_NAME unconfig_int_add
 #set DESIGN_NAME unconfig_int_add
 
@@ -221,6 +221,29 @@ set msb_3_reg_c_l [make-reg_l "c" [expr $lsb_bits + 8] $DATA_PATH_WIDTH]
 set msb_3_reg_d_l [make-reg_l "d" [expr 2 * [expr $lsb_bits + 8]] $DATA_PATH_WIDTH]
 set msb_3_reg_a_b_joined [concat $msb_3_reg_a_l $msb_3_reg_b_l]
 set msb_3_reg_a_b_c_joined [concat $msb_3_reg_a_b_joined $msb_3_reg_c_l]
+
+
+#set msb_3_reg_a_h_l [make-reg_l "a_h" [expr $lsb_bits + 8]  $DATA_PATH_WIDTH]
+#set msb_3_reg_b_h_l [make-reg_l "b_h" [expr $lsb_bits + 8] $DATA_PATH_WIDTH]
+#set msb_3_reg_c_h_l [make-reg_l "c_h" 24 $DATA_PATH_WIDTH]
+#set msb_3_reg_d_l [make-reg_l "d" [expr 2 * [expr $lsb_bits + 8]] $DATA_PATH_WIDTH]
+#set msb_3_reg_a_b_h_joined [concat $msb_3_reg_a_h_l $msb_3_reg_b_h_l]
+#set msb_3_reg_a_b_c_h_joined [concat $msb_3_reg_a_b_h_joined $msb_3_reg_c_h_l]
+set Pn 12
+set a_h_n_bits [expr 32 -  $Pn]]
+set b_h_n_bits [expr 32 -  $Pn]]
+set c_h_n_bits [expr 2 * $Pn]
+
+set msb_3_reg_a_h_l [make-reg_l "a_h" 0 $a_h_n_bits]
+set msb_3_reg_b_h_l [make-reg_l "b_h" 0 $b_h_n_bits]
+set msb_3_reg_c_h_l [make-reg_l "c" $c_h_n_bits $DATA_PATH_WIDTH]
+set msb_3_reg_d_l [make-reg_l "d" [expr 2 * [expr $lsb_bits + 8]] $DATA_PATH_WIDTH]
+set msb_3_reg_a_b_h_joined [concat $msb_3_reg_a_h_l $msb_3_reg_b_h_l]
+set msb_3_reg_a_b_c_h_joined [concat $msb_3_reg_a_b_h_joined $msb_3_reg_c_h_l]
+puts $msb_3_reg_a_b_c_h_joined
+
+
+
 #-----  -----    -----     -----     -----     -----
 set lsb_4_reg_a_l [make-reg_l "a" 0 [expr $lsb_bits + 12]]
 set lsb_4_reg_b_l [make-reg_l "b" 0 [expr $lsb_bits + 12]]
@@ -310,12 +333,32 @@ set reg_12_16__d [make-reg_l "d" [expr $lsb_bits+8] [expr $lsb_bits+12]]
 set reg_12_16__a_b_joined [concat $reg_12_16__b $reg_12_16__a]
 set reg_12_16__a_b_c_joined [concat $reg_12_16__c $reg_12_16__a_b_joined]
 
+
+#set reg_12_32__a_h [make-reg_l "a_h"  [expr $lsb_bits+8] 32]
+#set reg_12_32__b_h [make-reg_l "b_h" [expr $lsb_bits+8] 32]
+#set reg_12_32__c_h [make-reg_l "c_h" 24 32]
+#set reg_12_32__d [make-reg_l "d" [expr $lsb_bits+8] 32]
+#set reg_12_32__a_b_h_joined [concat $reg_12_32__b_h $reg_12_32__a_h]
+#set reg_12_32__a_b_c_h_joined [concat $reg_12_32__c_h $reg_12_32__a_b_h_joined]
+
+set reg_12_32__a_h [make-reg_l "a_h"  0 $a_h_n_bits]
+set reg_12_32__b_h [make-reg_l "b_h" 0 $b_h_n_bits]
+set reg_12_32__c_h [make-reg_l "c" $c_h_n_bits 32]
+set reg_12_32__d [make-reg_l "d" [expr $lsb_bits+8] 32]
+set reg_12_32__a_b_h_joined [concat $reg_12_32__b_h $reg_12_32__a_h]
+set reg_12_32__a_b_c_h_joined [concat $reg_12_32__c_h $reg_12_32__a_b_h_joined]
+puts $reg_12_32__a_b_c_h_joined
+
+
 set reg_16_32__a [make-reg_l "a"  [expr $lsb_bits+12] [expr $lsb_bits+28]]
 set reg_16_32__b [make-reg_l "b" [expr $lsb_bits+12] [expr $lsb_bits+28]]
 set reg_16_32__c [make-reg_l "c" [expr $lsb_bits+12] [expr $lsb_bits+28]]
 set reg_16_32__d [make-reg_l "d" [expr $lsb_bits+12] [expr $lsb_bits+28]]
 set reg_16_32__a_b_joined [concat $reg_16_32__b $reg_16_32__a]
 set reg_16_32__a_b_c_joined [concat $reg_16_32__c $reg_16_32__a_b_joined]
+
+
+
 
 puts "-----  -----    -----     -----     -----     -----"
 puts $reg_0_4__a_b_c_joined
@@ -348,14 +391,15 @@ if {$apx_optimal == 1} {
        set priority_array  $lsb_4_reg_a_b_c_joined 
     }  
     
+    #set priority_array  $lsb_3_reg_a_b_c_joined 
+
 
     foreach pt $all_reg_a_b_c_joined { 
         puts $pt   
         if {[lsearch -exact $priority_array $pt] >= 0} {
             group_path -name lsb -from $pt -critical_range 0.5 -priority 2 -weight 2
         } else {
-            group_path -name msb_gen -from $pt -critical_range 0.5 -priority 5 -weight 5
-            group_path -name msb_spec -from $pt -through U_shift -critical_range 0.5 -priority 5 -weight 5
+            group_path -name msb -from $pt -critical_range 0.5 -priority 5 -weight 5
         }
     }
 } else {
@@ -369,19 +413,27 @@ if {$apx_optimal == 1} {
 #-------- if no, don't have to change the CLKGATED_BITWIDTH
 #-------- just need to activate one the followings to impose priority (only the following 
 #-------- not the above if statement
+
+#puts $msb_3_reg_a_b_c_h_joined
+#puts $msb_1_reg_d_l
+#exit
+
 if {$apx_optimal == 1} {
     if {$apx_optimal_mode(first) == 1} {
         puts "optimal first" 
         set_max_delay $msb_1_max_delay -from $msb_1_reg_a_b_c_joined -to $msb_1_reg_d_l
+        #set_max_delay $msb_1_max_delay -from $msb_3_reg_a_b_c_h_joined -to $msb_1_reg_d_l
         set_min_delay $msb_1_min_delay -from $msb_1_reg_a_b_c_joined -to $msb_1_reg_d_l
     }
     if {$apx_optimal_mode(second) == 1} {
         puts "optimal second" 
-        set_max_delay $msb_2_max_delay -from $msb_2_reg_a_b_c_joined -to $msb_2_reg_d_l -through U_shift
+        set_max_delay $msb_2_max_delay -from $msb_2_reg_a_b_c_joined -to $msb_2_reg_d_l
         set_min_delay $msb_2_min_delay -from $msb_2_reg_a_b_c_joined -to $msb_2_reg_d_l
+        #set_max_delay $msb_2_max_delay -from $msb_3_reg_a_b_c_h_joined -to $msb_2_reg_d_l
     }
     if {$apx_optimal_mode(third) == 1} {
-        set_max_delay $msb_3_max_delay -from $msb_3_reg_a_b_c_joined -to $msb_3_reg_d_l -through U_shift
+        #set_max_delay $msb_3_max_delay -from $msb_3_reg_a_b_c_joined -to $msb_3_reg_d_l
+        set_max_delay $msb_3_max_delay -from $msb_3_reg_a_b_c_h_joined -to $msb_3_reg_d_l
         set_min_delay $msb_3_min_delay -from $msb_3_reg_a_b_c_joined -to $msb_3_reg_d_l
     }
 #     
@@ -393,7 +445,6 @@ if {$apx_optimal == 1} {
 
 #group_path -name rst_reg_reg -from rst_reg_reg -priority 11
 
-
 #set_max_delay .26 -from rst_reg_reg 
 
 #foreach_in_collection endpt $inputpoints { set pin [get_object_name $endpt] 
@@ -403,8 +454,6 @@ if {$apx_optimal == 1} {
 #}
 
 
-
-
 #--- compile (symthesize  to gate level and optimize design)
 #compile
 #compile -map_effort high -area_effort high -power_effort high 
@@ -412,9 +461,10 @@ if {$apx_optimal == 1} {
 #compile_ultra
 #compile_ultra -timing_high_effort_script -incremental
 #set_dp_smartgen_options -carry_select_adder_cell true
+set_flatten true -minimize multiple_output
 compile_ultra -timing_high_effort_script 
 compile_ultra -timing_high_effort_script -incremental
-#compile_ultra -timing_high_effort_script -incremental
+compile_ultra -timing_high_effort_script -incremental
 #compile_ultra -timing_high_effort_script -incremental
 #compile_ultra
 
@@ -428,35 +478,30 @@ compile_ultra -timing_high_effort_script -incremental
 #report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing_ref.rpt
 report_timing -path full -from $reg_0_4__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
 report_timing -path full -from $reg_4_8__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
-#report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
-report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by group -significant_digits 4 
-#report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -exclude U_shift -sort_by slack -significant_digits 4 
-#report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -exclude U_shift -sort_by slack -significant_digits 4 
-#report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -exclude U_shift -sort_by slack -significant_digits 4 
-#report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
-#report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
-report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by group -significant_digits 4 
-report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by group -significant_digits 4 
+report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
+report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
+report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
 
+
+report_timing -path full -from $reg_12_32__a_b_c_h_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 
 
 
 
 report_timing -path full -from $reg_0_4__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 report_timing -path full -from $reg_4_8__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-#report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by group -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-#report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -exclude U_shift -sort_by slack -significant_digits 4  >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-#report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -exclude U_shift -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-#report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-#report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by group -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by group -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+report_timing -path full -from $reg_12_32__a_b_c_h_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #---    ---      ---       ---       ---       ---
 
 
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_area.rpt
 report_power > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_power.rpt
 report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_constrain_violators.rpt
+#*** F:AN erase the next two lines
+report_path_group > ${REPORTS_DIR}/path_groups__garbage_collect.rpt
+report_constraint > ${REPORTS_DIR}/constraint__garbage_collect.rpt
 report_cell > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_cells.rpt
 report_resources > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_resources.rpt
 report_net
