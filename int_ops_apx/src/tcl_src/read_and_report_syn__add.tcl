@@ -310,17 +310,38 @@ set_input_delay -max 0 -clock clk [get_ports a*]
 set_dont_touch_network [get_clocks clk]
 
 #---    ---      ---       ---       ---       ---
-report_timing -path full -from $reg_0_4__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_4_8__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_8_12__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_12_16__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_16_32__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -from $reg_0_4__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -from $reg_4_8__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -from $reg_8_12__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -from $reg_12_16__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -from $reg_16_32__a_b_joined -to $all_reg_c_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+
 
 #report_timing -path full -sort_by slack -slack_greater_than "-.100" -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #set A_0_12 [make-reg_l "A" 0 14]
 #report_timing -path full -sort_by slack -through [get_nets $A_0_12 -hierarchical] >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #report_timing -from c -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #report_timing -to d -nworst 100 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -to d -nworst 100 -significant_digits 4 
+#report_timing -transition_time -nets -attributes -nosplit
+
+#set all_cells [get_cells]
+#puts $all_cells
+
+
+set timing_log [open "timing_log.txt" w]
+puts $timing_log "--- TCL'S PARAMETER INFO"
+close $timing_log
+foreach_in_collection my_el [get_cells] {
+    set cell_name [get_object_name $my_el] 
+#    #*** F:AN make sure you set the limit properly 
+    echo $cell_name >> "timing_log.txt"  
+    report_timing -through $cell_name/* -path end >> "timing_log.txt"
+}
+
+#report_timing -through U1 -transition_time
+#report_timing -through U2 -transition_time
+#report_timing -through U3 -transition_time
 #---    ---      ---       ---       ---       ---
 
 #report_timing -path full -sort_by slack -from  $input_list -max_path 100 -nworst 2 >  ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_timing1.rpt
@@ -329,7 +350,10 @@ report_power > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDT
 report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_constrain_violators.rpt
 report_cell > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_cells.rpt
 report_resources > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_resources.rpt
-report_net
+#report_net
+
+
+
 #report_qor > ${REPORTS_DIR}/int_${DESIGN_NAME}_${NAB}_qor.rpt
 #report 
 

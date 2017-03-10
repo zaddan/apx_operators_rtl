@@ -9,8 +9,15 @@ file_ptr_2 = open(base_folder_address + "/" + int_values_and_conversion, "w")
 file_ptr_1  = open(base_folder_address + "/" + int_values_file, "w")
 
 number_of_pairs = 50000
-for el in range(0,2*number_of_pairs):
-    int_to_be_converted = int(random.uniform(-10000, 1000))
+for idx, el in enumerate(range(0,2*number_of_pairs)):
+#    if float (idx - 2)%3 == 0:
+#        int_to_be_converted = int(random.uniform(16777216, 67108864))
+#    else: 
+#        int_to_be_converted = int(random.uniform(8096, 64000))
+    
+    
+    #int_to_be_converted = int(random.uniform(8096, 64000))
+    int_to_be_converted = int(random.uniform(0, 1073741824))
     #int_to_be_converted = 0
     #int_to_be_converted = int(math.sqrt((sys.maxsize/2)) - 1)
 #     int_converted_to_hex = (hex(struct.unpack('!i',struct.pack('!f',int_to_be_converted))[0])&0xffffffff) [0:]

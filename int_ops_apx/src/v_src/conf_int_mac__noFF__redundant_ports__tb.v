@@ -18,7 +18,7 @@ module test_bench_tb;
   parameter number_of_input_pairs = 500; 
   parameter OP_BITWIDTH = 32;
   parameter DATA_PATH_BITWIDTH = 32;
-  parameter Pn = 12;
+  parameter Pn = 4;
 
   parameter clk_period = 5;
   parameter half_clk_period = clk_period/2;

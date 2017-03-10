@@ -79,26 +79,32 @@ def run_tool_chain(design_name, clk_period, DATA_PATH_WIDTH, CLKGATED_BITWIDTH,
 #----------------------------------------------------
 def main():
     design_name = "conf_int_mac__noFF__general"
-    clk_period = .69;#.55;#.63;#.68;#.7
+    clk_period = .65;#.55;#.63;#.68;#.7
     DATA_PATH_WIDTH = 32
     CLKGATED_BITWIDTH = 4; #numebr of apx bits
     apx_optimal = 1
     lsb_bits = 3
-    slow_down = .5
-    #Pn = 24
-    
-    msb_max_delay__max = .46;#.57;#.61;#.62;
     msb_min_delay = 0;#.55;#.59;#.58
+    #Pn = 24
+    #msb_max_delay__upper_limit = .46;#.57;#.61;#.62;
+    #msb_max_delay__lower_limit__delta = .1
+    
+    slow_down = .5
+    #-----  -----    -----     -----     -----     -----
+    msb_max_delay__upper_limit = clk_period/(1+slow_down);#.57;#.61;#.62;
+    msb_max_delay__lower_limit = .36
     msb_max_delay__step_size = .01;#.57;#.61;#.62;
-    msb_max_delay__lower_limit__delta = .1
-    for precision__el in range(21, 31):
-        for msb_max_delay__el in pylab.frange(msb_max_delay__max - \
-                msb_max_delay__lower_limit__delta, \
-                msb_max_delay__max, msb_max_delay__step_size):
+    #-----  -----    -----     -----     -----     -----
+    precision_lower_limit = 25
+    precision_higher_limit = 28
+    
+    msb_max_delay__upper_limit  = float("{0:.2f}".format(msb_max_delay__upper_limit)) #up to 2
+    for precision__el in range(precision_lower_limit, precision_higher_limit):
+        for msb_max_delay__el in pylab.frange(msb_max_delay__lower_limit,\
+                msb_max_delay__upper_limit, msb_max_delay__step_size):
             run_tool_chain(design_name, clk_period, DATA_PATH_WIDTH, CLKGATED_BITWIDTH,
                     apx_optimal, lsb_bits, msb_max_delay__el, msb_min_delay,
                     precision__el, slow_down)
-    
 #----------------------------------------------------
 #--- F: Main
 #----------------------------------------------------

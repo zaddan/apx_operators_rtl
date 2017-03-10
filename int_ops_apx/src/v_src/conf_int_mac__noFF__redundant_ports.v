@@ -51,7 +51,7 @@ endmodule
 module conf_int_mac__noFF__wrapper(clk, rst, a, b, c, d);
 parameter OP_BITWIDTH = 16; //operator bit width
 parameter DATA_PATH_BITWIDTH = 16; //flip flop Bit width
-parameter Pn = 8; //lowest precision requrested
+parameter Pn = 4; //lowest precision requrested
 
 
 //--- input,outputs
@@ -68,12 +68,12 @@ conf_int_mac__noFF__redundant_ports  #(OP_BITWIDTH, DATA_PATH_BITWIDTH, Pn) mac(
     .rst(rst), .a_h(a[31:Pn]),.a(a), .b_h(b[31: Pn]), .b(b), .c_h(c[31: (2*Pn)]), .c(c), .d(d));
 
 
-
 //**** F:CN  only use the following when you want to verify the correctness
 //           of the synthesized redundant design (this is to ensure that
 //           a_h and b_h are used the way the upper bits are used in a mul-
 //           tipilcation
-//    conf_int_mac__noFF__redundant_ports_OP_BITWIDTH32_DATA_PATH_BITWIDTH32 mac(.clk(clk),
+//*** F:AN the name of the module might change so look inside the synthesized file    
+//conf_int_mac__noFF__redundant_ports_OP_BITWIDTH32_DATA_PATH_BITWIDTH32_Pn4 mac(.clk(clk),
 //        .rst(rst), .a_h(a[31:Pn]),.a(32'b0), .b_h(b[31: Pn]), .b(32'b0), .c_h(c[31: (2*Pn)]), .c(c), .d(d));
 
 /*** F:AN
@@ -81,6 +81,9 @@ conf_int_mac__noFF__redundant_ports  #(OP_BITWIDTH, DATA_PATH_BITWIDTH, Pn) mac(
   design. Obviously, you might want to change some of the files
 
 ncverilog -v /home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/verilog_files/*.v /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results/conf_int_mac__noFF__redundant_ports_32Bit_32Bit_synthesized.v  /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src/conf_int_mac__noFF__redundant_ports.v /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src/conf_int_mac__noFF__redundant_ports__tb.v +access+r |tee log 
+
+
+
 
     the result of above needs to be compared with:
     ncverilog -v /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src/conf_int_mac__noFF__truncated.v /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src/conf_int_mac__noFF__truncated__tb.v +access+r

@@ -20,20 +20,20 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #----------------------------------------------------
 #---- N: the following should be commented out if the tcl file is invoked by 
 #-----   a python function
-set DATA_PATH_WIDTH 32;
-set CLKGATED_BITWIDTH 4; #numebr of apx bits
-set clk_period .46;#.63;#.68;#.7
-
-set apx_optimal 1
-set apx_optimal_mode(first) 1
-set apx_optimal_mode(second) 1
-set apx_optimal_mode(third)  1
-set apx_optimal_mode(fourth) 0
-
-set msb_1_max_delay .46;#.57;#.61;#.62;
-set msb_2_max_delay .46;#.48;#.52;#.53;
-set msb_3_max_delay .46;#.45;#.45;#.46;
-set msb_4_max_delay 0;#0;#0;#.42 
+#set DATA_PATH_WIDTH 32;
+#set CLKGATED_BITWIDTH 4; #numebr of apx bits
+#set clk_period .46;#.63;#.68;#.7
+#
+#set apx_optimal 1
+#set apx_optimal_mode(first) 1
+#set apx_optimal_mode(second) 1
+#set apx_optimal_mode(third)  1
+#set apx_optimal_mode(fourth) 0
+#
+#set msb_1_max_delay .46;#.57;#.61;#.62;
+#set msb_2_max_delay .46;#.48;#.52;#.53;
+#set msb_3_max_delay .46;#.45;#.45;#.46;
+#set msb_4_max_delay 0;#0;#0;#.42 
 #----------------------------------------------------
 set msb_1_min_delay 0;#.55;#.59;#.58
 set msb_2_min_delay 0;#.46;#.50;#.48

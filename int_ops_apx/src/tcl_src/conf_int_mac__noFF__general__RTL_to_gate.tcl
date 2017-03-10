@@ -25,9 +25,9 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set clk_period .7;#.55;#.63;#.68;#.7
 #set apx_optimal 1
 #set lsb_bits 3
-#set msb_max_delay .65;#.57;#.61;#.62;
+#set msb_max_delay .48;#.57;#.61;#.62;
 #set msb_min_delay 0;#.55;#.59;#.58
-#set Pn 24
+#set Pn 28
 #----------------------------------------------------
 set apx_optimal_mode(first) 1
 set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
