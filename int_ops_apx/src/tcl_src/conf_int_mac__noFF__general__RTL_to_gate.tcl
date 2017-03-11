@@ -1,3 +1,6 @@
+#*** F:DN this module allows us to only constrain some bits and up (but only
+#         one set, as opposed to multiple sets)
+
 #set WDIR /home/unga/sglee/Share/ac_hw_syn
 proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
     set reg_l {}

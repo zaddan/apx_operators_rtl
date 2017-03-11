@@ -19,7 +19,6 @@ set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operato
 #----------------------------------------------------
 #---- Parameters
 #----------------------------------------------------
-
 set DESIGN_NAME conf_int_mac__noFF__arch_agnos_OP_BITWIDTH32_DATA_PATH_BITWIDTH32
 set synth__file ${design_dir_addr}/conf_int_mac__noFF__arch_agnos_32Bit_32Bit_synthesized.v;#the synthesized verilog file
 set DATA_PATH_WIDTH 32;
