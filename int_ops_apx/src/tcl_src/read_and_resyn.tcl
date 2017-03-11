@@ -25,15 +25,15 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #----------------------------------------------------
 #---- N: the following should be commented out if the tcl file is invoked by 
 #-----   a python function
-set DATA_PATH_WIDTH 32;
-set CLKGATED_BITWIDTH 4; #numebr of apx bits
-set clk_period .61;#.63;#.68;#.7
-set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32_2
-set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_32Bit_32Bit__only_clk_cons_synthesized.v 
-set transition_cells__base_addr  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src"
-set transitioning_cells__log__na "transitioning_cells.txt"
-set Pn 28
-set acc_max_delay .43
+#set DATA_PATH_WIDTH 32;
+#set CLKGATED_BITWIDTH 4; #numebr of apx bits
+#set clk_period .61;#.63;#.68;#.7
+#set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32_3
+#set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_32Bit_32Bit__only_clk_cons_synthesized.v 
+#set transition_cells__base_addr  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src"
+#set transitioning_cells__log__na "transitioning_cells.txt"
+#set Pn 28
+#set acc_max_delay .43
 ##----------------------------------------------------
 set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
 puts $clk_period

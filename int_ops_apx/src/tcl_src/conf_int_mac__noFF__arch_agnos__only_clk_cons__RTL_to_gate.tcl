@@ -73,6 +73,7 @@ group_path -name clk -from clk
 
 
 #*** F:DN compile
+set_dp_smartgen_options -mult_arch nand_radix4
 compile_ultra -timing_high_effort_script -no_autoungroup 
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup

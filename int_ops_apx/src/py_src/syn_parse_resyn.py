@@ -312,7 +312,7 @@ def find_transitioning_cells(timing_per_cell__log__addr,\
 def set_const_for_transition_cells_and_resyn_and_time(syn__file__na,\
             wrapper_module__na, transition_cells__base_addr,
             transitioning_cells__log__na, precision, clk_period, \
-            DATA_PATH_WIDTH, CLKGATED_BITWIDTH):
+            DATA_PATH_WIDTH, CLKGATED_BITWIDTH, acc_max_delay):
     
     #*** F:DN variabes 
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
@@ -322,9 +322,10 @@ def set_const_for_transition_cells_and_resyn_and_time(syn__file__na,\
             "set synth_file__na " + syn__file__na  + ";" + \
             "set transition_cells__base_addr  " +  transition_cells__base_addr+ ";" \
             "set transitioning_cells__log__na " +  transitioning_cells__log__na + " ;" \
-            "set Pn " + precision + ";"
+            "set Pn " + str(precision) + ";" + \
+            "set acc_max_delay " + str(acc_max_delay)+ ";" 
 
-    output_file__na = "read_and_resyn__log.txt"
+    read_and_resyn__log = "read_and_resyn__log.txt"
     
     
     #----------------------------------------------------
@@ -369,7 +370,7 @@ def main():
     module__na = "conf_int_mac__noFF__arch_agnos_OP_BITWIDTH32_DATA_PATH_BITWIDTH32"
     syn__file__na = "conf_int_mac__noFF__arch_agnos__w_wrapper_32Bit_32Bit__only_clk_cons_synthesized.v"
     wrapper_module__na = \
-    "conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32_2" # this the wrapper
+    "conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32_3" # this the wrapper
 
 
     #---------------------------------------------------- 
@@ -390,24 +391,25 @@ def main():
 #    synth_design_with_only_clk_constraint(design_name, clk_period, \
 #        DATA_PATH_WIDTH, CLKGATED_BITWIDTH)
 #    hardwire_apx_bits_to_zero(syn__file__addr, module__na, DATA_PATH_WIDTH, precision);
-    
-    #*** F:DN find cells responsible for the none_apx part of the result
+#    
+#    #*** F:DN find cells responsible for the none_apx part of the result
 #    find_delay_through_each_cell(timing_per_cell__log__addr, syn__file__na, wrapper_module__na, \
 #            clk_period, DATA_PATH_WIDTH, CLKGATED_BITWIDTH, precision);
 #    find_transitioning_cells(timing_per_cell__log__addr,\
 #            transitioning_cells__log__addr, none_transitioning_cells__log__addr)
-#
-#    
-    #*** F:DN returning the synthesized file to it's original (un hardwired) 
+##
+##    
+#    #*** F:DN returning the synthesized file to it's original (un hardwired) 
 #    os.system("cp  " + syn__file__addr +"_temp" + " " + syn__file__addr) 
     
     #*** F:DN resynthesize the design while constraining the paths that goes
     #         through the cells responsible for the none_apx part of the result
-#    clk_period = .63 
-#    set_const_for_transition_cells_and_resyn_and_time(syn__file__na,\
-#            wrapper_module__na, transition_cells__base_addr,\
-#            transitioning_cells__log__na, precision, clk_period, \
-#            DATA_PATH_WIDTH, CLKGATED_BITWIDTH)
+    clk_period = .61 
+    acc_max_delay = .43 
+    set_const_for_transition_cells_and_resyn_and_time(syn__file__na,\
+            wrapper_module__na, transition_cells__base_addr,\
+            transitioning_cells__log__na, precision, clk_period, \
+            DATA_PATH_WIDTH, CLKGATED_BITWIDTH, acc_max_delay)
     
         
     """
