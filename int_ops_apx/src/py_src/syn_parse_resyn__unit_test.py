@@ -200,8 +200,8 @@ def main():
     #---------------------------------------------------- 
     design_name = "conf_int_mac__noFF__arch_agnos"
     #clk_period = .46; #*** F:AN use the value in the for loop
-    clk__upper_limit = .7
-    clk__lower_limit = .46
+    clk__upper_limit = .69
+    clk__lower_limit = .69
     clk_values__c = 5    #*** F:DN this value determines how many clk values
                           #         you want to have in an equidistance fashion
                           #         between the upper and lower limits
@@ -216,14 +216,14 @@ def main():
     #acc_max_delay__lower_limit__delta = .1
     slow_down = .5
     #-----  -----    -----     -----     -----     -----
-    acc_max_delay__lower_limit = .36
+    acc_max_delay__lower_limit = .55
     #acc_max_delay__upper_limit = clk_period/(1+slow_down); #*** F:DN use for loop
     acc_max_delay__c = 10
     #acc_max_delay__step_size = .01; #*** F:DN use the for loop
     #-----  -----    -----     -----     -----     -----
-    precision__lower_limit = 24
-    precision__higher_limit = 31
-    precision__step_size = 2 
+    precision__lower_limit = 28
+    precision__higher_limit = 29
+    precision__step_size = 1
     #acc_max_delay__upper_limit  = float("{0:.2f}".format(acc_max_delay__upper_limit)) #up to 2
     #precision = 28 ;#*** F:AN instead use the for loop
     #.................................................... 
@@ -237,7 +237,8 @@ def main():
     #---------------------------------------------------- 
     #*** F:DN Variables
     #---------------------------------------------------- 
-    clk__step_size = (clk__upper_limit - clk__lower_limit)/clk_values__c
+    #clk__step_size = (clk__upper_limit - clk__lower_limit)/clk_values__c
+    clk__step_size = .01
     clk__step_size =  float("{0:.2f}".format(clk__step_size)) #up to 2
     base__dir = "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
     syn__file__addr = base__dir + "/" + syn__file__na
@@ -258,9 +259,10 @@ def main():
         #---------------------------------------------------- 
         #****F: DN variables 
         clk_period = clk__el 
-        acc_max_delay__upper_limit = clk_period
-        acc_max_delay__step_size = (acc_max_delay__upper_limit - \
-                acc_max_delay__lower_limit)/acc_max_delay__c
+        acc_max_delay__upper_limit = .55
+#        acc_max_delay__step_size = (acc_max_delay__upper_limit - \
+#                acc_max_delay__lower_limit)/acc_max_delay__c
+        acc_max_delay__step_size = .01
         acc_max_delay__step_size = \
                 float("{0:.2f}".format(acc_max_delay__step_size)) #up to 2
         #----------------------------------------------------

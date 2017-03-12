@@ -35,6 +35,8 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set Pn 28
 #set acc_max_delay .43
 ##----------------------------------------------------
+set op_type mac;# change this to add when doing add, it is used in the 
+                # the log file name and inside the log file for identification
 set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
 puts $clk_period
 
@@ -66,8 +68,13 @@ set search_path [concat  $search_path $lib_dir_3]
 set  std_library  "noAging.db" 
 set target_library $std_library; #$std_library_2" 
 set link_library $std_library; #$std_library_2"
-define_design_lib WORK -path ./WORK
+#...   ...    ..  ...  ..    ..    ...      ..
+#*** F:AN deleting is necessary otherwise the synthesized design might be renamed
+#         which results in problems while reading it (the synth design)
+file delete -force WORK_1 ;#deleting so I won't have to deal with renaming
+define_design_lib WORK -path ./WORK_1
 set verilogout_show_unconnected_pins "true"
+
 
 #*** F:DN lumping registers (wires) together
 #*** F:AN this is highly specific to the module (possibly changes wht add)
@@ -135,7 +142,24 @@ set compile_seqmap_propagate_constants false
 set compile_enable_register_merging false
 set compile_seqmap_enable_output_inversion false
 set AC_NAME $DESIGN_NAME
-#...   ...    ..  ...  ..    ..    ...      ..
+
+#----------------------------------------------------
+#**** F:DN collect data before increasing pressure(time wise) on the design
+#----------------------------------------------------
+set all_data__file__na ${op_type}_${DATA_PATH_WIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__log.txt
+set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
+echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN before putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F: after putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#----------------------------------------------------
+
+
 set_max_delay $acc_max_delay -to [all_outputs]
 set priority_array  $acc_reg_a_b_c_joined 
 foreach pt $all_input__pt { 
@@ -145,18 +169,18 @@ foreach pt $all_input__pt {
         group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
     }
 }
-ungroup -all -flatten
+#ungroup -all -flatten
+
 
 #set_max_delay $acc_max_delay -through $transition_cells__l -to $acc_reg_d_l
 #set_max_delay $clk_period -through $non_transition_cells__l -to $acc_reg_d_l
 set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
 
-#*** F:DN from here
 
 #*** F:DN compile
-#compile_ultra -timing_high_effort_script -no_autoungroup 
-#compile_ultra -timing_high_effort_script -incremental -no_autoungroup
-#compile_ultra -timing_high_effort_script -incremental -no_autoungroup
+compile_ultra -timing_high_effort_script -no_autoungroup 
+compile_ultra -timing_high_effort_script -incremental -no_autoungroup
+compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 #compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 #read_saif -auto_map_names -input ~/behzad_local/verilog_files/apx_operators/int_ops_apx/DUT.saif -instance test_bench_tb/acc_adder_u -verbose 
 
@@ -168,10 +192,11 @@ report_timing -sort_by group -significant_digits 4 >  ${REPORTS_DIR}/${report_fi
 echo "now through and exclude" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 echo "*** transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-
+#...   ...    ..  ...  ..    ..    ...      ..
 echo "*** non transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-report_timing -sort_by slack -exclude $transition_cells__l -nworst 30000 -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-
+#report_timing -sort_by slack -exclude $transition_cells__l -nworst 30000 -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+report_timing -sort_by slack -from a[0] -to [all_outputs] >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+#....................................................
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${report_file__prefix}__area.rpt
 report_power > ${REPORTS_DIR}/${report_file__prefix}__power.rpt
 report_constraint -all_violators > ${REPORTS_DIR}/${report_file__prefix}__constraint_violators.rpt
@@ -180,6 +205,18 @@ report_constraint -all_violators > ${REPORTS_DIR}/${report_file__prefix}__constr
 report_cell > ${REPORTS_DIR}/${report_file__prefix}__cells.rpt
 report_resources > ${REPORTS_DIR}/${report_file__prefix}__resources.rpt
 report_net
+#....................................................
+#*** F:DN dumping the result in one log file
+#set all_data__file__na ${op_type}_${DATA_PATH_WIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__log.txt
+echo $all_data__file__na >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN transitional cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
+                                             #all paths meet the clk
+echo "*** F:DN all cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 
 
 #*** F:DN save the design

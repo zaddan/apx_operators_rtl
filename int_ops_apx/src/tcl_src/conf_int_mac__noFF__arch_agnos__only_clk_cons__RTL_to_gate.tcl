@@ -17,6 +17,7 @@
 set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
 puts $clk_period
 
+
 #----------------------------------------------------
 #*** F:DN Variables
 #----------------------------------------------------
@@ -43,7 +44,11 @@ set search_path [concat  $search_path $lib_dir_3]
 set  std_library  "noAging.db" 
 set target_library $std_library; #$std_library_2" 
 set link_library $std_library; #$std_library_2"
-define_design_lib WORK -path ./WORK
+#...   ...    ..  ...  ..    ..    ...      ..
+#*** F:AN deleting is necessary otherwise the synthesized design might be renamed
+#         which results in problems while reading it (the synth design)
+file delete -force WORK_1 ;#deleting so I won't have to deal with renaming
+define_design_lib WORK -path ./WORK_1
 set verilogout_show_unconnected_pins "true"
 
 
@@ -60,8 +65,11 @@ set_ideal_network -no_propagate [get_ports clk]
 set_input_delay -max 0 -clock clk [get_ports b*]     
 set_input_delay -max 0 -clock clk [get_ports a*]     
 set_dont_touch_network [get_clocks clk]
+
+#set hdlin_keep_signal_name user
 #set enable_keep_signal_dt_net true
 #set enable_keep_signal true
+
 set compile_delete_unloaded_sequential_cells false
 set compile_seqmap_propagate_constants false
 set compile_enable_register_merging false
@@ -73,7 +81,7 @@ group_path -name clk -from clk
 
 
 #*** F:DN compile
-set_dp_smartgen_options -mult_arch nand_radix4
+set_dp_smartgen_options -mult_arch nand
 compile_ultra -timing_high_effort_script -no_autoungroup 
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
@@ -90,7 +98,7 @@ report_constraint -all_violators > ${REPORTS_DIR}/${report_file__prefix}__constr
 #report_path_group > ${REPORTS_DIR}/path_groups__garbage_collect.rpt
 #report_constraint > ${REPORTS_DIR}/constraint__garbage_collect.rpt
 report_cell > ${REPORTS_DIR}/${report_file__prefix}__cells.rpt
-report_resources > ${REPORTS_DIR}/${report_file__prefix}__resources.rpt
+report_resources -hierarchy > ${REPORTS_DIR}/${report_file__prefix}__resources.rpt
 report_net
 
 
