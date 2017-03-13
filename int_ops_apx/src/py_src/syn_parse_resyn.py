@@ -299,8 +299,8 @@ def main():
     transitioning_cells__log__na = "transitioning_cells.txt"
     none_transitioning_cells__log__na = "none_transitioning_cells.txt"
     timing_per_cell__log__addr = timing_per_cell__log__na
-    transitioning_cells__log__addr = transitioning_cells__log__na
-    none_transitioning_cells__log__addr = none_transitioning_cells__log__na
+    #transitioning_cells__log__addr = transitioning_cells__log__na
+    #none_transitioning_cells__log__addr = none_transitioning_cells__log__na
 
 
     #---------------------------------------------------- 
@@ -317,38 +317,53 @@ def main():
                 float("{0:.3f}".format(acc_max_delay__step_size)) #up to 2
         
         #*** F:DN synthesize the design with clk constraint
-        synth_design_with_only_clk_constraint(design_name, clk_period, \
-                DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH)
+#        synth_design_with_only_clk_constraint(design_name, clk_period, \
+#                DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH)
+#        
         for precision in range(precision__lower_limit, precision__higher_limit,\
                 precision__step_size):
             #*** F:DN hardwire to zero 
-            grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
-                    none_transitioning_cells__log__addr, transitioning_cells__log__addr,\
-                    syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
-                    CLKGATED_BITWIDTH, precision)
+#            grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
+#                    none_transitioning_cells__log__na,\
+#                    transitioning_cells__log__na,\
+#                    syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
+#                    CLKGATED_BITWIDTH, precision)
             #*** F:DN resynthesize the design while constraining the paths that goes
             #         through the cells responsible for the none_apx part of the result
             #acc_max_delay__step_size = .01 
+            counter = 0 
             for acc_max_delay__el in pylab.frange(acc_max_delay__lower_limit, \
                     acc_max_delay__upper_limit, acc_max_delay__step_size):
                 #acc_max_delay = .42
                 acc_max_delay = acc_max_delay__el
-                read_and_cons_transitional_cells_and_resyn(syn__file__na,\
-                        syn__wrapper_module__na, transition_cells__base_addr,\
-                        transitioning_cells__log__na, precision, clk_period, \
+                if (counter >= 1): 
+#                    read_and_cons_transitional_cells_and_resyn(syn__file__na,\
+#                            syn__wrapper_module__na, transition_cells__base_addr,\
+#                            transitioning_cells__log__na, precision, clk_period, \
+#                            DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay)
+                    #*** F:DN hardwire to zero 
+                    syn__file__na = syn__wrapper_module__na +"__only_clk_cons_resynthesized.v" # this the wrapper
+                    syn__file__addr = base__dir + "/" + syn__file__na
+                    transitioning_cells__log__na = "transitioning_cells_after_syn.txt"
+                    none_transitioning_cells__log__na = "none_transitioning_cells_after_syn.txt"
+                    grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
+                            none_transitioning_cells__log__na,\
+                            transitioning_cells__log__na,\
+                            syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
+                            CLKGATED_BITWIDTH, precision)
+                    sys.exit() 
+                    read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
+                            syn__wrapper_module__na, transition_cells__base_addr,\
+                            transitioning_cells__log__na, precision, clk_period, \
                         DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay)
-                
-                #*** F:DN hardwire to zero 
-                syn__file__na = syn__wrapper_module__na +"__only_clk_cons_resynthesized.v" # this the wrapper
+                    sys.exit()
+                #*** F:DN returning files to original 
+                counter +=1 
+                transitioning_cells__log__na = "transitioning_cells.txt"
+                none_transitioning_cells__log__na = "none_transitioning_cell.txt"
+                syn__file__na = syn__wrapper_module__na +"__only_clk_cons_synthesized.v" # this the wrapper
                 syn__file__addr = base__dir + "/" + syn__file__na
-                grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
-                        none_transitioning_cells__log__addr, transitioning_cells__log__addr,\
-                        syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
-                        CLKGATED_BITWIDTH, precision)
-                read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
-                        syn__wrapper_module__na, transition_cells__base_addr,\
-                        transitioning_cells__log__na, precision, clk_period, \
-                        DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay)
+
     """
     for precision__el in range(precision_lower_limit, precision_higher_limit):
         for acc_max_delay__el in pylab.frange(acc_max_delay__lower_limit,\
