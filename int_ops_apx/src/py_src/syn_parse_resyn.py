@@ -10,8 +10,8 @@ import pylab
 #----------------------------------------------------
 #*** F:DN reponsible for syntheszing the design of interest with the clk of 
 #          interest. The only constraint (on all paths) is the clk itself
-def synth_design_with_only_clk_constraint(design_name, syn__file__addr, clk_period, \
-        DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH):
+def synth_design_with_only_clk_constraint(wrapper_module__na, syn__file__addr, clk_period, \
+        DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, base_to_dump_reports__dir):
     
     #----------------------------------------------------
     #--- F:DN Variables
@@ -19,21 +19,21 @@ def synth_design_with_only_clk_constraint(design_name, syn__file__addr, clk_peri
     tcl_parametrs = "set clk_period " + str(clk_period) + ";set DATA_PATH_BITWIDTH \
             "+str(DATA_PATH_BITWIDTH) + ";set CLKGATED_BITWIDTH "
     
-    synthesis__output__file__na = design_name + "_" + \
+    synthesis__output__file__na = base_to_dump_reports__dir +\
+            "/"+wrapper_module__na+ "_" + \
             str(clk_period) + "_"+ \
             str(DATA_PATH_BITWIDTH) +"_"+ \
             str(CLKGATED_BITWIDTH) + \
             "__only_clk_contraint__synth_log.txt"
     only_clk_cons_syn__log__addr = "only_clk_cons_syn__log.txt"
-    
 
     #----------------------------------------------------
     #--- F:DN Body (running tcl file and archiving)
     #----------------------------------------------------
     setup_info =  "clk:"+str(clk_period) +"\n"
     setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
-    os.system("echo " + setup_info + " > " + synthesis__output__file__na)
-    tcl_file_name =  design_name+"__only_clk_cons__RTL_to_gate.tcl"
+    os.system("echo \" " + setup_info + " \" > " + synthesis__output__file__na)
+    tcl_file_name =  wrapper_module__na+"__only_clk_cons__RTL_to_gate.tcl"
     os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
             ../tcl_src/"+tcl_file_name +" >> " + synthesis__output__file__na)
     os.system("echo starting dot_v file  >> " + synthesis__output__file__na)
@@ -124,7 +124,8 @@ def hardwire_apx_bits_to_zero(sourceFileAddr, wrapper_module__na, module_name, D
 #          part of the result (this is b/c the paths that don't transition
 #          generat a "no path" signal in the timing report
 def find_delay_through_each_cell(timing_per_cell__log__addr, syn__file__na, syn__wrapper_module__na, \
-        clk_period, DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, precision):
+        clk_period, DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, precision,
+        base_to_dump_reports__dir):
     
     #*** F:DN Parameters 
     tcl_file__na =  "../tcl_src/find_delay_through_each_cell.tcl"
@@ -137,9 +138,17 @@ def find_delay_through_each_cell(timing_per_cell__log__addr, syn__file__na, syn_
             "set synth_file__na " + syn__file__na + ";" + \
             "set output__timing__log__na " + timing_per_cell__log__addr + ";"
     
+    output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
+            str(clk_period) + "_"+ \
+            str(DATA_PATH_BITWIDTH) +"_"+ \
+            "__only_clk_contraint__find_delay_through_each_cell__log.txt"
+    
+    setup_info =  "clk:"+str(clk_period) +"\n"
+    setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
+    os.system("echo \" " + setup_info + " \" > " + output__file__na)
     os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
-            ../tcl_src/"+tcl_file__na +" >" + \
-            "find_delay_through_each_cell__log.txt") 
+            ../tcl_src/"+tcl_file__na +" >>" + \
+            output__file__na)
 
 
 #*** F:DN same as the name 
@@ -197,7 +206,8 @@ def find_transitioning_cells(timing_per_cell__log__addr,\
 def read_and_cons_transitional_cells_and_resyn(syn__file__na,\
             syn__wrapper_module__na, transition_cells__base_addr,
             transitioning_cells__log__na, precision, clk_period, \
-            DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay):
+            DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
+            base_to_dump_reports__dir, base_to_dump_results__dir):
     
     #*** F:DN variabes 
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
@@ -210,22 +220,35 @@ def read_and_cons_transitional_cells_and_resyn(syn__file__na,\
             "set Pn " + str(precision) + ";" + \
             "set acc_max_delay " + str(acc_max_delay)+ ";" 
 
-    read_and_resyn__log = "read_and_cons_transitional_cells_and_resyn__log.txt"
-    
+    output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
+            str(clk_period) + "_"+ \
+            str(DATA_PATH_BITWIDTH) +"_"+ \
+            str(acc_max_delay)+"_"+\
+            "__read_cons_and_resyn__log.txt"
+    tcl_file_name =  "read_and_cons_transitional_cells_and_resyn.tcl"
     
     #----------------------------------------------------
     #--- F: Body
     #----------------------------------------------------
-    tcl_file_name =  "read_and_cons_transitional_cells_and_resyn.tcl"
-    os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
-            ../tcl_src/"+tcl_file_name +" >" + read_and_resyn__log)
+    setup_info =  "clk:"+str(clk_period) +"\n"
+    setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
+    setup_info +=  "precision:"+str(precision) +"\n"
+    setup_info +=  "acc_max_delay:"+str(acc_max_delay) +"\n"
+    os.system("echo \" " + setup_info + " \" > " + output__file__na)
+#    os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
+#            ../tcl_src/"+tcl_file_name +" >>" + output__file__na)
+    resyn__file__na = syn__wrapper_module__na +"__only_clk_cons_resynthesized.v" # this the wrapper
+    resyn__file__addr = base_to_dump_results__dir + "/" + resyn__file__na 
+    os.system("echo starting dot_v file  >> " + output__file__na)
+    os.system("cat  " + resyn__file__addr + "  >> " + output__file__na)
 
 
 #*** F:DN const transitonal cells and report time
 def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
             syn__wrapper_module__na, transition_cells__base_addr,
             transitioning_cells__log__na, precision, clk_period, \
-            DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay):
+            DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
+            base_to_dump_reports__dir):
     
     #*** F:DN variabes 
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
@@ -237,23 +260,31 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
             "set transitioning_cells__log__na " +  transitioning_cells__log__na + " ;" \
             "set Pn " + str(precision) + ";" + \
             "set acc_max_delay " + str(acc_max_delay)+ ";" 
-
-    read_and_resyn__log = "read_and_cons_transitional_cells_and_report_timing__log.txt"
+    output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
+            str(clk_period) + "_"+ \
+            str(DATA_PATH_BITWIDTH) +"_"+ \
+            str(acc_max_delay)+"_"+\
+            "__read_cons_and_report_t__log.txt"
+    tcl_file_name =  "read_and_cons_transitional_cells_and_report_timing.tcl"
     
     
     #----------------------------------------------------
     #--- F: Body
     #----------------------------------------------------
-    tcl_file_name =  "read_and_cons_transitional_cells_and_report_timing.tcl"
+    setup_info =  "clk:"+str(clk_period) +"\n"
+    setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
+    setup_info +=  "precision:"+str(precision) +"\n"
+    setup_info +=  "acc_max_delay:"+str(acc_max_delay) +"\n"
+    os.system("echo \" " + setup_info + " \" > " + output__file__na)
     os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
-            ../tcl_src/"+tcl_file_name +" >" + read_and_resyn__log)
+            ../tcl_src/"+tcl_file_name +" >> " + output__file__na)
 
 
 
 def grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
         none_transitioning_cells__log__addr, transitioning_cells__log__addr,\
         syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
-        CLKGATED_BITWIDTH, precision):
+        CLKGATED_BITWIDTH, precision, base_to_dump_reports__dir):
 
     #*** F: DN keep a copy of original synthesized file 
     os.system("cp  " + syn__file__addr + " " +\
@@ -262,7 +293,8 @@ def grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell_
     hardwire_apx_bits_to_zero(syn__file__addr, syn__wrapper_module__na, syn__module__na, DATA_PATH_BITWIDTH, precision);
     #*** F:DN find cells responsible for the none_apx part of the result
     find_delay_through_each_cell(timing_per_cell__log__addr, syn__file__na, syn__wrapper_module__na, \
-            clk_period, DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, precision);
+            clk_period, DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, precision,
+            base_to_dump_reports__dir);
     #*** F:DN find cells responsible for the apx part of the result
     find_transitioning_cells(timing_per_cell__log__addr,\
             transitioning_cells__log__addr, none_transitioning_cells__log__addr)
@@ -279,9 +311,10 @@ def main():
     #*** F:DN Parameters 
     #---------------------------------------------------- 
     design_name = "conf_int_mac__noFF__arch_agnos"
+    wrapper_module__na = design_name +"__w_wrapper"
     #clk_period = .46; #*** F:AN use the value in the for loop
     clk__upper_limit = .7
-    clk__lower_limit = .46
+    clk__lower_limit = .69
     clk_values__c = 5    #*** F:DN this value determines how many clk values
                           #         you want to have in an equidistance fashion
                           #         between the upper and lower limits
@@ -317,8 +350,12 @@ def main():
     #*** F:DN Variables
     #---------------------------------------------------- 
     clk__step_size = (clk__upper_limit - clk__lower_limit)/float(clk_values__c)
-    clk__step_size =  float("{0:.2f}".format(clk__step_size)) #up to 2
+    clk__step_size =  float("{0:.3f}".format(clk__step_size)) #up to 2
     base__dir = "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
+    base_to_dump_reports__dir =\
+            "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
+    base_to_dump_results__dir =\
+            "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
     syn__file__addr = base__dir + "/" + syn__file__na
     timing_per_cell__log__na = "timing_per_cell__log.txt"
     transitioning_cells__log__na = "transitioning_cells.txt"
@@ -342,8 +379,8 @@ def main():
                 float("{0:.3f}".format(acc_max_delay__step_size)) #up to 2
         
         #*** F:DN synthesize the design with clk constraint
-        synth_design_with_only_clk_constraint(design_name, syn__file__addr, clk_period, \
-                DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH)
+#        synth_design_with_only_clk_constraint(wrapper_module__na, syn__file__addr, clk_period, \
+#                DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, base_to_dump_reports__dir)
 #        
         for precision in range(precision__lower_limit, precision__higher_limit,\
                 precision__step_size):
@@ -352,18 +389,19 @@ def main():
                     none_transitioning_cells__log__na,\
                     transitioning_cells__log__na,\
                     syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
-                    CLKGATED_BITWIDTH, precision)
+                    CLKGATED_BITWIDTH, precision, base_to_dump_reports__dir)
             #*** F:DN resynthesize the design while constraining the paths that goes
             #         through the cells responsible for the none_apx part of the result
             #acc_max_delay__step_size = .01 
             for acc_max_delay__el in pylab.frange(acc_max_delay__lower_limit, \
                     acc_max_delay__upper_limit, acc_max_delay__step_size):
-                #acc_max_delay = .42
+                #acc_max_delay = .65
                 acc_max_delay = acc_max_delay__el
                 read_and_cons_transitional_cells_and_resyn(syn__file__na,\
                         syn__wrapper_module__na, transition_cells__base_addr,\
                         transitioning_cells__log__na, precision, clk_period, \
-                        DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay)
+                        DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
+                        base_to_dump_reports__dir, base_to_dump_results__dir)
                 #*** F:DN hardwire to zero 
                 syn__file__na = syn__wrapper_module__na +"__only_clk_cons_resynthesized.v" # this the wrapper
                 syn__file__addr = base__dir + "/" + syn__file__na
@@ -373,11 +411,12 @@ def main():
                         none_transitioning_cells__log__na,\
                         transitioning_cells__log__na,\
                         syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
-                        CLKGATED_BITWIDTH, precision)
+                        CLKGATED_BITWIDTH, precision, base_to_dump_reports__dir)
                 read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
                         syn__wrapper_module__na, transition_cells__base_addr,\
                         transitioning_cells__log__na, precision, clk_period, \
-                    DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay)
+                    DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
+                    base_to_dump_reports__dir)
                 #*** F:DN returning files to original 
                 transitioning_cells__log__na = "transitioning_cells.txt"
                 none_transitioning_cells__log__na = "none_transitioning_cell.txt"
