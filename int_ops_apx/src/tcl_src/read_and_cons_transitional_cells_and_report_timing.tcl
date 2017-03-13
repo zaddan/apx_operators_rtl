@@ -148,12 +148,12 @@ set AC_NAME $DESIGN_NAME
 #----------------------------------------------------
 set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__log.txt
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
-echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN before putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#echo "*** F:DN before putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F: after putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
