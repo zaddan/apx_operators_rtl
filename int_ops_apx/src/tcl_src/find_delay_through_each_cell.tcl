@@ -10,14 +10,14 @@
 #----------------------------------------------------
 #---- N: the following should be commented out if the tcl file is invoked by 
 #-----   a python function
-#set DATA_PATH_WIDTH 32;
+#set DATA_PATH_BITWIDTH 32;
 #set CLKGATED_BITWIDTH 4; #numebr of apx bits
 #set clk_period .65;#.63;#.68;#.7
 #set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32
 #set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_32Bit_32Bit__only_clk_cons_synthesized.v 
 #set output__timing__log__na "
 ##----------------------------------------------------
-set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
+set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
 puts $clk_period
 
 #----------------------------------------------------
@@ -75,7 +75,7 @@ group_path -name clk -from clk
 
 
 #*** F:DN report the results
-set report_file__prefix  ${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit__only_clk_cons
+set report_file__prefix  ${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_BITWIDTH}Bit__only_clk_cons
 set timing_log [open $output__timing__log__na w]
 close $timing_log
 foreach_in_collection my_el [get_cells -hierarchical] {

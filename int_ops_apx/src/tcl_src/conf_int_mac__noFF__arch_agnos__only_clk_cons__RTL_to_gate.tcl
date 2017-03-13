@@ -10,11 +10,11 @@
 #----------------------------------------------------
 #---- N: the following should be commented out if the tcl file is invoked by 
 #-----   a python function
-#set DATA_PATH_WIDTH 32;
+#set DATA_PATH_BITWIDTH 32;
 #set CLKGATED_BITWIDTH 4; #numebr of apx bits
 #set clk_period .7;#.63;#.68;#.7
 #----------------------------------------------------
-set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
+set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
 puts $clk_period
 
 
@@ -54,7 +54,7 @@ set verilogout_show_unconnected_pins "true"
 
 #*** F:DN read the design
 analyze -format verilog [list  ${design_dir_addr}/${DESIGN_NAME}.v]
-elaborate $my_toplevel -parameters $OP_BITWIDTH,$DATA_PATH_WIDTH
+elaborate $my_toplevel -parameters $OP_BITWIDTH,$DATA_PATH_BITWIDTH
 check_design
 link
 
@@ -90,7 +90,7 @@ compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 
 
 #*** F:DN report the results
-set report_file__prefix  ${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit__only_clk_cons
+set report_file__prefix  ${DESIGN_NAME}_OP_BITWIDTH${OP_BITWIDTH}_DATA_PATH_BITWIDTH${DATA_PATH_BITWIDTH}__only_clk_cons
 report_timing -sort_by slack -nworst 1000 -significant_digits 4 >  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${report_file__prefix}__area.rpt
 report_power > ${REPORTS_DIR}/${report_file__prefix}__power.rpt
