@@ -34,6 +34,7 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set transitioning_cells__log__na "transitioning_cells.txt"
 #set Pn 28
 #set acc_max_delay .43
+#set attempt__iter__c 0
 ##----------------------------------------------------
 set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
@@ -146,7 +147,7 @@ set AC_NAME $DESIGN_NAME
 #----------------------------------------------------
 #**** F:DN collect data before increasing pressure(time wise) on the design
 #----------------------------------------------------
-set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__log.txt
+set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_del_${acc_max_delay}__Pn_${Pn}__atmpt_${attempt__iter__c}__evol_log.txt
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
 #echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #echo "*** F:DN before putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
@@ -161,6 +162,7 @@ echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 
 
 set_max_delay $acc_max_delay -to [all_outputs]
+
 set priority_array  $acc_reg_a_b_c_joined 
 foreach pt $all_input__pt { 
     if {[lsearch -exact $priority_array $pt] >= 0} {
@@ -169,6 +171,8 @@ foreach pt $all_input__pt {
         group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
     }
 }
+
+
 #ungroup -all -flatten
 #set collection_result_display_limit 100000
 
@@ -192,7 +196,12 @@ set report_file__prefix  ${DESIGN_NAME}__only_clk_cons
 report_timing -sort_by group -significant_digits 4 >  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 echo "now through and exclude" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 echo "*** transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+
+# Change this back
+#report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+#** up to here
+
 #...   ...    ..  ...  ..    ..    ...      ..
 echo "*** non transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #report_timing -sort_by slack -exclude $transition_cells__l -nworst 30000 -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
@@ -208,16 +217,19 @@ report_resources > ${REPORTS_DIR}/${report_file__prefix}__resources.rpt
 report_net
 #....................................................
 #*** F:DN dumping the result in one log file
-#set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__log.txt
+#set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__evol_log.txt
 echo $all_data__file__na >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F:DN transitional cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+
 report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
                                              #all paths meet the clk
 echo "*** F:DN all cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_area -hierarchy -nosplit >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 
 get_cells
 
