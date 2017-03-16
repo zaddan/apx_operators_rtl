@@ -257,6 +257,47 @@ def read_resyn_and_report(\
     os.system("cat  " + resyn__file__addr + "  >> " + output__file__na)
 
 
+def parse_file_to_get_slack(src_file):
+    start_looking = False 
+    try:
+        f = open(src_file)
+    except IOError:
+        handleIOError(src_file, "csource file")
+        exit()
+    else:
+        with f:
+            for line in f:
+                word_list =   line.strip().replace(',', ' ').replace(';', ' ').split(' ') 
+                if ("after" in word_list) and ("resynthesis" in word_list):
+                    start_looking = True 
+                if start_looking:
+                    if ("slack" in word_list) and \
+                            (not("-sort_by") in word_list):
+                                if "(MET)" in word_list:
+                                    return True
+                                else:
+                                    return False
+
+
+def parse_file_to_get_best_delay(src_file):
+    start_looking = False 
+    try:
+        f = open(src_file)
+    except IOError:
+        handleIOError(src_file, "csource file")
+        exit()
+    else:
+        with f:
+            for line in f:
+                word_list =   line.strip().replace(',', ' ').replace(';', ' ').split(' ') 
+                if ("after" in word_list) and ("resynthesis" in word_list):
+                    start_looking = True 
+                if start_looking:
+                    if ("data" in word_list) and \
+                            ("arrival" in word_list) and \
+                            ("time") in word_list:
+                                return word_list[-1]
+
 
 
 
