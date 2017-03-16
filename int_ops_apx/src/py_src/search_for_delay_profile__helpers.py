@@ -221,6 +221,9 @@ def read_resyn_and_report(\
         base_to_dump_reports__dir, 
         base_to_dump_results__dir,
         attempt__iter__c, 
+        clk__upper_limit,
+        clk__lower_limit,
+        prev__clk,
         ID):
     
     #*** F:DN variabes 
@@ -246,7 +249,11 @@ def read_resyn_and_report(\
     #--- F: Body
     #----------------------------------------------------
     setup_info =  "clk:"+str(clk_period) +"\n"
+    setup_info +=  "prev__clk:"+str(prev__clk) +"\n"
+    setup_info +=  "clk__lower_limit:"+str(clk__lower_limit) +"\n"
+    setup_info +=  "clk__upper_limit:"+str(clk__upper_limit) +"\n"
     setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
+
     os.system("echo \" " + setup_info + " \" > " + output__file__na)
     os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
             ../tcl_src/"+tcl_file_name +" >>" + output__file__na)

@@ -19,18 +19,18 @@ def main():
     design_name = "conf_int_mac__noFF__arch_agnos"
     wrapper_module__na = design_name +"__w_wrapper"
     #clk_period = .46; #*** F:AN use the value in the for loop
-    clk__upper_limit = .675
-    clk__lower_limit = .2
+    clk__upper_limit = .450
+    clk__lower_limit = .411
     initial_clk = clk__upper_limit 
     clk_values__c = 2    #*** F:DN this value determines how many clk values
                           #         you want to have in an equidistance fashion
                           #         between the upper and lower limits
-    DATA_PATH_BITWIDTH__lower_bound = 28
+    DATA_PATH_BITWIDTH__lower_bound = 26
     DATA_PATH_BITWIDTH__upper_bound = 31
     #DATA_PATH_BITWIDTH = 32
     DATA_PATH_BITWIDTH__step_size = 1 
     CLKGATED_BITWIDTH = 4; #numebr of apx bits
-    attempt__upper_bound = 1
+    attempt__upper_bound = 4
     ID = "SCBD" #finding base(S) case(C) best(B) delay(D)
     #-----  -----    -----     -----     -----     -----
     
@@ -62,34 +62,31 @@ def main():
         
         clk__el = initial_clk 
         slack_met = True
+        #*** F:DN initial synthesis 
+        clk_period = clk__el 
+        synth_design_with_only_clk_constraint(\
+                wrapper_module__na, 
+                syn__file__addr, 
+                clk_period, 
+                DATA_PATH_BITWIDTH,
+                CLKGATED_BITWIDTH,
+                base_to_dump_reports__dir, 
+                ID)
+        
         while (True): 
             if (slack_met):
                 clk__upper_limit = clk__el
             else:
-                clk_lower_limit = clk__el
-                clk__upper_limit = best_delay_so_far
+                clk__lower_limit = clk__el
+                #clk__upper_limit = best_delay_so_far
+            prev__clk = clk__el  #recording the previous clk
             clk__el = float(clk__upper_limit + clk__lower_limit)/float(2)
             clk__el =  float("{0:.3f}".format(clk__el)) #up to 2
-            if (clk__el == 0) :
+            #*** F:DN if two clks has reached each other or
+            #         the clk hasn't changed in two cycles, break (1)
+            if (clk__upper_limit == clk__lower_limit) or (prev__clk == clk__el):
                 break
-#            for clk__el in pylab.frange(\
-#                clk__upper_limit, 
-#                clk__lower_limit,
-#                clk__step_size):
-            #****F: DN variables 
-            syn__file__na = syn__wrapper_module__na +"__only_clk_cons_synthesized"+str(ID)+".v" # this the wrapper
-            syn__file__addr = base__dir + "/" + syn__file__na
             clk_period = clk__el 
-            #*** F:DN initial synthesis 
-            synth_design_with_only_clk_constraint(\
-                    wrapper_module__na, 
-                    syn__file__addr, 
-                    clk_period, 
-                    DATA_PATH_BITWIDTH,
-                    CLKGATED_BITWIDTH,
-                    base_to_dump_reports__dir, 
-                    ID)
-
             for attempt__iter__c in range(0, attempt__upper_bound): 
                 read_resyn_and_report(\
                         syn__file__na,
@@ -99,6 +96,9 @@ def main():
                         base_to_dump_reports__dir,
                         base_to_dump_results__dir,
                         attempt__iter__c,
+                        clk__upper_limit,
+                        clk__lower_limit,
+                        prev__clk,
                         ID)
                 
                 my_dir =\
@@ -125,3 +125,11 @@ def main():
 #----------------------------------------------------
 main()
 
+
+
+#----------------------------------------------------
+#--- F: Notes
+#----------------------------------------------------
+#*** (1) the reason that the clks might not ever reach each other
+#        is b/c of rounding. Rounding might cause the avg to never
+#        actually pull up a clk (or down) to the other

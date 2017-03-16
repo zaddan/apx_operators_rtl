@@ -150,13 +150,14 @@ def main():
                 break
             else:
                 best_delay_so_far = parse_file_to_get_best_delay(file_to_look_for_slack_in)
+                os.system("echo " + str(best_delay_so_far) + " >> best_delay_so_far.txt") 
 
         #*** F:DN returning files to original 
-        transitioning_cells__log__na = "transitioning_cells"+str(ID)+".txt"
-        none_transitioning_cells__log__na = "none_transitioning_cells"+str(ID)+".txt"
-        syn__file__na = syn__wrapper_module__na + \
-                "__only_clk_cons_synthesized"+str(ID)+".v" # this the wrapper
-        syn__file__addr = base__dir + "/" + syn__file__na
+#        transitioning_cells__log__na = "transitioning_cells"+str(ID)+".txt"
+#        none_transitioning_cells__log__na = "none_transitioning_cells"+str(ID)+".txt"
+#        syn__file__na = syn__wrapper_module__na + \
+#                "__only_clk_cons_synthesized"+str(ID)+".v" # this the wrapper
+#        syn__file__addr = base__dir + "/" + syn__file__na
 
 #----------------------------------------------------
 #--- F: Main
