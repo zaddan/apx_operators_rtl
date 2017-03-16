@@ -141,7 +141,7 @@ report_net
 
 #set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
 echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN after resyntheis " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN after resynthesis " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}

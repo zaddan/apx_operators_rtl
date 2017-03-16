@@ -157,7 +157,7 @@ set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesu
 #echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F: after putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F: after resynthesis" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #----------------------------------------------------
 

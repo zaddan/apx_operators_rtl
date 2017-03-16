@@ -115,9 +115,6 @@ def main():
                     break
                 else:
                     best_delay_so_far = parse_file_to_get_best_delay(file_to_look_for_slack_in)
-                    print best_delay_so_far
-                    sys.exit()
-                
                 syn__file__na = syn__wrapper_module__na +\
                         "__only_clk_cons_resynthesized" + str(ID) +".v" # this the wrapper
                 syn__file__addr = base__dir + "/" + syn__file__na
