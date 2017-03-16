@@ -32,6 +32,7 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_32Bit_32Bit__only_clk_cons_synthesized.v 
 #set acc_max_delay .43
 #set attempt__iter__c 0
+#set ID 2
 ##----------------------------------------------------
 set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
@@ -95,10 +96,10 @@ set AC_NAME $DESIGN_NAME
 #----------------------------------------------------
 #**** F:DN collect data before increasing pressure(time wise) on the design
 #----------------------------------------------------
-set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__atmpt__${attempt__iter__c}__log.txt
+set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__atmpt_${attempt__iter__c}__id_${ID}__evol_log.txt
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
 echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN before putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN before resyntheis " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
@@ -125,7 +126,7 @@ set report_file__prefix  ${DESIGN_NAME}__only_clk_cons
 #report_timing -sort_by group -nworst 1000 -significant_digits 4 >  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 report_timing -sort_by group -significant_digits 4 >  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #**** change this back
-report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${report_file__prefix}__area.rpt
@@ -136,6 +137,19 @@ report_constraint -all_violators > ${REPORTS_DIR}/${report_file__prefix}__constr
 report_cell > ${REPORTS_DIR}/${report_file__prefix}__cells.rpt
 report_resources > ${REPORTS_DIR}/${report_file__prefix}__resources.rpt
 report_net
+
+
+#set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
+echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN after resyntheis " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_area -hierarchy -nosplit >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+
+
+
 #....................................................
 #*** F:DN dumping the result in one log file
 #set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__log.txt
@@ -152,10 +166,10 @@ report_net
 
 #*** F:DN save the design
 set syn_name ${report_file__prefix} ;#syntheiszed file name
-write -format ddc -hierarchy -output ${RESULTS_DIR}/${syn_name}_resynthesized.ddc
-write -f verilog -hierarchy -output ${RESULTS_DIR}/${syn_name}_resynthesized.v
-write_sdc ${RESULTS_DIR}/${syn_name}_resynthesized.sdc
-write_sdf ${RESULTS_DIR}/${syn_name}_resynthesized.mapped.sdf; #switching activity file
+write -format ddc -hierarchy -output ${RESULTS_DIR}/${syn_name}_resynthesized${ID}.ddc
+write -f verilog -hierarchy -output ${RESULTS_DIR}/${syn_name}_resynthesized${ID}.v
+write_sdc ${RESULTS_DIR}/${syn_name}_resynthesized${ID}.sdc
+write_sdf ${RESULTS_DIR}/${syn_name}_resynthesized${ID}.mapped.sdf; #switching activity file
 remove_design -hierarchy
 
 

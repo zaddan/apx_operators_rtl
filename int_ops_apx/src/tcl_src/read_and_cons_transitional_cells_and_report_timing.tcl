@@ -35,6 +35,7 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set Pn 28
 #set acc_max_delay .43
 #set attempt__iter__c 0
+#set ID 1
 ##----------------------------------------------------
 set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
@@ -147,7 +148,7 @@ set AC_NAME $DESIGN_NAME
 #----------------------------------------------------
 #**** F:DN collect data before increasing pressure(time wise) on the design
 #----------------------------------------------------
-set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_del_${acc_max_delay}__Pn_${Pn}__atmpt_${attempt__iter__c}__evol_log.txt
+set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_del_${acc_max_delay}__Pn_${Pn}__atmpt_${attempt__iter__c}__id_${ID}__evol_log.txt
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
 #echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #echo "*** F:DN before putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}

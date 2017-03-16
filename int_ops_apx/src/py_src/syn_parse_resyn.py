@@ -4,7 +4,10 @@
 #----------------------------------------------------
 import os
 import pylab
-
+import sys
+print "the functionality of this file is relocated to:\
+        search search_for_2_delay_profile.py"
+sys.exit(0)
 
 #----------------------------------------------------
 #----------------------------------------------------
@@ -223,6 +226,7 @@ def read_and_cons_transitional_cells_and_resyn(syn__file__na,\
     output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
             str(clk_period) + "_"+ \
             str(DATA_PATH_BITWIDTH) +"_"+ \
+            str(precision)+"_"+\
             str(acc_max_delay)+"_"+\
             "__read_cons_and_resyn__log.txt"
     tcl_file_name =  "read_and_cons_transitional_cells_and_resyn.tcl"
@@ -235,8 +239,8 @@ def read_and_cons_transitional_cells_and_resyn(syn__file__na,\
     setup_info +=  "precision:"+str(precision) +"\n"
     setup_info +=  "acc_max_delay:"+str(acc_max_delay) +"\n"
     os.system("echo \" " + setup_info + " \" > " + output__file__na)
-#    os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
-#            ../tcl_src/"+tcl_file_name +" >>" + output__file__na)
+    os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
+            ../tcl_src/"+tcl_file_name +" >>" + output__file__na)
     resyn__file__na = syn__wrapper_module__na +"__only_clk_cons_resynthesized.v" # this the wrapper
     resyn__file__addr = base_to_dump_results__dir + "/" + resyn__file__na 
     os.system("echo starting dot_v file  >> " + output__file__na)
@@ -263,6 +267,7 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
     output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
             str(clk_period) + "_"+ \
             str(DATA_PATH_BITWIDTH) +"_"+ \
+            str(precision)+"_"+\
             str(acc_max_delay)+"_"+\
             "__read_cons_and_report_t__log.txt"
     tcl_file_name =  "read_and_cons_transitional_cells_and_report_timing.tcl"
@@ -313,9 +318,9 @@ def main():
     design_name = "conf_int_mac__noFF__arch_agnos"
     wrapper_module__na = design_name +"__w_wrapper"
     #clk_period = .46; #*** F:AN use the value in the for loop
-    clk__upper_limit = .7
-    clk__lower_limit = .69
-    clk_values__c = 5    #*** F:DN this value determines how many clk values
+    clk__upper_limit = .48
+    clk__lower_limit = .675
+    clk_values__c = 20    #*** F:DN this value determines how many clk values
                           #         you want to have in an equidistance fashion
                           #         between the upper and lower limits
     DATA_PATH_BITWIDTH = 32
@@ -329,14 +334,14 @@ def main():
     #acc_max_delay__lower_limit__delta = .1
     slow_down = .5
     #-----  -----    -----     -----     -----     -----
-    acc_max_delay__lower_limit = .36
+    acc_max_delay__lower_limit = .420
     #acc_max_delay__upper_limit = clk_period/(1+slow_down); #*** F:DN use for loop
     acc_max_delay__c = 10
     #acc_max_delay__step_size = .01; #*** F:DN use the for loop
     #-----  -----    -----     -----     -----     -----
-    precision__lower_limit = 24
-    precision__higher_limit = 31
-    precision__step_size = 4 
+    precision__lower_limit = 26
+    precision__higher_limit = 32
+    precision__step_size = 2
     #acc_max_delay__upper_limit  = float("{0:.2f}".format(acc_max_delay__upper_limit)) #up to 2
     #precision = 28 ;#*** F:AN instead use the for loop
     #.................................................... 
@@ -353,7 +358,7 @@ def main():
     clk__step_size =  float("{0:.3f}".format(clk__step_size)) #up to 2
     base__dir = "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
     base_to_dump_reports__dir =\
-            "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
+            "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/logs"
     base_to_dump_results__dir =\
             "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
     syn__file__addr = base__dir + "/" + syn__file__na
@@ -373,8 +378,9 @@ def main():
         #****F: DN variables 
         clk_period = clk__el 
         acc_max_delay__upper_limit = clk_period
-        acc_max_delay__step_size = (acc_max_delay__upper_limit - \
-                acc_max_delay__lower_limit)/float(acc_max_delay__c)
+#        acc_max_delay__step_size = (acc_max_delay__upper_limit - \
+#                acc_max_delay__lower_limit)/float(acc_max_delay__c)
+        acc_max_delay__step_size = .001
         acc_max_delay__step_size = \
                 float("{0:.3f}".format(acc_max_delay__step_size)) #up to 2
         
@@ -382,20 +388,20 @@ def main():
 #        synth_design_with_only_clk_constraint(wrapper_module__na, syn__file__addr, clk_period, \
 #                DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, base_to_dump_reports__dir)
 #        
+        precision__step_size = 1
         for precision in range(precision__lower_limit, precision__higher_limit,\
                 precision__step_size):
             #*** F:DN hardwire to zero 
-            grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
-                    none_transitioning_cells__log__na,\
-                    transitioning_cells__log__na,\
-                    syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
-                    CLKGATED_BITWIDTH, precision, base_to_dump_reports__dir)
+#            grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
+#                    none_transitioning_cells__log__na,\
+#                    transitioning_cells__log__na,\
+#                    syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
+#                    CLKGATED_BITWIDTH, precision, base_to_dump_reports__dir)
             #*** F:DN resynthesize the design while constraining the paths that goes
             #         through the cells responsible for the none_apx part of the result
-            #acc_max_delay__step_size = .01 
+            acc_max_delay__step_size = .001
             for acc_max_delay__el in pylab.frange(acc_max_delay__lower_limit, \
                     acc_max_delay__upper_limit, acc_max_delay__step_size):
-                #acc_max_delay = .65
                 acc_max_delay = acc_max_delay__el
                 read_and_cons_transitional_cells_and_resyn(syn__file__na,\
                         syn__wrapper_module__na, transition_cells__base_addr,\
@@ -418,10 +424,10 @@ def main():
                     DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
                     base_to_dump_reports__dir)
                 #*** F:DN returning files to original 
-                transitioning_cells__log__na = "transitioning_cells.txt"
-                none_transitioning_cells__log__na = "none_transitioning_cell.txt"
-                syn__file__na = syn__wrapper_module__na +"__only_clk_cons_synthesized.v" # this the wrapper
-                syn__file__addr = base__dir + "/" + syn__file__na
+#                transitioning_cells__log__na = "transitioning_cells.txt"
+#                none_transitioning_cells__log__na = "none_transitioning_cells.txt"
+#                syn__file__na = syn__wrapper_module__na +"__only_clk_cons_synthesized.v" # this the wrapper
+#                syn__file__addr = base__dir + "/" + syn__file__na
 
     """
     for precision__el in range(precision_lower_limit, precision_higher_limit):

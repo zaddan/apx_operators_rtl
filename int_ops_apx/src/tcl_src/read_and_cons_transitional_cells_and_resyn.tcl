@@ -150,7 +150,7 @@ set AC_NAME $DESIGN_NAME
 #**** F:DN collect data before increasing pressure(time wise) on the design
 #----------------------------------------------------
 #set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__log.txt
-set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_del_${acc_max_delay}__Pn_${Pn}__atmpt_${attempt__iter__c}__evol_log.txt
+set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_del_${acc_max_delay}__Pn_${Pn}__atmpt_${attempt__iter__c}__id_${ID}__evol_log.txt
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
 echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F:DN before putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}

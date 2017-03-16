@@ -33,6 +33,7 @@ def synth_design_with_only_clk_constraint(wrapper_module__na, syn__file__addr, c
             "/"+"mac"+ "_" + \
             str(DATA_PATH_BITWIDTH)+"__"+\
             "clk" + "_"+ str(clk_period) + "__"+ \
+            "id"+"_"+str(ID)+"__"+\
             "only_clk_contraint__synth_log.txt"
     only_clk_cons_syn__log__addr = "only_clk_cons_syn__log.txt"
 
@@ -134,7 +135,7 @@ def hardwire_apx_bits_to_zero(sourceFileAddr, wrapper_module__na, module_name, D
 #          generat a "no path" signal in the timing report
 def find_delay_through_each_cell(timing_per_cell__log__addr, syn__file__na, syn__wrapper_module__na, \
         clk_period, DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, precision,
-        base_to_dump_reports__dir):
+        base_to_dump_reports__dir, ID):
     
     #*** F:DN Parameters 
     tcl_file__na =  "../tcl_src/find_delay_through_each_cell.tcl"
@@ -152,6 +153,7 @@ def find_delay_through_each_cell(timing_per_cell__log__addr, syn__file__na, syn_
     output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
             str(clk_period) + "_"+ \
             str(DATA_PATH_BITWIDTH) +"__"+ \
+            "id"+"_"+str(ID)+"__"+\
             "find_delay_through_each_cell__log.txt"
     
     setup_info =  "clk:"+str(clk_period) +"\n"
@@ -211,6 +213,52 @@ def find_transitioning_cells(timing_per_cell__log__addr,\
     none_transitioning_cell__log__file_handle.close()
 
 
+def read_resyn_and_report(\
+        syn__file__na,
+        syn__wrapper_module__na, 
+        clk_period, 
+        DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, 
+        base_to_dump_reports__dir, 
+        base_to_dump_results__dir,
+        attempt__iter__c, 
+        ID):
+    
+    #*** F:DN variabes 
+    tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
+            "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
+            "set CLKGATED_BITWIDTH "  +str(CLKGATED_BITWIDTH) + ";" + \
+            "set DESIGN_NAME " + syn__wrapper_module__na + ";" + \
+            "set synth_file__na " + syn__file__na  + ";" + \
+            "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
+            "set ID " + str(ID)+ ";"
+    
+    #*** F:AN for now set the syn__file__na to mac
+    syn__file__na = "mac"
+    output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
+            str(DATA_PATH_BITWIDTH) +"__"+ \
+            "clk" + "_" + str(clk_period) + "__"+ \
+            "atmpt"+"_"+str(attempt__iter__c) + "__"+\
+            "id"+"_"+str(ID)+"__"+\
+            "read_resyn_and_report__log.txt"
+    tcl_file_name =  "read_resyn_and_report.tcl"
+    
+    #----------------------------------------------------
+    #--- F: Body
+    #----------------------------------------------------
+    setup_info =  "clk:"+str(clk_period) +"\n"
+    setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
+    os.system("echo \" " + setup_info + " \" > " + output__file__na)
+    os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
+            ../tcl_src/"+tcl_file_name +" >>" + output__file__na)
+    resyn__file__na = syn__wrapper_module__na +"__only_clk_cons_resynthesized"+\
+            str(ID)+".v" # this the wrapper
+    resyn__file__addr = base_to_dump_results__dir + "/" + resyn__file__na 
+    os.system("echo starting dot_v file  >> " + output__file__na)
+    os.system("cat  " + resyn__file__addr + "  >> " + output__file__na)
+
+
+
+
 
 #*** F:DN resynthesize the design while constraining the paths that goes
 #         through the cells responsible for the non_apx part of the result
@@ -242,6 +290,7 @@ def read_and_cons_transitional_cells_and_resyn(syn__file__na,\
             "acc_max_del" + "_" + str(acc_max_delay)+"__"+\
             "Pn"+ "_" + str(precision)+"__"+\
             "atmpt"+"_"+str(attempt__iter__c) + "__"+\
+            "id"+"_"+str(ID)+"__"+\
             "read_cons_and_resyn__log.txt"
     tcl_file_name =  "read_and_cons_transitional_cells_and_resyn.tcl"
     
@@ -268,7 +317,7 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
             transitioning_cells__log__na, precision, clk_period, \
             DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
             base_to_dump_reports__dir,
-            attempt__iter__c):
+            attempt__iter__c, ID):
     
     #*** F:DN variabes 
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
@@ -280,7 +329,8 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
             "set transitioning_cells__log__na " +  transitioning_cells__log__na + " ;" \
             "set Pn " + str(precision) + ";" + \
             "set acc_max_delay " + str(acc_max_delay)+ ";"\
-            "set attempt__iter__c " + str(attempt__iter__c)+ ";"
+            "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
+            "set ID " + str(ID)+ ";"
 
 
     
@@ -292,6 +342,7 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
             "acc_max_del" + "_" + str(acc_max_delay)+"__"+\
             "Pn"+ "_" + str(precision)+"__"+\
             "atmpt"+"_"+str(attempt__iter__c) + "__"+\
+            "id"+"_"+str(ID)+"__"+\
             "read_cons_and_report_t__log.txt"
     tcl_file_name =  "read_and_cons_transitional_cells_and_report_timing.tcl"
     
@@ -312,7 +363,7 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
 def grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
         none_transitioning_cells__log__addr, transitioning_cells__log__addr,\
         syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
-        CLKGATED_BITWIDTH, precision, base_to_dump_reports__dir):
+        CLKGATED_BITWIDTH, precision, base_to_dump_reports__dir, ID):
 
     #*** F: DN keep a copy of original synthesized file 
     os.system("cp  " + syn__file__addr + " " +\
@@ -322,7 +373,7 @@ def grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell_
     #*** F:DN find cells responsible for the none_apx part of the result
     find_delay_through_each_cell(timing_per_cell__log__addr, syn__file__na, syn__wrapper_module__na, \
             clk_period, DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, precision,
-            base_to_dump_reports__dir);
+            base_to_dump_reports__dir, ID);
     #*** F:DN find cells responsible for the apx part of the result
     find_transitioning_cells(timing_per_cell__log__addr,\
             transitioning_cells__log__addr, none_transitioning_cells__log__addr)
