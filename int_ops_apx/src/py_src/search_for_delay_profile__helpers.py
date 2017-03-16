@@ -280,7 +280,9 @@ def parse_file_to_get_slack(src_file):
                 if start_looking:
                     if ("slack" in word_list) and \
                             (not("-sort_by") in word_list):
-                                if "(MET)" in word_list:
+#                                if "(MET)" in word_list:
+#                                    return True
+                                if (float(word_list[-1]) == 0):
                                     return True
                                 else:
                                     return False

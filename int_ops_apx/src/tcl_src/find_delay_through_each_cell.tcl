@@ -1,8 +1,6 @@
 #----------------------------------------------------
-#*** F:DN this file syntheizes an arch agnos design for a mac 
-#         where the only contraint is the clk itself.
+#*** F:DN finds the delay as/w each cell
 #----------------------------------------------------
-
 
 
 #----------------------------------------------------
@@ -15,10 +13,11 @@
 #set clk_period .65;#.63;#.68;#.7
 #set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32
 #set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32__only_clk_cons_synthesized.v
-#set output__timing__log__na "blah"
+#set output__timing__log__na "test log"
 ##----------------------------------------------------
 set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
 puts $clk_period
+
 
 #----------------------------------------------------
 #*** F:DN Variables
@@ -79,13 +78,14 @@ set report_file__prefix  ${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_BITWIDTH}B
 set timing_log [open $output__timing__log__na w]
 close $timing_log
 
-#*** from here
+#*** non_transitional cells identifier
 foreach_in_collection my_el [get_cells -hierarchical] {
     set cell_name [get_object_name $my_el] 
     #*** F:AN make sure you set the limit properly 
     echo "cell_name: " $cell_name >> $output__timing__log__na
     report_timing -through $cell_name/* -path end >> $output__timing__log__na
 }
+
 
 #**** F:DN an attempt to see whether writing the result to a string
 #          will accelerate the process; The answer is negative

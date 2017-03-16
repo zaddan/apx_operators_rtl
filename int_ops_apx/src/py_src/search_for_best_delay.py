@@ -19,14 +19,14 @@ def main():
     design_name = "conf_int_mac__noFF__arch_agnos"
     wrapper_module__na = design_name +"__w_wrapper"
     #clk_period = .46; #*** F:AN use the value in the for loop
-    clk__upper_limit = .450
-    clk__lower_limit = .411
+    clk__upper_limit = .455#.450
+    clk__lower_limit = .425
     initial_clk = clk__upper_limit 
-    clk_values__c = 2    #*** F:DN this value determines how many clk values
+    #clk_values__c = 2    #*** F:DN this value determines how many clk values
                           #         you want to have in an equidistance fashion
                           #         between the upper and lower limits
-    DATA_PATH_BITWIDTH__lower_bound = 26
-    DATA_PATH_BITWIDTH__upper_bound = 31
+    DATA_PATH_BITWIDTH__lower_bound = 30
+    DATA_PATH_BITWIDTH__upper_bound = 32
     #DATA_PATH_BITWIDTH = 32
     DATA_PATH_BITWIDTH__step_size = 1 
     CLKGATED_BITWIDTH = 4; #numebr of apx bits
@@ -37,8 +37,8 @@ def main():
     #---------------------------------------------------- 
     #*** F:DN Variables
     #---------------------------------------------------- 
-    clk__step_size = -(clk__upper_limit - clk__lower_limit)/float(clk_values__c)
-    clk__step_size =  float("{0:.3f}".format(clk__step_size)) #up to 2
+    #clk__step_size = -(clk__upper_limit - clk__lower_limit)/float(clk_values__c)
+    #clk__step_size =  float("{0:.3f}".format(clk__step_size)) #up to 2
     base__dir = "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
     base_to_dump_reports__dir =\
             "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/logs_2"
