@@ -18,27 +18,24 @@ def main():
     design_name = "conf_int_mac__noFF__arch_agnos"
     wrapper_module__na = design_name +"__w_wrapper"
     ID = "SCBSD" #best case best sub delay
-    clk_period = .7; #*** F:AN use the value in the for loop
-                          #         you want to have in an equidistance fashion
-                          #         between the upper and lower limits
+    clk_period = .7; 
     DATA_PATH_BITWIDTH = 32
     OP_BITWIDTH = DATA_PATH_BITWIDTH 
     CLKGATED_BITWIDTH = 4; #numebr of apx bits
-    apx_optimal = 1
-    lsb_bits = 3
-    msb_min_delay = 0;#.55;#.59;#.58
-    slow_down = .5
     #-----  -----    -----     -----     -----     -----
-    acc_max_delay__upper_limit = .55
-    acc_max_delay__lower_limit = .30
-    acc_max_delay__c = 10
+    acc_max_delay__upper_limit = .46
+    acc_max_delay__lower_limit = .40
+    acc_max_delay__upper_limit__initial_value = acc_max_delay__upper_limit 
+    #acc_max_delay__c = 10
     #acc_max_delay__step_size = .01; #*** F:DN use the for loop
-    attempt__upper_bound = 2
+    attempt__upper_bound = 5
     #-----  -----    -----     -----     -----     -----
+    #*** F: CN if you want to focuse on one precision, simply pick the
+    #       higher_limit one about lower limit
     precision__lower_limit = 26
     precision__higher_limit = 32
     precision__step_size = 2
-    precision = 30 ;#*** F:AN instead use the for loop
+    #precision = 30 ;#*** F:AN instead use the for loop
     #.................................................... 
     transition_cells__base_addr = "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src"
     syn__module__na = design_name+"_OP_BITWIDTH"+str(OP_BITWIDTH)+"_DATA_PATH_BITWIDTH"+str(DATA_PATH_BITWIDTH)
@@ -71,87 +68,102 @@ def main():
             base_to_dump_reports__dir, ID)
 #        
     #*** F:DN hardwire to zero 
-    grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
-            none_transitioning_cells__log__na,\
-            transitioning_cells__log__na,\
-            syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
-            CLKGATED_BITWIDTH, precision, base_to_dump_reports__dir, ID)
-    
-    #*** F:DN resynthesize the design while constraining the paths that goes
-    #         through the cells responsible for the none_apx part of the result
-    acc_max_delay = acc_max_delay__upper_limit
-    slack_met = True
-    while (True): 
-        if (slack_met):
-            acc_max_delay__upper_limit = acc_max_delay
-        else:
-            acc_max_delay__lower_limit = acc_max_delay
-            acc_max_delay__upper_limit = best_delay_so_far
-        acc_max_delay  = float(acc_max_delay__upper_limit + acc_max_delay__lower_limit)/float(2)
-        acc_max_delay =  float("{0:.3f}".format(acc_max_delay)) #up to 2
-        if (acc_max_delay == 0):
-            break
-        for attempt__iter__c in range(0,
-                attempt__upper_bound): 
-            read_and_cons_transitional_cells_and_resyn(\
-                    syn__file__na,
-                    syn__wrapper_module__na, transition_cells__base_addr,
-                    transitioning_cells__log__na, precision, clk_period, 
-                    DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
-                    base_to_dump_reports__dir,
-                    base_to_dump_results__dir,
-                    attempt__iter__c,
-                    ID)
-            #*** F:DN hardwire to zero 
-            syn__file__na = syn__wrapper_module__na +\
-                    "__only_clk_cons_resynthesized" + str(ID) +".v" # this the wrapper
-            syn__file__addr = base__dir + "/" + syn__file__na
-            transitioning_cells__log__na = \
-                    "transitioning_cells_after_resyn"+str(ID)+".txt"
-            none_transitioning_cells__log__na =\
-                    "none_transitioning_cells_after_resyn" + str(ID) +".txt"
-            grep_for_transitional_cells(\
-                    syn__file__na, syn__file__addr,
-                    timing_per_cell__log__addr,
-                    none_transitioning_cells__log__na,
-                    transitioning_cells__log__na,
-                    syn__wrapper_module__na, 
-                    syn__module__na, clk_period, 
-                    DATA_PATH_BITWIDTH,
-                    CLKGATED_BITWIDTH, 
-                    precision, base_to_dump_reports__dir,
-                    ID)
-            read_and_cons_transitional_cells_and_report_timing(\
-                    syn__file__na,
-                    syn__wrapper_module__na, 
-                    transition_cells__base_addr,
-                    transitioning_cells__log__na,
-                    precision, clk_period, 
-                    DATA_PATH_BITWIDTH, 
-                    CLKGATED_BITWIDTH, 
-                    acc_max_delay,
-                    base_to_dump_reports__dir,
-                    attempt__iter__c, 
-                    ID)
-            my_dir =\
-                        "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
-            #*** F:AN this needs to change to add or something later 
-            op_type = "mac" 
-            #*** F:DN if slack met break 
-            file_to_look_for_slack_in = my_dir + "/"+ str(op_type)+"_"+\
-                    str(DATA_PATH_BITWIDTH)+\
-                    "__clk_"+ str(clk_period)+\
-                    "__acc_max_del_"+str(acc_max_delay)+\
-                    "__Pn_"+str(precision)+\
-                    "__atmpt_"+str(attempt__iter__c)+\
-                    "__id_"+str(ID)+ "__evol_log.txt"
-            slack_met = parse_file_to_get_slack(file_to_look_for_slack_in)
+    for precision in range(precision__lower_limit, 
+            precision__higher_limit, 
+            precision__step_size):
+        grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
+                none_transitioning_cells__log__na,\
+                transitioning_cells__log__na,\
+                syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
+                CLKGATED_BITWIDTH, precision, base_to_dump_reports__dir, ID)
+        
+        #*** F:DN resynthesize the design while constraining the paths that goes
+        #         through the cells responsible for the none_apx part of the result
+        
+        acc_max_delay = acc_max_delay__upper_limit__initial_value
+        slack_met = True
+        while (True): 
             if (slack_met):
-                break
+                acc_max_delay__upper_limit = acc_max_delay
             else:
-                best_delay_so_far = parse_file_to_get_best_delay(file_to_look_for_slack_in)
-                os.system("echo " + str(best_delay_so_far) + " >> best_delay_so_far.txt") 
-
+                acc_max_delay__lower_limit = acc_max_delay
+                #acc_max_delay__upper_limit = best_delay_so_far
+            prev__acc_max_delay = acc_max_delay 
+            acc_max_delay  = float(acc_max_delay__upper_limit + acc_max_delay__lower_limit)/float(2)
+            acc_max_delay =  float("{0:.3f}".format(acc_max_delay)) #up to 2
+            if (acc_max_delay__upper_limit == acc_max_delay__lower_limit) or\
+                    (prev__acc_max_delay == acc_max_delay):
+                break
+            for attempt__iter__c in range(0,
+                    attempt__upper_bound): 
+                read_and_cons_transitional_cells_and_resyn(\
+                        syn__file__na,
+                        syn__wrapper_module__na, transition_cells__base_addr,
+                        transitioning_cells__log__na, precision, clk_period, 
+                        DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
+                        base_to_dump_reports__dir,
+                        base_to_dump_results__dir,
+                        attempt__iter__c,
+                        ID)
+                #*** F:DN hardwire to zero 
+                syn__file__na = syn__wrapper_module__na +\
+                        "__only_clk_cons_resynthesized" + str(ID) +".v" # this the wrapper
+                syn__file__addr = base__dir + "/" + syn__file__na
+                transitioning_cells__log__na = \
+                        "transitioning_cells_after_resyn"+str(ID)+".txt"
+                none_transitioning_cells__log__na =\
+                        "none_transitioning_cells_after_resyn" + str(ID) +".txt"
+                grep_for_transitional_cells(\
+                        syn__file__na, syn__file__addr,
+                        timing_per_cell__log__addr,
+                        none_transitioning_cells__log__na,
+                        transitioning_cells__log__na,
+                        syn__wrapper_module__na, 
+                        syn__module__na, clk_period, 
+                        DATA_PATH_BITWIDTH,
+                        CLKGATED_BITWIDTH, 
+                        precision, base_to_dump_reports__dir,
+                        ID)
+                read_and_cons_transitional_cells_and_report_timing(\
+                        syn__file__na,
+                        syn__wrapper_module__na, 
+                        transition_cells__base_addr,
+                        transitioning_cells__log__na,
+                        precision, clk_period, 
+                        DATA_PATH_BITWIDTH, 
+                        CLKGATED_BITWIDTH, 
+                        acc_max_delay,
+                        base_to_dump_reports__dir,
+                        attempt__iter__c, 
+                        ID,
+                        acc_max_delay__lower_limit,
+                        acc_max_delay__upper_limit,
+                        prev__acc_max_delay)
+                my_dir =\
+                            "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
+                #*** F:AN this needs to change to add or something later 
+                op_type = "mac" 
+                #*** F:DN if slack met break 
+                file_to_look_for_slack_in = my_dir + "/"+ str(op_type)+"_"+\
+                        str(DATA_PATH_BITWIDTH)+\
+                        "__clk_"+ str(clk_period)+\
+                        "__acc_max_del_"+str(acc_max_delay)+\
+                        "__Pn_"+str(precision)+\
+                        "__atmpt_"+str(attempt__iter__c)+\
+                        "__id_"+str(ID)+ "__evol_log.txt"
+                slack_met = parse_file_to_get_slack(file_to_look_for_slack_in)
+                if (slack_met):
+                    break
+                else:
+                    best_delay_so_far = parse_file_to_get_best_delay(file_to_look_for_slack_in)
+                    acc_max_delay__upper_limit = min(best_delay_so_far,
+                            acc_max_delay__upper_limit)
+        transitioning_cells__log__na = "transitioning_cells"+str(ID)+".txt"
+        none_transitioning_cells__log__na = "none_transitioning_cells"+str(ID)+".txt"
+        syn__file__na = syn__wrapper_module__na + \
+                "__only_clk_cons_synthesized"+str(ID)+".v" # this the wrapper
+        syn__file__addr = base__dir + "/" + syn__file__na
+ 
         #*** F:DN returning files to original 
 #        transitioning_cells__log__na = "transitioning_cells"+str(ID)+".txt"
 #        none_transitioning_cells__log__na = "none_transitioning_cells"+str(ID)+".txt"

@@ -21,7 +21,7 @@ def main():
     #clk_period = .46; #*** F:AN use the value in the for loop
     clk__upper_limit = .455#.450
     clk__lower_limit = .425
-    initial_clk = clk__upper_limit 
+    clk__upper_limit__initial_value = clk__upper_limit 
     #clk_values__c = 2    #*** F:DN this value determines how many clk values
                           #         you want to have in an equidistance fashion
                           #         between the upper and lower limits
@@ -60,7 +60,7 @@ def main():
         syn__file__na = syn__wrapper_module__na +"__only_clk_cons_synthesized"+str(ID)+".v" # this the wrapper
         syn__file__addr = base__dir + "/" + syn__file__na
         
-        clk__el = initial_clk 
+        clk__el = clk__upper_limit__initial_value
         slack_met = True
         #*** F:DN initial synthesis 
         clk_period = clk__el 
@@ -124,6 +124,19 @@ def main():
 #--- F: Main
 #----------------------------------------------------
 main()
+
+
+#----------------------------------------------------
+#--- F: Issues
+#----------------------------------------------------
+# (1) I have notices that sometimes when I am looking for a low clk(T0)
+# it won't meet, but it'll meet a clk that is fairly close(T1) and 
+# when I change the lower bound and try to look for the new clk(T2) (which 
+# say is higher than the "fairly close(T1)" clock, it won't meet the "new
+# clk(T2)". This is why, you should look inside all the log files to see
+#           whether you can find a clk that was lower than the latest clk found
+# **** F:AN: Issue (1) is why, you should look inside all the log files to see
+#           whether you can find a clk that was lower than the latest clk found
 
 
 

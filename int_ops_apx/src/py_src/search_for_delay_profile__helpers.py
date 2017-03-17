@@ -282,7 +282,7 @@ def parse_file_to_get_slack(src_file):
                             (not("-sort_by") in word_list):
 #                                if "(MET)" in word_list:
 #                                    return True
-                                if (float(word_list[-1]) == 0):
+                                if (float(word_list[-1]) >= 0):
                                     return True
                                 else:
                                     return False
@@ -367,7 +367,10 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
             transitioning_cells__log__na, precision, clk_period, \
             DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
             base_to_dump_reports__dir,
-            attempt__iter__c, ID):
+            attempt__iter__c, ID,
+            acc_max_delay__lower_limit,
+            acc_max_delay__upper_limit,
+            prev__acc_max_delay):
     
     #*** F:DN variabes 
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
@@ -404,6 +407,9 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
     setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
     setup_info +=  "precision:"+str(precision) +"\n"
     setup_info +=  "acc_max_delay:"+str(acc_max_delay) +"\n"
+    setup_info +=  "acc_max_delay__lower_limit:"+str(acc_max_delay__lower_limit) +"\n"
+    setup_info +=  "acc_max_delay__upper_limit:"+str(acc_max_delay__upper_limit) +"\n"
+    setup_info +=  "prev__acc_max_delay:"+str(prev__acc_max_delay) +"\n"
     os.system("echo \" " + setup_info + " \" > " + output__file__na)
     os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
             ../tcl_src/"+tcl_file_name +" >> " + output__file__na)
