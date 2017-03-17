@@ -5,6 +5,24 @@
 import os
 import pylab
 
+#*** F:DN obvious based on the name
+def archive_design_and_design_info_best_case_found(syn__file__adr,
+                            transitioning_cells__log__na,
+                            none_transitioning_cells__log__na):
+    os.system("cp " + syn__file__adr + " " + syn__file__adr+"_best_case")
+    os.system("cp " + transitioning_cells__log__na + " " + transitioning_cells__log__na+"_best_case")
+    os.system("cp " + none_transitioning_cells__log__na + " " + none_transitioning_cells__log__na+"_best_case")
+
+
+#*** F:DN obvious based on the name
+def restore_design_and_design_info_best_case_found(syn__file__adr,
+                            transitioning_cells__log__na,
+                            none_transitioning_cells__log__na):
+    os.system("cp " + syn__file__adr+"_best_case" + " " + syn__file__adr)
+    os.system("cp " + transitioning_cells__log__na+"_best_case" + " " + transitioning_cells__log__na)
+    os.system("cp " + none_transitioning_cells__log__na+"_best_case" + " " + none_transitioning_cells__log__na)
+
+
 
 #----------------------------------------------------
 #----------------------------------------------------
@@ -305,7 +323,7 @@ def parse_file_to_get_best_delay(src_file):
                     if ("data" in word_list) and \
                             ("arrival" in word_list) and \
                             ("time") in word_list:
-                                return word_list[-1]
+                                return float(word_list[-1])
 
 
 
@@ -370,7 +388,8 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
             attempt__iter__c, ID,
             acc_max_delay__lower_limit,
             acc_max_delay__upper_limit,
-            prev__acc_max_delay):
+            prev__acc_max_delay,
+            report__timing__f):
     
     #*** F:DN variabes 
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
@@ -399,11 +418,11 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
             "read_cons_and_report_t__log.txt"
     tcl_file_name =  "read_and_cons_transitional_cells_and_report_timing.tcl"
     
-    
     #----------------------------------------------------
     #--- F: Body
     #----------------------------------------------------
     setup_info =  "clk:"+str(clk_period) +"\n"
+    setup_info += "resynthesis of the file:" + report__timing__f+ "\n"
     setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
     setup_info +=  "precision:"+str(precision) +"\n"
     setup_info +=  "acc_max_delay:"+str(acc_max_delay) +"\n"
@@ -414,7 +433,7 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
     os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
             ../tcl_src/"+tcl_file_name +" >> " + output__file__na)
 
-
+    return output__file__na
 
 def grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
         none_transitioning_cells__log__addr, transitioning_cells__log__addr,\

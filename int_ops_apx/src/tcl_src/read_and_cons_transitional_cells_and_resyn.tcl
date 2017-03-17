@@ -155,15 +155,13 @@ set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesu
 echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F:DN before putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN all paths" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_area -hierarchy -nosplit >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+
 #echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #echo "*** F: after putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #----------------------------------------------------
-
 
 set_max_delay $acc_max_delay -to [all_outputs]
 set priority_array  $acc_reg_a_b_c_joined 
@@ -175,13 +173,16 @@ foreach pt $all_input__pt {
     }
 }
 #ungroup -all -flatten
-
-
-#set_max_delay $acc_max_delay -through $transition_cells__l -to $acc_reg_d_l
-#set_max_delay $clk_period -through $non_transition_cells__l -to $acc_reg_d_l
-
-
 set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
+
+
+#*** F:report the timing for transitional cells
+echo "*** F:DN transitional cells" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_area -hierarchy -nosplit >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+
 
 #*** F:DN compile
 compile_ultra -timing_high_effort_script -no_autoungroup 

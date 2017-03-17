@@ -18,23 +18,25 @@ def main():
     design_name = "conf_int_mac__noFF__arch_agnos"
     wrapper_module__na = design_name +"__w_wrapper"
     ID = "SCBSD" #best case best sub delay
-    clk_period = .7; 
-    DATA_PATH_BITWIDTH = 32
+    
+    clk_period = .250; 
+    DATA_PATH_BITWIDTH = 8    
     OP_BITWIDTH = DATA_PATH_BITWIDTH 
     CLKGATED_BITWIDTH = 4; #numebr of apx bits
     #-----  -----    -----     -----     -----     -----
-    acc_max_delay__upper_limit = .46
-    acc_max_delay__lower_limit = .40
+    acc_max_delay__upper_limit = .300 #.46
+    acc_max_delay__lower_limit = .1#.436#.40
     acc_max_delay__upper_limit__initial_value = acc_max_delay__upper_limit 
+    best_delay_this_round = acc_max_delay__upper_limit 
     #acc_max_delay__c = 10
     #acc_max_delay__step_size = .01; #*** F:DN use the for loop
-    attempt__upper_bound = 5
+    attempt__upper_bound = 3
     #-----  -----    -----     -----     -----     -----
     #*** F: CN if you want to focuse on one precision, simply pick the
     #       higher_limit one about lower limit
-    precision__lower_limit = 26
-    precision__higher_limit = 32
-    precision__step_size = 2
+    precision__lower_limit = 5
+    precision__higher_limit = 7
+    precision__step_size = 1
     #precision = 30 ;#*** F:AN instead use the for loop
     #.................................................... 
     transition_cells__base_addr = "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src"
@@ -56,46 +58,60 @@ def main():
     transitioning_cells__log__na = "transitioning_cells"+str(ID)+".txt"
     none_transitioning_cells__log__na = "none_transitioning_cells"+str(ID)+".txt"
     timing_per_cell__log__addr = timing_per_cell__log__na
+    report__timing__f__prev = "starting point"  #*** F:DN this variable help us 
+                                          #    track back the iteration results
     #transitioning_cells__log__addr = transitioning_cells__log__na
     #none_transitioning_cells__log__addr = none_transitioning_cells__log__na
-
-
+    
+    
     #---------------------------------------------------- 
     #*** F:DN Body
     #---------------------------------------------------- 
+    #*** F:DN synth design with the clk (only const is the clk)
     synth_design_with_only_clk_constraint(wrapper_module__na, syn__file__addr, clk_period, \
             DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH,
             base_to_dump_reports__dir, ID)
-#        
-    #*** F:DN hardwire to zero 
+    
+    #*** F:DN iterate through precisions and find best delay for each 
     for precision in range(precision__lower_limit, 
             precision__higher_limit, 
             precision__step_size):
+        
+        #*** F:DN Update Transitional Cell Lists
         grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
                 none_transitioning_cells__log__na,\
                 transitioning_cells__log__na,\
                 syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
                 CLKGATED_BITWIDTH, precision, base_to_dump_reports__dir, ID)
         
-        #*** F:DN resynthesize the design while constraining the paths that goes
-        #         through the cells responsible for the none_apx part of the result
         
+        #*** F:DN RESET acc_max_delay and it's upper limit 
+        #*** F:AN the lower limit is kept to the prev iteration
+        #         since we iterate the values downward, and hence
+        #         it's impossible for lower limit to be lower
+        #         than the prev iteration (lower precision)
+        #         This should change if we iterate in the reverse order
         acc_max_delay = acc_max_delay__upper_limit__initial_value
+        acc_max_delay__upper_limit = acc_max_delay__upper_limit__initial_value 
         slack_met = True
+        
         while (True): 
-            if (slack_met):
-                acc_max_delay__upper_limit = acc_max_delay
-            else:
+            #*** F:DN adjust the delays 
+            if not(slack_met):
                 acc_max_delay__lower_limit = acc_max_delay
-                #acc_max_delay__upper_limit = best_delay_so_far
+                #acc_max_delay__upper_limit = best_delay_this_round
             prev__acc_max_delay = acc_max_delay 
             acc_max_delay  = float(acc_max_delay__upper_limit + acc_max_delay__lower_limit)/float(2)
             acc_max_delay =  float("{0:.3f}".format(acc_max_delay)) #up to 2
             if (acc_max_delay__upper_limit == acc_max_delay__lower_limit) or\
                     (prev__acc_max_delay == acc_max_delay):
                 break
+            
+            #*** F:DN iterate in quest of a deisng with the acc_max_delay 
             for attempt__iter__c in range(0,
                     attempt__upper_bound): 
+                
+                #*** F:DN read, cons and resyn 
                 read_and_cons_transitional_cells_and_resyn(\
                         syn__file__na,
                         syn__wrapper_module__na, transition_cells__base_addr,
@@ -105,7 +121,8 @@ def main():
                         base_to_dump_results__dir,
                         attempt__iter__c,
                         ID)
-                #*** F:DN hardwire to zero 
+                
+                #*** F:DN update the synfile and transition file NAMES
                 syn__file__na = syn__wrapper_module__na +\
                         "__only_clk_cons_resynthesized" + str(ID) +".v" # this the wrapper
                 syn__file__addr = base__dir + "/" + syn__file__na
@@ -113,6 +130,8 @@ def main():
                         "transitioning_cells_after_resyn"+str(ID)+".txt"
                 none_transitioning_cells__log__na =\
                         "none_transitioning_cells_after_resyn" + str(ID) +".txt"
+                
+                #*** F:DN Update Transitional Celss Lists
                 grep_for_transitional_cells(\
                         syn__file__na, syn__file__addr,
                         timing_per_cell__log__addr,
@@ -124,7 +143,9 @@ def main():
                         CLKGATED_BITWIDTH, 
                         precision, base_to_dump_reports__dir,
                         ID)
-                read_and_cons_transitional_cells_and_report_timing(\
+                
+                #*** F:DN read, cons and report
+                report__timing__f__prev = read_and_cons_transitional_cells_and_report_timing(\
                         syn__file__na,
                         syn__wrapper_module__na, 
                         transition_cells__base_addr,
@@ -138,12 +159,15 @@ def main():
                         ID,
                         acc_max_delay__lower_limit,
                         acc_max_delay__upper_limit,
-                        prev__acc_max_delay)
-                my_dir =\
-                            "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
+                        prev__acc_max_delay,
+                        report__timing__f__prev)
+                
+                #*** F:DN look at the slack values and break (if met),
+                #         otherwise, if a new design with better delay found
+                #         record it
+                my_dir ="/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
                 #*** F:AN this needs to change to add or something later 
                 op_type = "mac" 
-                #*** F:DN if slack met break 
                 file_to_look_for_slack_in = my_dir + "/"+ str(op_type)+"_"+\
                         str(DATA_PATH_BITWIDTH)+\
                         "__clk_"+ str(clk_period)+\
@@ -152,25 +176,35 @@ def main():
                         "__atmpt_"+str(attempt__iter__c)+\
                         "__id_"+str(ID)+ "__evol_log.txt"
                 slack_met = parse_file_to_get_slack(file_to_look_for_slack_in)
-                if (slack_met):
-                    break
-                else:
-                    best_delay_so_far = parse_file_to_get_best_delay(file_to_look_for_slack_in)
-                    acc_max_delay__upper_limit = min(best_delay_so_far,
+                best_delay_this_round = parse_file_to_get_best_delay(file_to_look_for_slack_in)
+                
+                #*** F:DN archive best (if this iteration is the best)
+                if (best_delay_this_round < acc_max_delay__upper_limit):
+                    archive_design_and_design_info_best_case_found(syn__file__addr,
+                            transitioning_cells__log__na,
+                            none_transitioning_cells__log__na,
+                            )
+                    report__timing__f__best = report__timing__f__prev
+                acc_max_delay__upper_limit = min(best_delay_this_round,
                             acc_max_delay__upper_limit)
+                
+                #*** F:DN if met, stop trying
+                if(slack_met):
+                    break
+            
+            #*** F:DN  restore the best found so far
+            restore_design_and_design_info_best_case_found(syn__file__addr,
+                    transitioning_cells__log__na,
+                    none_transitioning_cells__log__na)
+            report__timing__f__prev = report__timing__f__best
+        #*** F:DN update the synfile and transition file NAMES
         transitioning_cells__log__na = "transitioning_cells"+str(ID)+".txt"
         none_transitioning_cells__log__na = "none_transitioning_cells"+str(ID)+".txt"
         syn__file__na = syn__wrapper_module__na + \
                 "__only_clk_cons_synthesized"+str(ID)+".v" # this the wrapper
         syn__file__addr = base__dir + "/" + syn__file__na
  
-        #*** F:DN returning files to original 
-#        transitioning_cells__log__na = "transitioning_cells"+str(ID)+".txt"
-#        none_transitioning_cells__log__na = "none_transitioning_cells"+str(ID)+".txt"
-#        syn__file__na = syn__wrapper_module__na + \
-#                "__only_clk_cons_synthesized"+str(ID)+".v" # this the wrapper
-#        syn__file__addr = base__dir + "/" + syn__file__na
-
+        
 #----------------------------------------------------
 #--- F: Main
 #----------------------------------------------------
@@ -260,6 +294,35 @@ def hardwire_apx_bits_to_zero_old(sourceFileAddr, DATA_PATH_BITWIDTH, precision)
 
     
     modified_syn__file__handle.close()
+
+
+
+#**** F:DN basic test case 
+#*** it takes about 18 min to go through 5 bit precision
+#    and 
+#    clk_period = .250; 
+#    DATA_PATH_BITWIDTH = 8    
+#    OP_BITWIDTH = DATA_PATH_BITWIDTH 
+#    CLKGATED_BITWIDTH = 4; #numebr of apx bits
+#    #-----  -----    -----     -----     -----     -----
+#    acc_max_delay__upper_limit = .300 #.46
+#    acc_max_delay__lower_limit = .1#.436#.40
+#    acc_max_delay__upper_limit__initial_value = acc_max_delay__upper_limit 
+#    best_delay_this_round = acc_max_delay__upper_limit 
+#    #acc_max_delay__c = 10
+#    #acc_max_delay__step_size = .01; #*** F:DN use the for loop
+#    attempt__upper_bound = 3
+#    #-----  -----    -----     -----     -----     -----
+#    #*** F: CN if you want to focuse on one precision, simply pick the
+#    #       higher_limit one about lower limit
+#    precision__lower_limit = 5
+#    precision__higher_limit = 7
+#    precision__step_size = 1
+      
+
+
+
+
 
 
 
