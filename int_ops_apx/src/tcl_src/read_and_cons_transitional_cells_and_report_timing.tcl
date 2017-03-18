@@ -113,6 +113,13 @@ puts $acc_reg_a_b_c_joined
 puts $acc_reg_d_l
 #----------------------------------------------------
 
+set fp_1 [open $transition_cells__base_addr/$delays_striving_for__f__na]
+set file_data [read $fp_1]
+close $fp_1
+set delays_striving_for__l__string [split $file_data "\n"]
+set delays_striving_for__l [split $delays_striving_for__l__string " "]
+#echo $delays_striving_for__l > delays_striving_for_acquired_in_tcl
+
 
 #*** F:DN get transitioning cells list
 set fp [open $transition_cells__base_addr/$transitioning_cells__log__na r]
@@ -125,7 +132,8 @@ set fp [open $transition_cells__base_addr/none_$transitioning_cells__log__na r]
 set file_data [read $fp]
 close $fp
 set non_transition_cells__l__string [split $file_data "\n"]
-set non_transition_cells__l [split $non_transition_cells__l__string " "]
+#set non_transition_cells__l [split $non_transition_cells__l__string " "]
+
 #*** F:DN read the design
 read_file  $synth__file -autoread -top $my_toplevel
 check_design
@@ -180,7 +188,17 @@ foreach pt $all_input__pt {
 #
 #set_max_delay $acc_max_delay -through $transition_cells__l -to $acc_reg_d_l
 #set_max_delay $clk_period -through $non_transition_cells__l -to $acc_reg_d_l
-set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
+
+#set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
+set counter 1
+foreach non_transition_cells__l__e $non_transition_cells__l__string {
+    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+    set const [expr [lindex $delays_striving_for__l $counter]]
+    set_max_delay $const -through $non_transition_cells__l -to [all_outputs]
+    #echo $first_el >> non_transition_cells__l__acquired__in_tcl
+    incr counter
+}
+
 
 
 #*** F:DN compile
@@ -206,7 +224,7 @@ report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${report_f
 #...   ...    ..  ...  ..    ..    ...      ..
 echo "*** non transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #report_timing -sort_by slack -exclude $transition_cells__l -nworst 30000 -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-report_timing -sort_by slack -from a[0] -to [all_outputs] >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+#report_timing -sort_by slack -from a[0] -to [all_outputs] >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #....................................................
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${report_file__prefix}__area.rpt
 report_power > ${REPORTS_DIR}/${report_file__prefix}__power.rpt
@@ -222,7 +240,12 @@ report_net
 echo $all_data__file__na >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F:DN transitional cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 
-report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+foreach non_transition_cells__l__e $non_transition_cells__l__string {
+    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+    report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+}
+
 
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
                                              #all paths meet the clk

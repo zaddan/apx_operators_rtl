@@ -37,6 +37,8 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set acc_max_delay .43
 #set attempt__iter__c 0
 #set ID 0
+#set delays_striving_for__f__na "blah"
+#set clk_period 0.25;set DATA_PATH_BITWIDTH 8;set CLKGATED_BITWIDTH 4;set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH8_DATA_PATH_BITWIDTH8;set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH8_DATA_PATH_BITWIDTH8__only_clk_cons_synthesizedSCBSD.v;set transition_cells__base_addr  /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src;set transitioning_cells__log__na transitioning_cellsSCBSD.txt ;set Pn 5;set acc_max_delay 0.2;set attempt__iter__c 0;set ID SCBSD;set delays_striving_for__f__na delays_striving_for.txt;
 ##----------------------------------------------------
 set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
@@ -114,19 +116,28 @@ puts $acc_reg_a_b_c_joined
 puts $acc_reg_d_l
 #----------------------------------------------------
 
-
-#*** F:DN get transitioning cells list
+#*** get delays striving for
+set fp_1 [open $transition_cells__base_addr/$delays_striving_for__f__na]
+set file_data [read $fp_1]
+close $fp_1
+set delays_striving_for__l__string [split $file_data "\n"]
+set delays_striving_for__l [split $delays_striving_for__l__string " "]
 set fp [open $transition_cells__base_addr/$transitioning_cells__log__na r]
 set file_data [read $fp]
 close $fp
 set transition_cells__l__string [split $file_data "\n"]
-set transition_cells__l [split $transition_cells__l__string " "]
+#set transition_cells__l [split $transition_cells__l__string " "]
 
+#*** F:DN get transitioning cells list
 set fp [open $transition_cells__base_addr/none_$transitioning_cells__log__na r]
 set file_data [read $fp]
 close $fp
 set non_transition_cells__l__string [split $file_data "\n"]
-set non_transition_cells__l [split $non_transition_cells__l__string " "]
+
+#puts [lindex $non_transition_cells__l__string 0]
+#exit
+#set non_transition_cells__l [split $non_transition_cells__l__string " "]
+
 #*** F:DN read the design
 read_file  $synth__file -autoread -top $my_toplevel
 check_design
@@ -163,7 +174,6 @@ report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_colle
 #echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #----------------------------------------------------
 
-set_max_delay $acc_max_delay -to [all_outputs]
 set priority_array  $acc_reg_a_b_c_joined 
 foreach pt $all_input__pt { 
     if {[lsearch -exact $priority_array $pt] >= 0} {
@@ -173,12 +183,26 @@ foreach pt $all_input__pt {
     }
 }
 #ungroup -all -flatten
-set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
+#set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
+
+set_max_delay $acc_max_delay -to [all_outputs]
+set counter 1
+foreach non_transition_cells__l__e $non_transition_cells__l__string {
+    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+    set const [expr [lindex $delays_striving_for__l $counter]]
+    set_max_delay $const -through $non_transition_cells__l -to [all_outputs]
+    #echo $first_el >> non_transition_cells__l__acquired__in_tcl
+    incr counter
+}
+#set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
 
 
 #*** F:report the timing for transitional cells
 echo "*** F:DN transitional cells" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+foreach non_transition_cells__l__e $non_transition_cells__l__string {
+    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+    report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+}
 echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_area -hierarchy -nosplit >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
@@ -200,7 +224,7 @@ report_timing -sort_by group -significant_digits 4 >  ${REPORTS_DIR}/${report_fi
 echo "now through and exclude" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 echo "*** transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 
-report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+#report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 
 #...   ...    ..  ...  ..    ..    ...      ..
 echo "*** non transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt

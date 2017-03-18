@@ -5,6 +5,46 @@
 import os
 import pylab
 
+#*** F:DN 
+def write_to_delays_striving_for__f(precision_best_delay__d, 
+        acc_max_delay, 
+        clk,
+        delays_striving_for__f__na,
+        propagate_info_regarding_previous_transiontal_cells__p):
+    delays_striving_for__f__handle = open(delays_striving_for__f__na, "w")
+    
+    if (propagate_info_regarding_previous_transiontal_cells__p): 
+        for precision in sorted(precision_best_delay__d.keys()):
+            delays_striving_for__f__handle.write(str(precision_best_delay__d[precision]) + " ")
+
+    delays_striving_for__f__handle.write(str(acc_max_delay) + " " )
+    delays_striving_for__f__handle.write(str(clk) + " ")
+    delays_striving_for__f__handle.write("to be ignored")
+    delays_striving_for__f__handle.close()
+
+
+
+#*** F:DN updating old_transitional cells (to contain new info found)
+def update_transitional_cells(old_transitioning_cells__log__na,
+        transitioning_cells__log__na) :
+    os.system("cp " + transitioning_cells__log__addr + " " +
+            old_transitioning_cells__log__na) 
+
+#*** F:DN obvious
+def append_one_file_to_another(old_transitioning_cells__log__na,
+        transitioning_cells__log__na):
+    fin = open(transitioning_cells__log__na, "r")
+    data1 = fin.read()
+    fin.close()
+    fin = open(old_transitioning_cells__log__na, "r")
+    data2 = fin.read()
+    fin.close()
+    combined_data = data1 + data2
+    fout = open(transitioning_cells__log__na, "w")
+    fout.write(combined_data)
+    fout.close()
+
+
 #*** F:DN obvious based on the name
 def archive_design_and_design_info_best_case_found(syn__file__adr,
                             transitioning_cells__log__na,
@@ -183,11 +223,12 @@ def find_delay_through_each_cell(timing_per_cell__log__addr, syn__file__na, syn_
 
 
 #*** F:DN same as the name 
-def find_transitioning_cells(timing_per_cell__log__addr,\
+def find_and_update_transitioning_cells(timing_per_cell__log__addr,\
         transitioning_cells__log__addr, none_transitioning_cells__log__addr):
     #*** F:DN Variables 
-    transitioning_cell__log__file_handle = open(transitioning_cells__log__addr, "w")
-    none_transitioning_cell__log__file_handle = open(none_transitioning_cells__log__addr, "w")
+    transitioning_cell__log__file_handle = open(transitioning_cells__log__addr,
+            "a+")
+    none_transitioning_cell__log__file_handle = open(none_transitioning_cells__log__addr, "a+")
     look_for_delay__p = False
     all_cells__l = []
     transitioning_cells__l = []
@@ -326,16 +367,24 @@ def parse_file_to_get_best_delay(src_file):
                                 return float(word_list[-1])
 
 
-
-
 #*** F:DN resynthesize the design while constraining the paths that goes
 #         through the cells responsible for the non_apx part of the result
-def read_and_cons_transitional_cells_and_resyn(syn__file__na,\
-            syn__wrapper_module__na, transition_cells__base_addr,
-            transitioning_cells__log__na, precision, clk_period, \
-            DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
-            base_to_dump_reports__dir, base_to_dump_results__dir,
-            attempt__iter__c, ID):
+def read_and_cons_transitional_cells_and_resyn(
+        syn__file__na,
+        syn__wrapper_module__na, 
+        transition_cells__base_addr,
+        transitioning_cells__log__na, 
+        precision, 
+        clk_period, 
+        DATA_PATH_BITWIDTH,
+        CLKGATED_BITWIDTH, 
+        acc_max_delay,
+        base_to_dump_reports__dir,
+        base_to_dump_results__dir,
+        attempt__iter__c, 
+        ID,
+        delays_striving_for__f__na
+        ):
     
     #*** F:DN variabes 
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
@@ -348,8 +397,9 @@ def read_and_cons_transitional_cells_and_resyn(syn__file__na,\
             "set Pn " + str(precision) + ";" + \
             "set acc_max_delay " + str(acc_max_delay)+ ";" \
             "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
-            "set ID " + str(ID)+ ";"
-    
+            "set ID " + str(ID)+ ";"+\
+            "set delays_striving_for__f__na " + delays_striving_for__f__na + ";"
+
     #*** F:AN for now set the syn__file__na to mac
     syn__file__na = "mac"
     output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
@@ -380,16 +430,25 @@ def read_and_cons_transitional_cells_and_resyn(syn__file__na,\
 
 
 #*** F:DN const transitonal cells and report time
-def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
-            syn__wrapper_module__na, transition_cells__base_addr,
-            transitioning_cells__log__na, precision, clk_period, \
-            DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
-            base_to_dump_reports__dir,
-            attempt__iter__c, ID,
-            acc_max_delay__lower_limit,
-            acc_max_delay__upper_limit,
-            prev__acc_max_delay,
-            report__timing__f):
+def read_and_cons_transitional_cells_and_report_timing(
+        syn__file__na,
+        syn__wrapper_module__na, 
+        transition_cells__base_addr,
+        transitioning_cells__log__na, 
+        precision, 
+        clk_period, 
+        DATA_PATH_BITWIDTH, 
+        CLKGATED_BITWIDTH, 
+        acc_max_delay,
+        base_to_dump_reports__dir,
+        attempt__iter__c, 
+        ID,
+        acc_max_delay__lower_limit,
+        acc_max_delay__upper_limit,
+        prev__acc_max_delay,
+        report__timing__f,
+        delays_striving_for__f__na
+        ):
     
     #*** F:DN variabes 
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
@@ -402,7 +461,9 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
             "set Pn " + str(precision) + ";" + \
             "set acc_max_delay " + str(acc_max_delay)+ ";"\
             "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
-            "set ID " + str(ID)+ ";"
+            "set ID " + str(ID)+ ";"+\
+            "set delays_striving_for__f__na " + delays_striving_for__f__na + ";"
+
 
 
     
@@ -435,23 +496,68 @@ def read_and_cons_transitional_cells_and_report_timing(syn__file__na,\
 
     return output__file__na
 
-def grep_for_transitional_cells(syn__file__na, syn__file__addr, timing_per_cell__log__addr,\
-        none_transitioning_cells__log__addr, transitioning_cells__log__addr,\
-        syn__wrapper_module__na, syn__module__na, clk_period, DATA_PATH_BITWIDTH,\
-        CLKGATED_BITWIDTH, precision, base_to_dump_reports__dir, ID):
+def grep_for_and_update_transitional_cells(
+        syn__file__na, 
+        syn__file__addr, 
+        timing_per_cell__log__addr,
+        none_transitioning_cells__log__addr,
+        transitioning_cells__log__addr,
+        syn__wrapper_module__na, 
+        syn__module__na, clk_period, 
+        DATA_PATH_BITWIDTH,
+        CLKGATED_BITWIDTH, 
+        precision, 
+        base_to_dump_reports__dir, 
+        ID,
+        propagate_info_regarding_previous_transiontal_cells__p,
+        precision__lower_limit
+        ):
 
     #*** F: DN keep a copy of original synthesized file 
     os.system("cp  " + syn__file__addr + " " +\
             syn__file__addr+"_original_synthesis")
-    #*** F:DN hardwire bits to zero 
-    hardwire_apx_bits_to_zero(syn__file__addr, syn__wrapper_module__na, syn__module__na, DATA_PATH_BITWIDTH, precision);
-    #*** F:DN find cells responsible for the none_apx part of the result
-    find_delay_through_each_cell(timing_per_cell__log__addr, syn__file__na, syn__wrapper_module__na, \
-            clk_period, DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, precision,
-            base_to_dump_reports__dir, ID);
-    #*** F:DN find cells responsible for the apx part of the result
-    find_transitioning_cells(timing_per_cell__log__addr,\
-            transitioning_cells__log__addr, none_transitioning_cells__log__addr)
-    #*** F:DN returning the synthesized file to it's original (un hardwired) 
-    os.system("cp  " + syn__file__addr +"_original_synthesis" + " " + syn__file__addr) 
+    
+    #*** F:DN erasing previous transitional cells from the file 
+    none_transitioning_cell__log__file_handle = \
+            open(none_transitioning_cells__log__addr, "w")
+    none_transitioning_cell__log__file_handle.close()
+    transitioning_cell__log__file_handle = \
+            open(transitioning_cells__log__addr, "w")
+    transitioning_cell__log__file_handle.close()
+
+    #*** F:DN if propage the info, setup the limits properly for iteration 
+    if (propagate_info_regarding_previous_transiontal_cells__p):
+        precision_to_find_transitional_cells__lower_limit = precision__lower_limit
+    else:
+        precision_to_find_transitional_cells__lower_limit = precision
+    precision_to_find_transitional_cells__upper_limit = precision + 1
+
+    #*** F:DN iterate through various precisions and generate transitional cells
+    for precision__el in range(
+            precision_to_find_transitional_cells__lower_limit, 
+            precision_to_find_transitional_cells__upper_limit):
+        #*** F:DN hardwire bits to zero 
+        hardwire_apx_bits_to_zero(syn__file__addr, syn__wrapper_module__na,
+                syn__module__na, DATA_PATH_BITWIDTH, precision__el);
+        
+        #*** F:DN find cells responsible for the none_apx part of the result
+        find_delay_through_each_cell(timing_per_cell__log__addr, syn__file__na, syn__wrapper_module__na, \
+                clk_period, DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, precision__el,
+                base_to_dump_reports__dir, ID);
+        
+        #*** F:DN find cells responsible for the apx part of the result
+        find_and_update_transitioning_cells(timing_per_cell__log__addr,
+                transitioning_cells__log__addr, 
+                none_transitioning_cells__log__addr)
+        
+        #*** F:DN append to the old transitional cells 
+    #    if (propagate_info_regarding_previous_transiontal_cells__p): 
+    #        append_one_file_to_another(old_transitioning_cells__log__na,
+    #                transitioning_cells__log__na)
+    #        append_one_file_to_another(old_none_transitioning_cells,
+    #                none_transitioning_cells__log__na)
+    #
+        
+        #*** F:DN returning the synthesized file to it's original (un hardwired) 
+        os.system("cp  " + syn__file__addr +"_original_synthesis" + " " + syn__file__addr) 
 
