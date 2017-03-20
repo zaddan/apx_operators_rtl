@@ -15,12 +15,12 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 }
 
 
-set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results" 
+set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
 #----------------------------------------------------
 #---- Parameters
 #----------------------------------------------------
-set DESIGN_NAME conf_int_mac__noFF__arch_agnos__OP_BITWIDTH32_DATA_PATH_BITWIDTH32
-set synth__file ${design_dir_addr}/conf_int_mac__noFF__arch_agnos_32Bit_32Bit_synthesized.v;#the synthesized verilog file
+set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32
+set synth__file ${design_dir_addr}/test_mac.v;#the synthesized verilog file
 set DATA_PATH_WIDTH 32;
 set CLKGATED_BITWIDTH 4; #numebr of apx bits
 set clk_period .5
@@ -62,7 +62,7 @@ close $parameter_log
 #----------------------------------------------------
 set WDIR "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn"
 #~/behzad_local/verilog_files/synthesis
-set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
+set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
 #~/behzad_local/verilog_files/apx_operators/int_ops_apx
 set REPORTS_DIR ${WDIR}/reports
 
@@ -400,7 +400,7 @@ if {$apx_optimal == 1} {
 #compile_ultra -timing_high_effort_script -incremental
 
 
-set_dp_smartgen_options -mult_radix4 true; #non_booth
+#set_dp_smartgen_options -mult_radix4 true; #non_booth
 #set_dp_smartgen_options -mult_arch benc_radix8
 #set_dp_smartgen_options -mult_arch benc_radix8_mux
 #set_dp_smartgen_options -mult_arch benc_radix4
@@ -420,14 +420,14 @@ set_dp_smartgen_options -mult_radix4 true; #non_booth
 #---    ---      ---       ---       ---       ---
 #report_timing -path full -sort_by slack -nworst 5000000 -max_paths 5000000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #report_timing -path full -sort_by slack -nworst 20000 -max_paths 20000 -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing_ref.rpt
-report_timing -path full -from $reg_0_4__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_4_8__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
-report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -from $reg_0_4__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -from $reg_4_8__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -from $reg_8_12__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -from $reg_12_16__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
+#report_timing -path full -from $reg_16_32__a_b_c_joined -to $all_reg_d_l -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_timing.rpt
 #---    ---      ---       ---       ---       ---
 
-
+report_timing -path full > ${REPORTS_DIR}/timing_result.rpt
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_area.rpt
 report_power > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_power.rpt
 report_constraint -all_violators > ${REPORTS_DIR}/${DESIGN_NAME}__${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit_constrain_violators.rpt
@@ -446,7 +446,7 @@ set syn_name  ${DESIGN_NAME}_${OP_BITWIDTH}Bit_${DATA_PATH_WIDTH}Bit
 #the following generates the gatelevel netlist 
 #write -f verilog -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized.v
 #write_sdc ${RESULTS_DIR}/${syn_name}_synthesized.sdc
-write_sdf ${RESULTS_DIR}/${syn_name}_synthesized.mapped.sdf; #switching activity file
+#write_sdf ${RESULTS_DIR}/${syn_name}_synthesized.mapped.sdf; #switching activity file
 
 
 remove_design -hierarchy

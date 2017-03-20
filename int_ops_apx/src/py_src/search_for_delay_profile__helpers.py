@@ -4,7 +4,7 @@
 #----------------------------------------------------
 import os
 import pylab
-
+import numpy
 #*** F:DN 
 def write_to_delays_striving_for__f(precision_best_delay__d, 
         acc_max_delay, 
@@ -19,7 +19,7 @@ def write_to_delays_striving_for__f(precision_best_delay__d,
 
     delays_striving_for__f__handle.write(str(acc_max_delay) + " " )
     delays_striving_for__f__handle.write(str(clk) + " ")
-    delays_striving_for__f__handle.write("to be ignored")
+    delays_striving_for__f__handle.write("to_be_ignored")
     delays_striving_for__f__handle.close()
 
 
@@ -197,8 +197,9 @@ def find_delay_through_each_cell(timing_per_cell__log__addr, syn__file__na, syn_
     
     #*** F:DN Parameters 
     tcl_file__na =  "../tcl_src/find_delay_through_each_cell.tcl"
-    
-    #*** F:DN Variables 
+    os.system("pwd")
+    os.system("pwd")
+    #*** F:DN Variables
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
             "set CLKGATED_BITWIDTH " + str(CLKGATED_BITWIDTH) + ";" + \
@@ -228,6 +229,7 @@ def find_and_update_transitioning_cells(timing_per_cell__log__addr,\
     #*** F:DN Variables 
     transitioning_cell__log__file_handle = open(transitioning_cells__log__addr,
             "a+")
+    
     none_transitioning_cell__log__file_handle = open(none_transitioning_cells__log__addr, "a+")
     look_for_delay__p = False
     all_cells__l = []
@@ -268,6 +270,8 @@ def find_and_update_transitioning_cells(timing_per_cell__log__addr,\
     for cell__na in none_transitioning_cells__l: 
         none_transitioning_cell__log__file_handle.write(cell__na + " ")
     
+    transitioning_cell__log__file_handle.write("\n")
+    none_transitioning_cell__log__file_handle.write("\n")
     transitioning_cell__log__file_handle.close()
     none_transitioning_cell__log__file_handle.close()
 
@@ -322,6 +326,12 @@ def read_resyn_and_report(\
     os.system("echo starting dot_v file  >> " + output__file__na)
     os.system("cat  " + resyn__file__addr + "  >> " + output__file__na)
 
+def calc_design_worth(design_arrival_times__l):
+    return -1*numpy.mean(design_arrival_times__l)
+
+
+def is_slack_acceptable(design_arrival_times__l, acc_max_delay):
+    return ((acc_max_delay - design_arrival_times__l[0])>= 0)
 
 def parse_file_to_get_slack(src_file):
     start_looking = False 
@@ -347,7 +357,7 @@ def parse_file_to_get_slack(src_file):
                                     return False
 
 
-def parse_file_to_get_best_delay(src_file):
+def parse_file_to_get_design_arrival_times(src_file):
     start_looking = False 
     try:
         f = open(src_file)
@@ -364,7 +374,7 @@ def parse_file_to_get_best_delay(src_file):
                     if ("data" in word_list) and \
                             ("arrival" in word_list) and \
                             ("time") in word_list:
-                                return float(word_list[-1])
+                                return [(float(word_list[-1]))]
 
 
 #*** F:DN resynthesize the design while constraining the paths that goes

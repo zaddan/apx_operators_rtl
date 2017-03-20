@@ -24,13 +24,15 @@ def main():
     OP_BITWIDTH = DATA_PATH_BITWIDTH 
     CLKGATED_BITWIDTH = 4; #numebr of apx bits
     #-----  -----    -----     -----     -----     -----
-    acc_max_delay__upper_limit = .300 #.46
-    acc_max_delay__lower_limit = .1#.436#.40
-    acc_max_delay__upper_limit__initial_value = acc_max_delay__upper_limit 
+    acc_max_delay__upper_limit__initial_value = .156
+    acc_max_delay__lower_limit__initial_value = .152  
+    
+    acc_max_delay__upper_limit = acc_max_delay__upper_limit__initial_value
+    acc_max_delay__lower_limit = acc_max_delay__lower_limit__initial_value
     best_delay_this_round = acc_max_delay__upper_limit 
     #acc_max_delay__c = 10
     #acc_max_delay__step_size = .01; #*** F:DN use the for loop
-    attempt__upper_bound = 3
+    attempt__upper_bound = 2
     #-----  -----    -----     -----     -----     -----
     #*** F: CN if you want to focuse on one precision, simply pick the
     #       higher_limit one about lower limit
@@ -41,7 +43,7 @@ def main():
     #.................................................... 
     #*** F:DN if following predicate is true, we propagate the transitional
     #         cells found from one proecision to another
-    propagate_info_regarding_previous_transiontal_cells__p = False 
+    propagate_info_regarding_previous_transiontal_cells__p = True
         
     #.................................................... 
     transition_cells__base_addr = "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src"
@@ -53,8 +55,13 @@ def main():
     #---------------------------------------------------- 
     #*** F:DN Variables
     #---------------------------------------------------- 
+    best_design_worth_so_far = -1 
+    first_time__p = True #this variable allows us to archive the transitional
+                         #cells and also the design in the first iteration
+                         # this is helpfull when the acc_mac__upper limit 
+                         # is chosen lower than what the tool can find
     report__timing__f__prev = "starting point"
-    precision_best_delay__d = {}
+    precision_acc_max_delay_resulting_in_best_design__d = {}
     delays_striving_for__f__na = "delays_striving_for.txt" #this file
     #                           keeps track of the best delays found for each
     #                           precision, so it can be retrieved in the tcl
@@ -64,6 +71,18 @@ def main():
             "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/logs_2"
     base_to_dump_results__dir =\
             "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
+    base_to_dump_reports__dir_2 =\
+            "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
+    op_type = "mac" 
+    tool_chain__log__f__na = op_type+"_" + \
+            str(DATA_PATH_BITWIDTH)+"__"+\
+            "clk" + "_"+ str(clk_period) + "__"+ \
+            "id"+"_"+str(ID)+"__"+\
+            "tool_chain__log.txt" 
+    tool_chain__log__f__addr = base_to_dump_reports__dir_2 +\
+            "/"+tool_chain__log__f__na
+    tool_chain__log__handle = open(tool_chain__log__f__addr, "w")
+
     syn__file__addr = base__dir + "/" + syn__file__na
     timing_per_cell__log__na = "timing_per_cell__log"+str(ID)+".txt"
     timing_per_cell__log__addr = timing_per_cell__log__na
@@ -105,22 +124,26 @@ def main():
     #*** F:DN Body
     #---------------------------------------------------- 
     #*** F:DN synth design with the clk (only const is the clk)
-#    synth_design_with_only_clk_constraint(
-#            wrapper_module__na, 
-#            syn__file__addr, clk_period, 
-#            DATA_PATH_BITWIDTH, 
-#            CLKGATED_BITWIDTH,
-#            base_to_dump_reports__dir,
-#            ID)
+    synth_design_with_only_clk_constraint(
+            wrapper_module__na,
+            syn__file__addr, clk_period,
+            DATA_PATH_BITWIDTH,
+            CLKGATED_BITWIDTH,
+            base_to_dump_reports__dir,
+            ID)
     
     #*** F:DN iterate through precisions and find best delay for each 
     #*** F:AN the upper bound can not be higher than 32(hence 32 not included
     #         I believe there are many reasons but at the very least None
     #         transionining cells are 32 is none which would error out
-    for precision in range(precision__lower_limit, 
-            precision__higher_limit, 
-            precision__step_size):
-        
+    precision = precision__lower_limit
+    while(True):
+        if (precision > precision__higher_limit):
+            break
+#    for precision in range(precision__lower_limit, 
+#            precision__higher_limit, 
+#            precision__step_size):
+#        
         #*** F:DN append transitional cells to the old_transitioning
         #         cells. comment this if you don't want to propagate
         #         the transitional cell dependencies across precisions
@@ -150,11 +173,11 @@ def main():
         #         This should change if we iterate in the reverse order
         acc_max_delay = acc_max_delay__upper_limit__initial_value
         acc_max_delay__upper_limit = acc_max_delay__upper_limit__initial_value 
-        slack_met = True
+        slack_acceptable__p = True
+        while (True):
 
-        while (True): 
             #*** F:DN adjust the delays 
-            if not(slack_met):
+            if not(slack_acceptable__p):
                 acc_max_delay__lower_limit = acc_max_delay
                 #acc_max_delay__upper_limit = best_delay_this_round
             prev__acc_max_delay = acc_max_delay 
@@ -163,7 +186,7 @@ def main():
             if (acc_max_delay__upper_limit == acc_max_delay__lower_limit) or\
                     (prev__acc_max_delay == acc_max_delay):
                 break
-            write_to_delays_striving_for__f(precision_best_delay__d, 
+            write_to_delays_striving_for__f(precision_acc_max_delay_resulting_in_best_design__d, 
                     acc_max_delay,
                     clk_period,
                     delays_striving_for__f__na,
@@ -235,7 +258,6 @@ def main():
                 #         record it
                 my_dir ="/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
                 #*** F:AN this needs to change to add or something later 
-                op_type = "mac" 
                 file_to_look_for_slack_in = my_dir + "/"+ str(op_type)+"_"+\
                         str(DATA_PATH_BITWIDTH)+\
                         "__clk_"+ str(clk_period)+\
@@ -243,20 +265,32 @@ def main():
                         "__Pn_"+str(precision)+\
                         "__atmpt_"+str(attempt__iter__c)+\
                         "__id_"+str(ID)+ "__evol_log.txt"
-                slack_met = parse_file_to_get_slack(file_to_look_for_slack_in)
-                best_delay_this_round = parse_file_to_get_best_delay(file_to_look_for_slack_in)
-                
+                #slack_acceptable = parse_file_to_get_slack(file_to_look_for_slack_in)
+                design_arrival_times__l = parse_file_to_get_design_arrival_times(file_to_look_for_slack_in)
+                slack_acceptable__p = is_slack_acceptable(design_arrival_times__l, acc_max_delay)
+                design_worth = calc_design_worth(design_arrival_times__l) 
                 #*** F:DN archive best (if this iteration is the best)
-                if (best_delay_this_round < acc_max_delay__upper_limit):
+                if (design_worth > best_design_worth_so_far): 
                     archive_design_and_design_info_best_case_found(syn__file__addr,
                             transitioning_cells__log__na,
                             none_transitioning_cells__log__na)
                     report__timing__f__best = report__timing__f__prev
-                acc_max_delay__upper_limit = min(best_delay_this_round,
-                            acc_max_delay__upper_limit)
+                    precision_acc_max_delay_resulting_in_best_design__d[precision] = acc_max_delay
+                    best_design_worth_so_far = design_worth
+                elif first_time__p: #this is to make sure that we will have a value for these variables 
+                    archive_design_and_design_info_best_case_found(syn__file__addr,
+                            transitioning_cells__log__na,
+                            none_transitioning_cells__log__na)
+                    report__timing__f__best = report__timing__f__prev
+                    precision_acc_max_delay_resulting_in_best_design__d[precision] = acc_max_delay
+                    best_design_worth_so_far = design_worth
+                
+#                acc_max_delay__upper_limit = min(best_delay_this_round,
+#                            acc_max_delay__upper_limit)
+                first_time__p = False 
                 
                 #*** F:DN if met, stop trying
-                if(slack_met):
+                if(slack_acceptable__p):
                     break
             
             #*** F:DN  restore the best found so far
@@ -267,10 +301,23 @@ def main():
         
         
         #*** F:DN record best delay found for the precision
-        precision_best_delay__d[precision] = acc_max_delay__upper_limit 
+        #precision_acc_max_delay_resulting_in_best_design__d[precision] = acc_max_delay__upper_limit 
+        
+        #*** F:DN adjust acc_max_delay__upper_limit__initial_value if necessary
+        #         and repeate for the same precision if necessary
+        if (acc_max_delay >= acc_max_delay__upper_limit__initial_value):
+            acc_max_delay__uper_limit__expanded =  acc_max_delay__upper_limit + .05*(acc_max_delay__upper_limit)
+            tool_chain__log__handle.write("acc_max_delay__upper_limit of " + \
+                    str(acc_max_delay__upper_limit__initial_value) + " was not high enough for"+ \
+                    " precision: " +str(precision) + ". we expanded the upper\
+                    limite to " + str(acc_max_delay__uper_limit__expanded))
+            acc_max_delay__upper_limit__initial_value = acc_max_delay__uper_limit__expanded
+        else:
+            precision += precision__step_size
         
         #*** F:DN update the synfile and transition file NAMES
         if not(propagate_info_regarding_previous_transiontal_cells__p): 
+            design_worth = 0
             transitioning_cells__log__na = "transitioning_cells"+str(ID)+".txt"
             none_transitioning_cells__log__na = "none_transitioning_cells"+str(ID)+".txt"
             syn__file__na = syn__wrapper_module__na + \
@@ -278,126 +325,11 @@ def main():
             syn__file__addr = base__dir + "/" + syn__file__na
             report__timing__f__prev = "starting point"
  
-        
+    tool_chain__log__handle.close()        
 #----------------------------------------------------
 #--- F: Main
 #----------------------------------------------------
 main()
-
-
-
-#----------------------------------------------------
-#--- F: Parameters:
-#----------------------------------------------------
-#----------------------------------------------------
-#--- F: Helpers
-#----------------------------------------------------
-def dummy():
-    print "".join(map(lambda x: str(x), apx_optimal_mode.values())), "::" , msb_1_max_delay, " ", msb_2_max_delay, " ", msb_3_max_delay, " " ,msb_4_max_delay
-
-#print tcl_parametrs
-#----------------------------------------------------
-#*** F:DN hardwire the bits that will be approimxated (by modifying the 
-#         synthesized design
-def hardwire_apx_bits_to_zero_old(sourceFileAddr, DATA_PATH_BITWIDTH, precision):
-    #*** F:DN Variables 
-    modified_syn__file__addr = sourceFileAddr
-    original_syn_copy__file__addr = sourceFileAddr+"_temp"
-    os.system("cp " + sourceFileAddr + " " + original_syn_copy__file__addr) 
-    modified_syn__file__handle = open(modified_syn__file__addr, "w")
-    condition = [False, False, False, False, False] #if satisfied modify the file
-    done_modifiying = False
-    next_line_modify = False 
-    apx_bit__c = DATA_PATH_BITWIDTH - precision 
-    #*** F:DN Body
-    #*** F:DN parse the file 
-    try:
-        f = open(original_syn_copy__file__addr)
-    except IOError:
-        handleIOError(original_syn_copy__file__addr, "csource file")
-        exit()
-    else:
-        found_one = False
-        line_nu = 0
-        f = open(original_syn_copy__file__addr)
-        with f:
-            for line in f:
-                line_nu +=1
-                word_list =   line.strip().replace(',', ' ').replace('/','').replace(';', ' ').split(' ') 
-                if "module conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32" in line:
-                    condition[0] = True
-                if ("input" in line) and ("[31:0]" in line)  and \
-                        ("a" in line) and condition[0] == True:
-                            modified__line = "input [" + str(precision - 1)+":0] a; \n"
-                            condition[1] = True
-                elif ("input" in line) and ("[31:0]" in line) and \
-                        ("b" in line) and (condition[0] == True):
-                            modified__line = "input [" + str(precision - 1)+":0] b;\n" 
-                            condition[2] = True
-                elif ("input" in line) and ("[31:0]" in line) and \
-                        ("c" in line) and (condition[0] == True):
-                            c_length = 32 - (2 * (32 - precision)) 
-                            modified__line = "input [" + str(c_length - 1)+":0] c;\n" 
-                            condition[3] = True
-                elif "conf_int_mac__noFF__arch_agnos_OP_BITWIDTH32_DATA_PATH_BITWIDTH32_1"\
-                        in line and not("module" in line):
-                    next_line_modify = True
-                    modified__line = line
-                elif next_line_modify:
-                    next_line_modify = False 
-                    apx_bit__c = DATA_PATH_BITWIDTH - precision 
-                    modified__line = ".clk(clk), .rst(n1)," + \
-                            ".a("+ "{a,"+str(apx_bit__c)+"\'b0})," + \
-                            ".b("+ "{b,"+ str(apx_bit__c)+"\'b0})," + \
-                            ".c("+ "{c,"+ str(2*apx_bit__c)+"\'b0})," + \
-                            ".d(d) );"
-                    condition[4] = True 
-                else:
-                    modified__line = line
-                
-               
-                if (done_modifiying): 
-                    modified_syn__file__handle.write(line)
-                else:
-                    modified_syn__file__handle.write(modified__line)
-                
-                if (condition[0] and condition[1] and condition[2] and \
-                        condition[3] and condition[4] and \
-                        (not(done_modifiying))):
-                    done_modifiying = True
-
-    
-    modified_syn__file__handle.close()
-
-
-
-#**** F:DN basic test case 
-#*** it takes about 18 min to go through 5 bit precision
-#    and 
-#    clk_period = .250; 
-#    DATA_PATH_BITWIDTH = 8    
-#    OP_BITWIDTH = DATA_PATH_BITWIDTH 
-#    CLKGATED_BITWIDTH = 4; #numebr of apx bits
-#    #-----  -----    -----     -----     -----     -----
-#    acc_max_delay__upper_limit = .300 #.46
-#    acc_max_delay__lower_limit = .1#.436#.40
-#    acc_max_delay__upper_limit__initial_value = acc_max_delay__upper_limit 
-#    best_delay_this_round = acc_max_delay__upper_limit 
-#    #acc_max_delay__c = 10
-#    #acc_max_delay__step_size = .01; #*** F:DN use the for loop
-#    attempt__upper_bound = 3
-#    #-----  -----    -----     -----     -----     -----
-#    #*** F: CN if you want to focuse on one precision, simply pick the
-#    #       higher_limit one about lower limit
-#    precision__lower_limit = 5
-#    precision__higher_limit = 7
-#    precision__step_size = 1
-      
-
-
-
-
-
 
 
 

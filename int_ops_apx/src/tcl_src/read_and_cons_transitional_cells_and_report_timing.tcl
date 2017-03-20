@@ -240,8 +240,20 @@ report_net
 echo $all_data__file__na >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F:DN transitional cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 
+
+set non_transition_cells__l__length_minus_1 [expr [llength $non_transition_cells__l__string] - 1]
+set non_transition_cells__l__e [lindex $non_transition_cells__l__string $non_transition_cells__l__length_minus_1]
+set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+
+set non_transition_cells__l__string__length [llength $non_transition_cells__l__string]
+set offset [expr $non_transition_cells__l__string__length - 2]
 #report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
+    echo "======for precision=====:" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+    set precision_to_be_shown [expr $Pn - $offset]
+    echo $precision_to_be_shown >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+    set offset [expr $offset - 1] 
     set non_transition_cells__l [split  $non_transition_cells__l__e " "]
     report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 }

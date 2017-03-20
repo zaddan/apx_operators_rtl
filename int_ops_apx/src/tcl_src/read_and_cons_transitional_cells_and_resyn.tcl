@@ -196,11 +196,17 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
 }
 #set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
 
+set non_transition_cells__l__string__length [llength $non_transition_cells__l__string]
+set offset [expr $non_transition_cells__l__string__length - 2]
 
 #*** F:report the timing for transitional cells
 echo "*** F:DN transitional cells" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
     set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+    set precision_to_be_shown [expr $Pn - $offset]
+    echo "======for precision=====:" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+    echo $precision_to_be_shown >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+    set offset [expr $offset - 1] 
     report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 }
 echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
