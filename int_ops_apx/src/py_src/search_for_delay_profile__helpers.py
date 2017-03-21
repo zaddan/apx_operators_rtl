@@ -5,8 +5,12 @@
 import os
 import pylab
 import numpy
-#*** F:DN 
-def write_to_delays_striving_for__f(precision_best_delay__d, 
+import copy
+
+#*** F:DN
+def write_to_delays_striving_for__f(\
+        targetting_precision,
+        bestDesignsPrecision_delay__d,
         acc_max_delay, 
         clk,
         delays_striving_for__f__na,
@@ -14,8 +18,9 @@ def write_to_delays_striving_for__f(precision_best_delay__d,
     delays_striving_for__f__handle = open(delays_striving_for__f__na, "w")
     
     if (propagate_info_regarding_previous_transiontal_cells__p): 
-        for precision in sorted(precision_best_delay__d.keys()):
-            delays_striving_for__f__handle.write(str(precision_best_delay__d[precision]) + " ")
+        for precision in sorted(bestDesignsPrecision_delay__d.keys()):
+            if (precision < targetting_precision):
+                delays_striving_for__f__handle.write(str(bestDesignsPrecision_delay__d[precision]) + " ")
 
     delays_striving_for__f__handle.write(str(acc_max_delay) + " " )
     delays_striving_for__f__handle.write(str(clk) + " ")
@@ -25,11 +30,12 @@ def write_to_delays_striving_for__f(precision_best_delay__d,
 
 
 #*** F:DN updating old_transitional cells (to contain new info found)
-def update_transitional_cells(old_transitioning_cells__log__na,
-        transitioning_cells__log__na) :
-    os.system("cp " + transitioning_cells__log__addr + " " +
-            old_transitioning_cells__log__na) 
-
+#def update_transitional_cells(\
+#        old_transitioning_cells__log__na,
+#        transitioning_cells__log__na) :
+#    os.system("cp " + transitioning_cells__log__addr + " " +
+#            old_transitioning_cells__log__na) 
+#
 #*** F:DN obvious
 def append_one_file_to_another(old_transitioning_cells__log__na,
         transitioning_cells__log__na):
@@ -127,7 +133,8 @@ def hardwire_apx_bits_to_zero(sourceFileAddr, wrapper_module__na, module_name, D
     try:
         f = open(original_syn_copy__file__addr)
     except IOError:
-        handleIOError(original_syn_copy__file__addr, "csource file")
+        print "src_file" + original_syn_copy__file__addr+ "not found"
+        #handleIOError(original_syn_copy__file__addr, "csource file")
         exit()
     else:
         f = open(original_syn_copy__file__addr)
@@ -241,7 +248,8 @@ def find_and_update_transitioning_cells(timing_per_cell__log__addr,\
     try:
         f = open(timing_per_cell__log__addr)
     except IOError:
-        handleIOError(timing_per_cell__log__addr, "csource file")
+        print "src_file" +timing_per_cell__log__addr+ "not found"
+#        handleIOError(timing_per_cell__log__addr, "csource file")
         exit()
     else:
         with f:
@@ -326,19 +334,39 @@ def read_resyn_and_report(\
     os.system("echo starting dot_v file  >> " + output__file__na)
     os.system("cat  " + resyn__file__addr + "  >> " + output__file__na)
 
-def calc_design_worth(design_arrival_times__l):
-    return -1*numpy.mean(design_arrival_times__l)
+def calc_design_worth(design_arrival_times__d):
+    return -1*numpy.mean(design_arrival_times__d.values())
 
 
-def is_slack_acceptable(design_arrival_times__l, acc_max_delay):
-    return ((acc_max_delay - design_arrival_times__l[0])>= 0)
+
+
+def is_slack_acceptable(\
+        precision,
+        currently_targetting_acc_max_delay,
+        currentDesignsPrecision_delay__d,
+        bestDesignsPrecision__delay__d):
+    return ((currently_targetting_acc_max_delay -\
+        currentDesignsPrecision_delay__d[precision]) >=0)
+
+
+
+
+
+def is_slack_met_for__precision_under_investigation(\
+                        currentDesignsPrecision_delay__d,
+                        precision,
+                        currently_targetting_acc_max_delay):
+    return ((currently_targetting_acc_max_delay -\
+        currentDesignsPrecision_delay__d[precision]) >=0)
+
 
 def parse_file_to_get_slack(src_file):
     start_looking = False 
     try:
         f = open(src_file)
     except IOError:
-        handleIOError(src_file, "csource file")
+        print "src_file" +src_file + "not found"
+        #handleIOError(src_file, "csource file")
         exit()
     else:
         with f:
@@ -356,13 +384,21 @@ def parse_file_to_get_slack(src_file):
                                 else:
                                     return False
 
-
-def parse_file_to_get_design_arrival_times(src_file):
+#*** F:DN it find the arrival time for the precisions so far
+#         investigated, and for the rest it sets them to the clk value
+def parse_file_to_get_design_arrival_times(\
+        src_file,
+        precision,
+        precision__lower_limit, 
+        precision__higher_limit):
     start_looking = False 
+    design_arrival_times__d = {}
+    precision__parsing_for = precision__lower_limit
     try:
         f = open(src_file)
     except IOError:
-        handleIOError(src_file, "csource file")
+        print "src_file" +src_file + "not found"
+        #handleIOError(src_file, "csource file")
         exit()
     else:
         with f:
@@ -374,8 +410,14 @@ def parse_file_to_get_design_arrival_times(src_file):
                     if ("data" in word_list) and \
                             ("arrival" in word_list) and \
                             ("time") in word_list:
-                                return [(float(word_list[-1]))]
+                                if (float(word_list[-1]) >=0): #this is b/c arrival time is repeated for the same precision, and the 2nd one is negative
+                                    design_arrival_times__d[precision__parsing_for] = (float(word_list[-1]))
+                                    precision__parsing_for +=1
+                                    last_arrival__t__seen = float(word_list[-1])
+    for precision__el in range(precision + 1, precision__higher_limit+1):
+        design_arrival_times__d[precision__el] = (last_arrival__t__seen)
 
+    return design_arrival_times__d
 
 #*** F:DN resynthesize the design while constraining the paths that goes
 #         through the cells responsible for the non_apx part of the result
@@ -570,4 +612,101 @@ def grep_for_and_update_transitional_cells(
         
         #*** F:DN returning the synthesized file to it's original (un hardwired) 
         os.system("cp  " + syn__file__addr +"_original_synthesis" + " " + syn__file__addr) 
+
+
+                
+def collect_syn_design_statistics(\
+        op_type,
+        DATA_PATH_BITWIDTH,
+        clk_period,
+        currently_targetting_acc_max_delay,
+        precision,
+        attempt__iter__c,
+        ID,
+        precision__lower_limit,
+        precision__higher_limit,
+        bestDesignsPrecision__delay__d):
+
+    my_dir ="/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
+       #*** F:AN this needs to change to add or something later 
+    file_to_look_for_slack_in = my_dir + "/"+ str(op_type)+"_"+\
+            str(DATA_PATH_BITWIDTH)+\
+            "__clk_"+ str(clk_period)+\
+            "__acc_max_del_"+str(currently_targetting_acc_max_delay)+\
+            "__Pn_"+str(precision)+\
+            "__atmpt_"+str(attempt__iter__c)+\
+            "__id_"+str(ID)+ "__evol_log.txt"
+    
+    #...   ...    ..  ...  ..    ..    ...      ..
+    currentDesignsPrecision_delay__d =\
+            parse_file_to_get_design_arrival_times(
+                    file_to_look_for_slack_in,
+                    precision, 
+                    precision__lower_limit,
+                    precision__higher_limit)
+    slack_acceptable__p = is_slack_acceptable(\
+            precision, 
+            currently_targetting_acc_max_delay,
+            currentDesignsPrecision_delay__d,
+            bestDesignsPrecision__delay__d)
+    #...   ...    ..  ...  ..    ..    ...      ..
+    slack_met_for_precision_under_investigation =\
+            is_slack_met_for__precision_under_investigation(\
+            currentDesignsPrecision_delay__d,
+            precision,
+            currently_targetting_acc_max_delay)
+    #...   ...    ..  ...  ..    ..    ...      ..
+    design_worth = calc_design_worth(\
+            currentDesignsPrecision_delay__d)
+
+    return (currentDesignsPrecision_delay__d,\
+            slack_acceptable__p,
+            slack_met_for_precision_under_investigation,
+            design_worth)
+
+                
+def archive_best(\
+        syn__file__addr,
+        transitioning_cells__log__na,
+        none_transitioning_cells__log__na,
+        report__timing__f__prev,
+        currentDesignsPrecision_delay__d,
+        design_worth,
+        precision,
+        precision_best_delay__d,
+        precision__best__p):
+
+    archive_design_and_design_info_best_case_found(syn__file__addr,
+            transitioning_cells__log__na,
+            none_transitioning_cells__log__na)
+    report__timing__f__best = report__timing__f__prev
+    bestDesignsPrecision__delay__d = \
+    copy.copy(currentDesignsPrecision_delay__d) #shallow copy
+    best_design_worth_so_far = design_worth
+    if (precision__best__p):
+        precision_best_delay__d[precision]= \
+                currentDesignsPrecision_delay__d[precision]
+ 
+    return  (report__timing__f__best,
+            bestDesignsPrecision__delay__d,
+            best_design_worth_so_far,
+            precision_best_delay__d)
+
+
+def expand__acc_max_delay__upper_limit(\
+        tool_chain__log__handle,
+        acc_max_delay__upper_limit,
+        acc_max_delay__upper_limit__initial_value,
+        precision):
+    acc_max_delay__upper_limit__expanded =  acc_max_delay__upper_limit + .05*(acc_max_delay__upper_limit)
+    tool_chain__log__handle.write("acc_max_delay__upper_limit of " + \
+            str(acc_max_delay__upper_limit__initial_value) + " was not high enough for"+ \
+            " precision: " +str(precision) + ". we expanded the upper\
+            limite to " + str(acc_max_delay__upper_limit__expanded))
+    acc_max_delay__upper_limit__initial_value = acc_max_delay__upper_limit__expanded
+    return acc_max_delay__upper_limit__initial_value
+
+
+
+
 

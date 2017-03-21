@@ -38,7 +38,7 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set attempt__iter__c 0
 #set ID 0
 #set delays_striving_for__f__na "blah"
-#set clk_period 0.25;set DATA_PATH_BITWIDTH 8;set CLKGATED_BITWIDTH 4;set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH8_DATA_PATH_BITWIDTH8;set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH8_DATA_PATH_BITWIDTH8__only_clk_cons_synthesizedSCBSD.v;set transition_cells__base_addr  /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src;set transitioning_cells__log__na transitioning_cellsSCBSD.txt ;set Pn 5;set acc_max_delay 0.2;set attempt__iter__c 0;set ID SCBSD;set delays_striving_for__f__na delays_striving_for.txt;
+#set clk_period 0.25;set DATA_PATH_BITWIDTH 8;set CLKGATED_BITWIDTH 4;set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH8_DATA_PATH_BITWIDTH8;set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH8_DATA_PATH_BITWIDTH8__only_clk_cons_synthesizedSCBSD.v;set transition_cells__base_addr  /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src;set transitioning_cells__log__na transitioning_cellsSCBSD.txt ;set Pn 5;set acc_max_delay 0.154;set attempt__iter__c 0;set ID SCBSD;set delays_striving_for__f__na delays_striving_for.txt;
 ##----------------------------------------------------
 set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
@@ -126,13 +126,24 @@ set fp [open $transition_cells__base_addr/$transitioning_cells__log__na r]
 set file_data [read $fp]
 close $fp
 set transition_cells__l__string [split $file_data "\n"]
+set transition_cells__l__string__length [llength transition_cells__l__string]
+#***F:DN need to manipulate the list b/c it has an extra {} at the end
+set transition_cells__l__string [lrange  $transition_cells__l__string  0 [expr $transition_cells__l__string__length -2]]
+set transition_cells__l__string__length [llength transition_cells__l__string]
+
+
 #set transition_cells__l [split $transition_cells__l__string " "]
 
 #*** F:DN get transitioning cells list
 set fp [open $transition_cells__base_addr/none_$transitioning_cells__log__na r]
 set file_data [read $fp]
 close $fp
+
 set non_transition_cells__l__string [split $file_data "\n"]
+set non_transition_cells__l__string__length [llength $non_transition_cells__l__string]
+#***F:DN need to manipulate the list b/c it has an extra {} at the end
+set non_transition_cells__l__string [lrange  $non_transition_cells__l__string  0 [expr $non_transition_cells__l__string__length -2]]
+set non_transition_cells__l__string__length [llength $non_transition_cells__l__string]
 
 #puts [lindex $non_transition_cells__l__string 0]
 #exit
@@ -182,9 +193,12 @@ foreach pt $all_input__pt {
         group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
     }
 }
-#ungroup -all -flatten
-#set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
 
+
+set_max_delay $clk_period -to [all_outputs]
+echo "*** F:DN all cells" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#*** F:DN constrain according to the constaints
 set_max_delay $acc_max_delay -to [all_outputs]
 set counter 1
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
@@ -194,21 +208,19 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
     #echo $first_el >> non_transition_cells__l__acquired__in_tcl
     incr counter
 }
-#set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
 
-set non_transition_cells__l__string__length [llength $non_transition_cells__l__string]
-set offset [expr $non_transition_cells__l__string__length - 2]
-
+set offset [expr $non_transition_cells__l__string__length - 1]
 #*** F:report the timing for transitional cells
 echo "*** F:DN transitional cells" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
     set non_transition_cells__l [split  $non_transition_cells__l__e " "]
     set precision_to_be_shown [expr $Pn - $offset]
-    echo "======for precision=====:" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-    echo $precision_to_be_shown >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+    set my_string  ***PRECISION:$precision_to_be_shown 
+    echo $my_string >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
     set offset [expr $offset - 1] 
     report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 }
+
 echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_area -hierarchy -nosplit >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}

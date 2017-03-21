@@ -5,7 +5,7 @@
 import os
 import pylab
 from search_for_delay_profile__helpers import *
-
+import copy
 
 #----------------------------------------------------
 #---- F: Main 
@@ -55,12 +55,21 @@ def main():
     #---------------------------------------------------- 
     #*** F:DN Variables
     #---------------------------------------------------- 
+    currentDesignsPrecision_delay__d =  {}
+    bestDesignsPrecision__delay__d = {}
+    precision_best_delay__d = {}
+    for i in range(precision__lower_limit, precision__higher_limit+1):
+        bestDesignsPrecision__delay__d[i] = 10
+        precision_best_delay__d[i] = 10
+
     best_design_worth_so_far = -1 
     first_time__p = True #this variable allows us to archive the transitional
                          #cells and also the design in the first iteration
                          # this is helpfull when the acc_mac__upper limit 
                          # is chosen lower than what the tool can find
     report__timing__f__prev = "starting point"
+    report__timing__f__best = "starting point"
+    
     precision_acc_max_delay_resulting_in_best_design__d = {}
     delays_striving_for__f__na = "delays_striving_for.txt" #this file
     #                           keeps track of the best delays found for each
@@ -138,12 +147,6 @@ def main():
     #         transionining cells are 32 is none which would error out
     precision = precision__lower_limit
     while(True):
-        if (precision > precision__higher_limit):
-            break
-#    for precision in range(precision__lower_limit, 
-#            precision__higher_limit, 
-#            precision__step_size):
-#        
         #*** F:DN append transitional cells to the old_transitioning
         #         cells. comment this if you don't want to propagate
         #         the transitional cell dependencies across precisions
@@ -171,23 +174,26 @@ def main():
         #         it's impossible for lower limit to be lower
         #         than the prev iteration (lower precision)
         #         This should change if we iterate in the reverse order
-        acc_max_delay = acc_max_delay__upper_limit__initial_value
+        currently_targetting_acc_max_delay = acc_max_delay__upper_limit__initial_value
         acc_max_delay__upper_limit = acc_max_delay__upper_limit__initial_value 
         slack_acceptable__p = True
+        slack_met_for_precision_under_investigation = False 
         while (True):
-
+            prev__targeted_acc_max_delay = currently_targetting_acc_max_delay 
             #*** F:DN adjust the delays 
             if not(slack_acceptable__p):
-                acc_max_delay__lower_limit = acc_max_delay
-                #acc_max_delay__upper_limit = best_delay_this_round
-            prev__acc_max_delay = acc_max_delay 
-            acc_max_delay  = float(acc_max_delay__upper_limit + acc_max_delay__lower_limit)/float(2)
-            acc_max_delay =  float("{0:.3f}".format(acc_max_delay)) #up to 2
+                acc_max_delay__lower_limit = prev__targeted_acc_max_delay
+            currently_targetting_acc_max_delay= \
+                    float(acc_max_delay__upper_limit + acc_max_delay__lower_limit)/float(2)
+            currently_targetting_acc_max_delay = \
+                    float("{0:.3f}".format(currently_targetting_acc_max_delay)) #up to 2
             if (acc_max_delay__upper_limit == acc_max_delay__lower_limit) or\
-                    (prev__acc_max_delay == acc_max_delay):
+                    (prev__targeted_acc_max_delay == currently_targetting_acc_max_delay):
                 break
-            write_to_delays_striving_for__f(precision_acc_max_delay_resulting_in_best_design__d, 
-                    acc_max_delay,
+            write_to_delays_striving_for__f(\
+                    precision,
+                    bestDesignsPrecision__delay__d,
+                    currently_targetting_acc_max_delay,
                     clk_period,
                     delays_striving_for__f__na,
                     propagate_info_regarding_previous_transiontal_cells__p)
@@ -198,15 +204,21 @@ def main():
                 #*** F:DN read, cons and resyn 
                 read_and_cons_transitional_cells_and_resyn(
                         syn__file__na,
-                        syn__wrapper_module__na, transition_cells__base_addr,
-                        transitioning_cells__log__na, precision, clk_period, 
-                        DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, acc_max_delay,
+                        syn__wrapper_module__na, 
+                        transition_cells__base_addr,
+                        transitioning_cells__log__na,
+                        precision, 
+                        clk_period, 
+                        DATA_PATH_BITWIDTH, 
+                        CLKGATED_BITWIDTH,
+                        currently_targetting_acc_max_delay,
                         base_to_dump_reports__dir,
                         base_to_dump_results__dir,
                         attempt__iter__c,
                         ID,
                         delays_striving_for__f__na
                         )
+                
                 #*** F:DN update the synfile and transition file NAMES
                 syn__file__na = syn__wrapper_module__na +\
                         "__only_clk_cons_resynthesized" + str(ID) +".v" # this the wrapper
@@ -233,6 +245,7 @@ def main():
                         propagate_info_regarding_previous_transiontal_cells__p,
                         precision__lower_limit
                         )
+                
                 #*** F:DN read, cons and report
                 report__timing__f__prev = read_and_cons_transitional_cells_and_report_timing(\
                         syn__file__na,
@@ -242,57 +255,84 @@ def main():
                         precision, clk_period, 
                         DATA_PATH_BITWIDTH, 
                         CLKGATED_BITWIDTH, 
-                        acc_max_delay,
+                        currently_targetting_acc_max_delay,
                         base_to_dump_reports__dir,
-                        attempt__iter__c, 
+                        attempt__iter__c,
                         ID,
                         acc_max_delay__lower_limit,
                         acc_max_delay__upper_limit,
-                        prev__acc_max_delay,
+                        prev__targeted_acc_max_delay,
                         report__timing__f__prev,
                         delays_striving_for__f__na
                         )
                 
-                #*** F:DN look at the slack values and break (if met),
-                #         otherwise, if a new design with better delay found
-                #         record it
-                my_dir ="/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
-                #*** F:AN this needs to change to add or something later 
-                file_to_look_for_slack_in = my_dir + "/"+ str(op_type)+"_"+\
-                        str(DATA_PATH_BITWIDTH)+\
-                        "__clk_"+ str(clk_period)+\
-                        "__acc_max_del_"+str(acc_max_delay)+\
-                        "__Pn_"+str(precision)+\
-                        "__atmpt_"+str(attempt__iter__c)+\
-                        "__id_"+str(ID)+ "__evol_log.txt"
-                #slack_acceptable = parse_file_to_get_slack(file_to_look_for_slack_in)
-                design_arrival_times__l = parse_file_to_get_design_arrival_times(file_to_look_for_slack_in)
-                slack_acceptable__p = is_slack_acceptable(design_arrival_times__l, acc_max_delay)
-                design_worth = calc_design_worth(design_arrival_times__l) 
+                #---------------------------------------------------- 
+                #*** F:DN find out synth (resynth) designs value 
+                #---------------------------------------------------- 
+                #*** F:CN deign_worth is used to note which design is the best
+                #         so far
+                #*** F:CN slack_acceptabl__p is used to indicate whether the
+                #         condition we are looking for is met or no
+                currentDesignsPrecision_delay__d, 
+                slack_acceptable__p,
+                slack_met_for_precision_under_investigation,
+                design_worth = \
+                collect_syn_design_statistics(\
+                        op_type,
+                        DATA_PATH_BITWIDTH,
+                        clk_period,
+                        currently_targetting_acc_max_delay,
+                        precision,
+                        attempt__iter__c,
+                        ID,
+                        precision__lower_limit,
+                        precision__higher_limit,
+                        bestDesignsPrecision__delay__d)
+
+                #*** F:DN if first time going through, archive evrything 
+                if first_time__p: #this is to make sure that we will have a value for these variables 
+                    report__timing__f__best,
+                    bestDesignsPrecision__delay__d,
+                    best_design_worth_so_far,
+                    precision_best_delay__d =\
+                            archive_best(\
+                            syn__file__addr,
+                            transitioning_cells__log__na,
+                            none_transitioning_cells__log__na,
+                            report__timing__f__prev,
+                            design_worth, 
+                            precision,
+                            precision_best_delay__d,
+                            True)
+                    first__time__p = False
+                    continue
+                
                 #*** F:DN archive best (if this iteration is the best)
                 if (design_worth > best_design_worth_so_far): 
-                    archive_design_and_design_info_best_case_found(syn__file__addr,
+                    report__timing__f__best,
+                    bestDesignsPrecision__delay__d,
+                    best_design_worth_so_far,
+                    _ =\
+                            archive_best(\
+                            syn__file__addr,
                             transitioning_cells__log__na,
-                            none_transitioning_cells__log__na)
-                    report__timing__f__best = report__timing__f__prev
-                    precision_acc_max_delay_resulting_in_best_design__d[precision] = acc_max_delay
-                    best_design_worth_so_far = design_worth
-                elif first_time__p: #this is to make sure that we will have a value for these variables 
-                    archive_design_and_design_info_best_case_found(syn__file__addr,
-                            transitioning_cells__log__na,
-                            none_transitioning_cells__log__na)
-                    report__timing__f__best = report__timing__f__prev
-                    precision_acc_max_delay_resulting_in_best_design__d[precision] = acc_max_delay
-                    best_design_worth_so_far = design_worth
-                
-#                acc_max_delay__upper_limit = min(best_delay_this_round,
-#                            acc_max_delay__upper_limit)
-                first_time__p = False 
-                
+                            none_transitioning_cells__log__na,
+                            report__timing__f__prev,
+                            currentDesignsPrecision_delay__d,
+                            design_worth,
+                            precision,
+                            precision_best_delay__d,
+                            False)
+                #...   ...    ..  ...  ..    ..    ...      ..
+                #***F:DN keeping track of the best delay for the
+                #        precision (regardless of other precisions)
+                if(slack_met_for_precision_under_investigation):
+                    precision_best_delay__d[precision]=\
+                       currentDesignsPrecision_delay__d[precision]
+
                 #*** F:DN if met, stop trying
                 if(slack_acceptable__p):
                     break
-            
             #*** F:DN  restore the best found so far
             restore_design_and_design_info_best_case_found(syn__file__addr,
                     transitioning_cells__log__na,
@@ -305,18 +345,93 @@ def main():
         
         #*** F:DN adjust acc_max_delay__upper_limit__initial_value if necessary
         #         and repeate for the same precision if necessary
-        if (acc_max_delay >= acc_max_delay__upper_limit__initial_value):
-            acc_max_delay__uper_limit__expanded =  acc_max_delay__upper_limit + .05*(acc_max_delay__upper_limit)
-            tool_chain__log__handle.write("acc_max_delay__upper_limit of " + \
-                    str(acc_max_delay__upper_limit__initial_value) + " was not high enough for"+ \
-                    " precision: " +str(precision) + ". we expanded the upper\
-                    limite to " + str(acc_max_delay__uper_limit__expanded))
-            acc_max_delay__upper_limit__initial_value = acc_max_delay__uper_limit__expanded
+        if (currently_targetting_acc_max_delay >= acc_max_delay__upper_limit__initial_value):
+             expand__acc_max_delay__upper_limit(\
+                 tool_chain__log__handle,
+                 acc_max_delay__upper_limit,
+                 acc_max_delay__upper_limit__initial_value,
+                 precision)
         else:
             precision += precision__step_size
         
+
+        if (precision > precision__higher_limit):
+            break
+        else: #get the delays before imposing any extra constraints
+            #*** F:DN read, cons and report
+            attempt__iter__c = -1 #this means we havn't imposed any new constraints
+            grep_for_and_update_transitional_cells(
+                    syn__file__na,
+                    syn__file__addr,
+                    timing_per_cell__log__addr,
+                    none_transitioning_cells__log__na,
+                    transitioning_cells__log__na,
+                    syn__wrapper_module__na,
+                    syn__module__na, clk_period,
+                    DATA_PATH_BITWIDTH,
+                    CLKGATED_BITWIDTH,
+                    precision,
+                    base_to_dump_reports__dir,
+                    ID,
+                    propagate_info_regarding_previous_transiontal_cells__p,
+                    precision__lower_limit
+                    )
+
+            report__timing__f__prev = read_and_cons_transitional_cells_and_report_timing(\
+                    syn__file__na,
+                    syn__wrapper_module__na,
+                    transition_cells__base_addr,
+                    transitioning_cells__log__na,
+                    precision,
+                     clk_period,
+                    DATA_PATH_BITWIDTH,
+                    CLKGATED_BITWIDTH,
+                    0,
+                    base_to_dump_reports__dir,
+                    attempt__iter__c,
+                    ID,
+                    acc_max_delay__lower_limit,
+                    acc_max_delay__upper_limit,
+                    prev__targeted_acc_max_delay,
+                    report__timing__f__prev,
+                    delays_striving_for__f__na
+                    )
+            currentDesignsPrecision_delay__d, 
+            slack_acceptable__p,
+            slack_met_for_precision_under_investigation,
+            design_worth =\
+            collect_syn_design_statistics(\
+                    op_type,
+                    DATA_PATH_BITWIDTH,
+                    clk_period,
+                    currently_targetting_acc_max_delay,
+                    precision,
+                    attempt__iter__c,
+                    ID,
+                    precision__lower_limit,
+                    precision__higher_limit,
+                    currentDesignsPrecision_delay__d,
+                    bestDesignsPrecision__delay__d)
+            
+            report__timing__f__best,
+            bestDesignsPrecision__delay__d,
+            best_design_worth_so_far,
+            precision_best_delay__d =\
+                    archive_best(\
+                    syn__file__addr,
+                    transitioning_cells__log__na,
+                    none_transitioning_cells__log__na,
+                    report__timing__f__prev,
+                    currentDesignsPrecision_delay__d,
+                    design_worth,
+                    precision,
+                    precision_best_delay__d,
+                    True)
+
+
         #*** F:DN update the synfile and transition file NAMES
         if not(propagate_info_regarding_previous_transiontal_cells__p): 
+            first_time__p = True  
             design_worth = 0
             transitioning_cells__log__na = "transitioning_cells"+str(ID)+".txt"
             none_transitioning_cells__log__na = "none_transitioning_cells"+str(ID)+".txt"
