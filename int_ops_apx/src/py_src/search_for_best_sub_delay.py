@@ -20,24 +20,24 @@ def main():
     ID = "SCBSD" #best case best sub delay
     
     clk_period = .400#.250;
-    DATA_PATH_BITWIDTH = 5#8
+    DATA_PATH_BITWIDTH = 7#8
     OP_BITWIDTH = DATA_PATH_BITWIDTH 
     CLKGATED_BITWIDTH = 2; #numebr of apx bits
     #-----  -----    -----     -----     -----     -----
-    acc_max_delay__upper_limit__initial_value = .065#.300#.156
-    acc_max_delay__lower_limit__initial_value = .063#.050#.152
+    acc_max_delay__upper_limit__initial_value = .066#.180#.300#.156
+    acc_max_delay__lower_limit__initial_value = .063#.050#.050#.152
     
     acc_max_delay__upper_limit = acc_max_delay__upper_limit__initial_value
     acc_max_delay__lower_limit = acc_max_delay__lower_limit__initial_value
     best_delay_this_round = acc_max_delay__upper_limit 
     #acc_max_delay__c = 10
     #acc_max_delay__step_size = .01; #*** F:DN use the for loop
-    attempt__upper_bound = 2
+    attempt__upper_bound = 3
     #-----  -----    -----     -----     -----     -----
     #*** F: CN if you want to focuse on one precision, simply pick the
     #       higher_limit one about lower limit
-    precision__lower_limit = 3#;5
-    precision__higher_limit = 4#7
+    precision__lower_limit = 4#;5
+    precision__higher_limit = 5#7
     precision__step_size = 1
     #precision = 30 ;#*** F:AN instead use the for loop
     #.................................................... 
@@ -401,10 +401,10 @@ def main():
                     transition_cells__base_addr,
                     transitioning_cells__log__na,
                     precision,
-                     clk_period,
+                    clk_period,
                     DATA_PATH_BITWIDTH,
                     CLKGATED_BITWIDTH,
-                    clk_period,
+                    currently_targetting_acc_max_delay,
                     base_to_dump_reports__dir,
                     attempt__iter__c,
                     ID,

@@ -269,7 +269,8 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
     set offset [expr $offset - 1] 
 }
 
-
+reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
+                               # might take precedence
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
 echo "*** F:DN all paths report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
