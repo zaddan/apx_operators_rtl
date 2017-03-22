@@ -25,17 +25,16 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #----------------------------------------------------
 #---- N: the following should be commented out if the tcl file is invoked by 
 #-----   a python function
-#set DATA_PATH_BITWIDTH 32;
+#set DATA_PATH_BITWIDTH 5;
 #set CLKGATED_BITWIDTH 4; #numebr of apx bits
-#set clk_period .61;#.63;#.68;#.7
-#set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BIT32_32_3
-#set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_32Bit_32Bit__only_clk_cons_synthesized.v 
+#set clk_period .4;#.63;#.68;#.7
+#set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH5_DATA_PATH_BITWIDTH5;
+#set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH5_DATA_PATH_BITWIDTH5__only_clk_cons_synthesizedSCBSD.v
 #set transition_cells__base_addr  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src"
-#set transitioning_cells__log__na "transitioning_cells.txt"
-#set Pn 28
-#set acc_max_delay .43
-#set attempt__iter__c 0
-#set ID 1
+#set transitioning_cells__log__na "transitioning_cells_after_resynSCBSD.txt"
+#set Pn 4
+#set acc_max_delay 0.067;
+#set attempt__iter__c -2;set ID SCBSD;set delays_striving_for__f__na delays_striving_for.txt;
 ##----------------------------------------------------
 set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
@@ -179,7 +178,7 @@ echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #----------------------------------------------------
 
 
-set_max_delay $acc_max_delay -to [all_outputs]
+#set_max_delay $acc_max_delay -to [all_outputs]
 
 set priority_array  $acc_reg_a_b_c_joined 
 foreach pt $all_input__pt { 
@@ -199,7 +198,11 @@ foreach pt $all_input__pt {
 #set_max_delay $clk_period -through $non_transition_cells__l -to $acc_reg_d_l
 
 #set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
-set counter 1
+
+
+set const [expr [lindex $delays_striving_for__l 1]]
+set_max_delay $const -to [all_outputs]
+set counter 2
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
     set non_transition_cells__l [split  $non_transition_cells__l__e " "]
     set const [expr [lindex $delays_striving_for__l $counter]]
@@ -255,6 +258,7 @@ echo "*** F:DN transitional cells report" >> ${REPORTS_DIR}/data_collected/${all
 #report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #
 set offset [expr $non_transition_cells__l__string__length - 1]
+
 #report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
     set precision_to_be_shown [expr $Pn - $offset]
@@ -267,7 +271,7 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
 
 
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
-echo "*** F:DN all cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN all paths report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}

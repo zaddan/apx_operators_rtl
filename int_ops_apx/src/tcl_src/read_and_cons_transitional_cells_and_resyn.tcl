@@ -194,13 +194,10 @@ foreach pt $all_input__pt {
     }
 }
 
-
-set_max_delay $clk_period -to [all_outputs]
-echo "*** F:DN all cells" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #*** F:DN constrain according to the constaints
-set_max_delay $acc_max_delay -to [all_outputs]
-set counter 1
+set const [expr [lindex $delays_striving_for__l 1]]
+set_max_delay $const -to [all_outputs]
+set counter 2
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
     set non_transition_cells__l [split  $non_transition_cells__l__e " "]
     set const [expr [lindex $delays_striving_for__l $counter]]
