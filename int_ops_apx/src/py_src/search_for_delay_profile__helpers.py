@@ -336,8 +336,15 @@ def read_resyn_and_report(\
     os.system("echo starting dot_v file  >> " + output__file__na)
     os.system("cat  " + resyn__file__addr + "  >> " + output__file__na)
 
-def calc_design_worth(design_arrival_times__d):
-    return -1*numpy.mean(design_arrival_times__d.values())
+def calc_design_worth(design_arrival_times__d, precision):
+    total = 0 
+    counter = 0
+    for precision_key in design_arrival_times__d.keys():
+        if precision_key <= precision:
+            total += design_arrival_times__d[precision_key]
+            counter +=1
+    return -1*(float(total)/float(counter))
+    #return -1*numpy.mean(design_arrival_times__d.values())
 
 
 
@@ -657,7 +664,8 @@ def collect_syn_design_statistics(\
             currently_targetting_acc_max_delay)
     #...   ...    ..  ...  ..    ..    ...      ..
     design_worth = calc_design_worth(\
-            currentDesignsPrecision_delay__d)
+            currentDesignsPrecision_delay__d,
+            precision)
 
     return (currentDesignsPrecision_delay__d,\
             slack_acceptable__p,
