@@ -6,6 +6,7 @@ import os
 import pylab
 import numpy
 import copy
+import sys
 
 #*** F:DN
 def write_to_delays_striving_for__f(\
@@ -17,6 +18,7 @@ def write_to_delays_striving_for__f(\
         propagate_info_regarding_previous_transiontal_cells__p):
     delays_striving_for__f__handle = open(delays_striving_for__f__na, "w")
     
+    delays_striving_for__f__handle.write("to_be_ignored ")
     if (propagate_info_regarding_previous_transiontal_cells__p): 
         for precision in sorted(bestDesignsPrecision_delay__d.keys()):
             if (precision < targetting_precision):
@@ -135,7 +137,7 @@ def hardwire_apx_bits_to_zero(sourceFileAddr, wrapper_module__na, module_name, D
     except IOError:
         print "src_file" + original_syn_copy__file__addr+ "not found"
         #handleIOError(original_syn_copy__file__addr, "csource file")
-        exit()
+        sys.exit()
     else:
         f = open(original_syn_copy__file__addr)
         with f:
@@ -250,7 +252,7 @@ def find_and_update_transitioning_cells(timing_per_cell__log__addr,\
     except IOError:
         print "src_file" +timing_per_cell__log__addr+ "not found"
 #        handleIOError(timing_per_cell__log__addr, "csource file")
-        exit()
+        sys.exit()
     else:
         with f:
             for line in f:
@@ -349,9 +351,6 @@ def is_slack_acceptable(\
         currentDesignsPrecision_delay__d[precision]) >=0)
 
 
-
-
-
 def is_slack_met_for__precision_under_investigation(\
                         currentDesignsPrecision_delay__d,
                         precision,
@@ -367,7 +366,7 @@ def parse_file_to_get_slack(src_file):
     except IOError:
         print "src_file" +src_file + "not found"
         #handleIOError(src_file, "csource file")
-        exit()
+        sys.exit()
     else:
         with f:
             for line in f:
@@ -399,7 +398,7 @@ def parse_file_to_get_design_arrival_times(\
     except IOError:
         print "src_file" +src_file + "not found"
         #handleIOError(src_file, "csource file")
-        exit()
+        sys.exit()
     else:
         with f:
             for line in f:
@@ -626,6 +625,7 @@ def collect_syn_design_statistics(\
         precision__lower_limit,
         precision__higher_limit,
         bestDesignsPrecision__delay__d):
+    # type: (object, object, object, object, object, object, object, object, object, object) -> object
 
     my_dir ="/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
        #*** F:AN this needs to change to add or something later 
@@ -696,9 +696,12 @@ def archive_best(\
 def expand__acc_max_delay__upper_limit(\
         tool_chain__log__handle,
         acc_max_delay__upper_limit,
+        acc_max_delay__lower_limit, 
         acc_max_delay__upper_limit__initial_value,
         precision):
-    acc_max_delay__upper_limit__expanded =  acc_max_delay__upper_limit + .05*(acc_max_delay__upper_limit)
+    acc_max_delay__upper_limit__expanded =  max(acc_max_delay__upper_limit,\
+            acc_max_delay__lower_limit)+ .1*max(acc_max_delay__upper_limit,\
+            acc_max_delay__lower_limit)
     tool_chain__log__handle.write("acc_max_delay__upper_limit of " + \
             str(acc_max_delay__upper_limit__initial_value) + " was not high enough for"+ \
             " precision: " +str(precision) + ". we expanded the upper\
