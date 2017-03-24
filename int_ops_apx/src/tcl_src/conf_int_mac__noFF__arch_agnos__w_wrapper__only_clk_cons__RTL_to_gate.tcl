@@ -105,10 +105,10 @@ report_net
 
 #*** F:DN save the design
 set syn_name ${report_file__prefix} ;#syntheiszed file name
-write -format ddc -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized${ID}.ddc
-write -f verilog -hierarchy -output ${RESULTS_DIR}/${syn_name}_synthesized${ID}.v
-write_sdc ${RESULTS_DIR}/${syn_name}_synthesized${ID}.sdc
-write_sdf ${RESULTS_DIR}/${syn_name}_synthesized${ID}.mapped.sdf; #switching activity file
+write -format ddc -hierarchy -output ${RESULTS_DIR}/${syn_name}_resynthesized${ID}.ddc
+write -f verilog -hierarchy -output ${RESULTS_DIR}/${syn_name}_resynthesized${ID}.v
+write_sdc ${RESULTS_DIR}/${syn_name}_resynthesized${ID}.sdc
+write_sdf ${RESULTS_DIR}/${syn_name}_resynthesized${ID}.mapped.sdf; #switching activity file
 remove_design -hierarchy
 
 
