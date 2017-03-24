@@ -35,6 +35,7 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set Pn 4
 #set acc_max_delay 0.067;
 #set attempt__iter__c -2;set ID SCBSD;set delays_striving_for__f__na delays_striving_for.txt;
+#set delay_prev_output__p  False
 ##----------------------------------------------------
 set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
@@ -172,6 +173,10 @@ set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesu
 #report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+if {$delete_prev_output__p} {
+    file delete ${REPORTS_DIR}/data_collected/${all_data__file__na}
+}
+
 echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F: after resynthesis" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}

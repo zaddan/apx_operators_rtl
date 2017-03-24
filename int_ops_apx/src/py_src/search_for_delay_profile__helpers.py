@@ -10,7 +10,7 @@ import sys
 
 #*** F:DN
 def archive_params(dest__f__addr,design_name, ID, clk_period, DATA_PATH_BITWIDTH,
-                acc_max_delay__upper_limit__initial_value,
+                acc_max_delay__upper_limit__hard,
                 acc_max_delay__lower_limit, attempt__upper_bound,
                 precision__lower_limit,precision__higher_limit, 
                 precision__step_size,
@@ -27,9 +27,9 @@ def archive_params(dest__f__addr,design_name, ID, clk_period, DATA_PATH_BITWIDTH
     dest__f__addr.write("ID = " + str(ID)) 
     dest__f__addr.write("clk_period = " + str(clk_period)) 
     dest__f__addr.write("DATA_PATH_BITWIDTH = " + str(DATA_PATH_BITWIDTH))
-    dest__f__addr.write("acc_max_delay__upper_limit__initial_value = " +
-            str(acc_max_delay__upper_limit__initial_value))
-    dest__f__addr.write("acc_max_delay__lower_limit__initial_value  = " +
+    dest__f__addr.write("acc_max_delay__upper_limit__hard = " +
+            str(acc_max_delay__upper_limit__hard))
+    dest__f__addr.write("acc_max_delay__lower_limit__hard  = " +
             str(acc_max_delay__lower_limit))
     dest__f__addr.write("attempt__upper_bound = " + str(attempt__upper_bound))
     dest__f__addr.write("precision__higher_limit = " +
@@ -551,6 +551,9 @@ def read_and_cons_transitional_cells_and_resyn(
             "atmpt"+"_"+str(attempt__iter__c) + "__"+\
             "id"+"_"+str(ID)+"__"+\
             "read_cons_and_resyn__log.txt"
+
+
+
     tcl_file_name =  "read_and_cons_transitional_cells_and_resyn.tcl"
     
     #----------------------------------------------------
@@ -579,8 +582,9 @@ def read_and_cons_transitional_cells_and_report_timing(
         acc_max_delay__upper_limit,
         prev__acc_max_delay,
         report__timing__f,
-        attempt__iter__c
-        ):
+        report__timing__f__best,
+        attempt__iter__c,
+        delete_prev_output__p):
     syn__file__na = input__obj.syn__file__na
     syn__wrapper_module__na = input__obj.syn__wrapper_module__na
     transition_cells__base_addr = input__obj.transition_cells__base_addr
@@ -605,6 +609,7 @@ def read_and_cons_transitional_cells_and_report_timing(
             "set acc_max_delay " + str(acc_max_delay)+ ";"\
             "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
             "set ID " + str(ID)+ ";"+\
+            "set delete_prev_output__p " + str(delete_prev_output__p)+ ";"+\
             "set delays_striving_for__f__na " + delays_striving_for__f__na + ";"
 
     
@@ -625,6 +630,7 @@ def read_and_cons_transitional_cells_and_report_timing(
     #----------------------------------------------------
     setup_info =  "clk:"+str(clk_period) +"\n"
     setup_info += "resynthesis of the file:" + report__timing__f+ "\n"
+    setup_info += "brest resynthesized file:" + report__timing__f__best+ "\n"
     setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
     setup_info +=  "precision:"+str(precision) +"\n"
     setup_info +=  "acc_max_delay:"+str(acc_max_delay) +"\n"
@@ -753,9 +759,8 @@ def collect_syn_design_statistics(\
             design_worth)
 
                 
-def archive_best(\
+def update_bests(\
         input__obj,
-        report__timing__f__prev,
         currentDesignsPrecision_delay__d,
         design_worth,
         precision,
@@ -767,35 +772,33 @@ def archive_best(\
     none_transitioning_cells__log__na = input__obj.none_transitioning_cells__log__na
 
     archive_design_and_design_info_best_case_found(input__obj)
-    report__timing__f__best = report__timing__f__prev
     bestDesignsPrecision__delay__d = \
     copy.copy(currentDesignsPrecision_delay__d) #shallow copy
     best_design_worth_so_far = design_worth
-
+    for el in precision_best_delay__d.keys():
+        precision_best_delay__d[el] = min (precision_best_delay__d[el],
+                                           currentDesignsPrecision_delay__d[el])
  
-    return  (report__timing__f__best,
-            bestDesignsPrecision__delay__d,
+    return  (bestDesignsPrecision__delay__d,
             best_design_worth_so_far,
             precision_best_delay__d)
 
 
 def expand__acc_max_delay__upper_limit(\
         input__obj,
-        acc_max_delay__upper_limit__initial_value,
-        acc_max_delay__upper_limit,
-        acc_max_delay__lower_limit, 
-        precision):
+        acc_max_delay__upper_limit__hard,
+        precision,
+        bestDesignsPrecision__delay__d__precision):
     
+    expansion__factor = .1
     tool_chain__log__handle = input__obj.tool_chain__log__handle
-    acc_max_delay__upper_limit__expanded =  max(acc_max_delay__upper_limit,\
-            acc_max_delay__lower_limit)+ .1*max(acc_max_delay__upper_limit,\
-            acc_max_delay__lower_limit)
+    acc_max_delay__upper_limit__expanded = (1 + expansion__factor) * bestDesignsPrecision__delay__d__precision
+    acc_max_delay__lower_limit__expanded = bestDesignsPrecision__delay__d__precision
     tool_chain__log__handle.write("acc_max_delay__upper_limit of " + \
-            str(acc_max_delay__upper_limit__initial_value) + " was not high enough for"+ \
+            str(acc_max_delay__upper_limit__hard) + " was not high enough for"+ \
             " precision: " +str(precision) + ". we expanded the upper\
             limite to " + str(acc_max_delay__upper_limit__expanded))
-    acc_max_delay__upper_limit__initial_value = acc_max_delay__upper_limit__expanded
-    return acc_max_delay__upper_limit__initial_value
+    return (acc_max_delay__lower_limit__expanded, acc_max_delay__upper_limit__expanded)
 
 
 def update__targetting_acc_max_delay(slack_acceptable__p,
@@ -813,7 +816,8 @@ def update__targetting_acc_max_delay(slack_acceptable__p,
     if not(slack_acceptable__p):
         acc_max_delay__lower_limit = prev__targeted_acc_max_delay
     else:
-        acc_max_delay__upper_limit = prev__targeted_acc_max_delay
+        if (not(updated_boundary__p)): #if updated boundary, that means both lower and upper already updated
+            acc_max_delay__upper_limit = prev__targeted_acc_max_delay
     currently_targetting_acc_max_delay= \
             float(acc_max_delay__upper_limit + acc_max_delay__lower_limit)/float(2)
     currently_targetting_acc_max_delay = \
@@ -823,7 +827,8 @@ def update__targetting_acc_max_delay(slack_acceptable__p,
                     done_searching__p = True
     
     updated_boundary__p = False
-    return (prev__targeted_acc_max_delay, currently_targetting_acc_max_delay, updated_boundary__p, done_searching__p)
+    return (prev__targeted_acc_max_delay, currently_targetting_acc_max_delay,
+            acc_max_delay__lower_limit, acc_max_delay__upper_limit, updated_boundary__p, done_searching__p)
 
     #return (prev__targeted_acc_max_delay, currently_targetting_acc_max_delay,
     #        acc_max_delay__lower_limit, acc_max_delay__upper_limit, done_searching__p)
@@ -832,29 +837,29 @@ def update__targetting_acc_max_delay(slack_acceptable__p,
 def find_best_delay__using_binary_search(
         input__obj, 
         precision, currently_targetting_acc_max_delay,
-        acc_max_delay__lower_limit, acc_max_delay__upper_limit,
-        report__timing__f,
+        acc_max_delay__lower_limit__hard, acc_max_delay__upper_limit__hard,
         bestDesignsPrecision__delay__d,
         best_design_worth_so_far,
         precision_best_delay__d,
-        report__timing__f__best
+        report__timing__f__best,
+        activate_check_point__p
 ):
     
     #*** F:DN intialized some vars
     attempt__upper_bound = input__obj.attempt__upper_bound
-    acc_max_delay__upper_limit__initial_value = acc_max_delay__upper_limit
-    acc_max_delay__lower_limit__initial_value = acc_max_delay__lower_limit
-    slack_acceptable__p = True    
+    acc_max_delay__lower_limit = acc_max_delay__lower_limit__hard
+    acc_max_delay__upper_limit = acc_max_delay__upper_limit__hard
+    slack_acceptable__p = True
     prev__targeted_acc_max_delay = -1
     updated_boundary__p = False
     #*** F:DN find transitional cells 
     grep_for_and_update_transitional_cells(input__obj, precision)
-    
+    report__timing__f__this_time = report__timing__f__best
     while (True):
         
         #*** F:DN update what max_delay (and some other vars) we are aiming for
         prev__targeted_acc_max_delay, currently_targetting_acc_max_delay,\
-        updated_boundary__p, done_searching__p = \
+        acc_max_delay__lower_limit, acc_max_delay__upper_limit, updated_boundary__p, done_searching__p = \
         update__targetting_acc_max_delay( #@@
         slack_acceptable__p, prev__targeted_acc_max_delay,\
         currently_targetting_acc_max_delay, acc_max_delay__upper_limit,\
@@ -868,10 +873,11 @@ def find_best_delay__using_binary_search(
         write_to_delays_striving_for__f(precision, bestDesignsPrecision__delay__d,
         currently_targetting_acc_max_delay, input__obj)
 
+
         #*** F:DN iterate in quest of a design with the acc_max_delay
         for attempt__iter__c in range(0,
                 attempt__upper_bound):
-
+            report__timing__f__prev_time = report__timing__f__this_time
             #*** F:DN read, constraint and resyn
             read_and_cons_transitional_cells_and_resyn(input__obj,  
                     currently_targetting_acc_max_delay, precision, attempt__iter__c)
@@ -880,11 +886,12 @@ def find_best_delay__using_binary_search(
             grep_for_and_update_transitional_cells(input__obj, precision)
 
             #*** F:DN read, cons and report
-            report__timing__f__prev = \
+            report__timing__f__this_time = \
                     read_and_cons_transitional_cells_and_report_timing(
                     input__obj, precision,  currently_targetting_acc_max_delay, 
                     acc_max_delay__lower_limit, acc_max_delay__upper_limit, 
-                    prev__targeted_acc_max_delay, report__timing__f, attempt__iter__c)
+                    prev__targeted_acc_max_delay, report__timing__f__prev_time, report__timing__f__best,
+                        attempt__iter__c, False)
 
             #*** F:CN deign_worth is used to note which design is the best
             #         so far
@@ -901,48 +908,87 @@ def find_best_delay__using_binary_search(
 
             #*** F:DN archive best (if this iteration is the best)
             if (design_worth > best_design_worth_so_far):
-                report__timing__f__best,\
                 bestDesignsPrecision__delay__d,\
                 best_design_worth_so_far,\
-                _ = archive_best( input__obj, report__timing__f__prev,
-                currentDesignsPrecision_delay__d, design_worth,
+                _ = update_bests( input__obj, currentDesignsPrecision_delay__d, design_worth,
                 precision, precision_best_delay__d, False)
+                report__timing__f__best = report__timing__f__this_time
             #...   ...    ..  ...  ..    ..    ...      ..
             #***F:DN keeping track of the best delay for the
             #        precision (regardless of other precisions)
-            if(slack_met_for_precision_under_investigation):
-                precision_best_delay__d[precision]=\
-                   min(currentDesignsPrecision_delay__d[precision],precision_best_delay__d[precision])
+            precision_best_delay__d[precision]= \
+                min(currentDesignsPrecision_delay__d[precision],precision_best_delay__d[precision])
 
             #*** F:DN if met, stop trying
             if(slack_acceptable__p):
                 break
         #*** F:expand acc_max_delay__upper 
         if (bestDesignsPrecision__delay__d[precision]\
-                >= acc_max_delay__upper_limit__initial_value):
-            acc_max_delay__lower_limit__initial_value = bestDesignsPrecision__delay__d[precision]
-            acc_max_delay__upper_limit__initial_value = expand__acc_max_delay__upper_limit(\
-                    input__obj,
-                    acc_max_delay__upper_limit__initial_value,
-                    acc_max_delay__upper_limit,
-                    acc_max_delay__lower_limit, 
-                    precision)
+                >= acc_max_delay__upper_limit__hard):
+            acc_max_delay__lower_limit__hard,\
+                acc_max_delay__upper_limit__hard = \
+                expand__acc_max_delay__upper_limit(#@@
+                    input__obj, acc_max_delay__upper_limit__hard,
+                    precision,
+                    bestDesignsPrecision__delay__d[precision])
+
             updated_boundary__p = True
-            acc_max_delay__upper_limit = acc_max_delay__upper_limit__initial_value
-            acc_max_delay__lower_limit = acc_max_delay__lower_limit__initial_value
+            acc_max_delay__lower_limit = acc_max_delay__lower_limit__hard
         #*** F:DN  restore the best found so far
         restore_design_and_design_info_best_case_found(input__obj)
-        report__timing__f__prev = report__timing__f__best
+        report__timing__f__this_time = report__timing__f__best
+        if (updated_boundary__p): #we through the towel (adjust the boundaries) and leave
+            break
     
-    return (report__timing__f__prev, bestDesignsPrecision__delay__d,
-    acc_max_delay__lower_limit, acc_max_delay__upper_limit,prev__targeted_acc_max_delay,
-    report__timing__f, report__timing__f__prev, precision_best_delay__d)
+    acc_max_delay__lower_limit__hard = bestDesignsPrecision__delay__d[precision]
+
+    #*** F:DN archiveing the results
+    archive_results(input__obj, precision, bestDesignsPrecision__delay__d, precision_best_delay__d,
+                    report__timing__f__best, activate_check_point__p)
+
+    return (report__timing__f__best, bestDesignsPrecision__delay__d,
+    acc_max_delay__lower_limit__hard, acc_max_delay__upper_limit__hard,prev__targeted_acc_max_delay,
+    precision_best_delay__d)
+
+def archive_results(input__obj, precision, bestDesignsPrecision__delay__d, precision_best_delay__d,
+                    report__timing__f__best, activate_check_point__p):
+
+    syn__file__na = input__obj.syn__file__na
+    syn__wrapper_module__na = input__obj.syn__wrapper_module__na
+    transition_cells__base_addr = input__obj.transition_cells__base_addr
+    transitioning_cells__log__na  = input__obj.transitioning_cells__log__na
+    clk_period  = input__obj.clk_period
+    DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
+    CLKGATED_BITWIDTH  = input__obj.CLKGATED_BITWIDTH
+    base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
+    ID = input__obj.ID
+    delays_striving_for__f__na = input__obj.delays_striving_for__f__na
+    output__f__addr = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
+            str(DATA_PATH_BITWIDTH) +"__"+ \
+            "clk" + "_" + str(clk_period) + "__"+ \
+            "Pn"+ "_" + str(precision)+"__"+\
+            "id"+"_"+str(ID)+"__"+\
+            "results_summary.txt"
+    output__f__handle = open(output__f__addr, "w")
+    output__f__handle.write("***F:DN info about the best results " + str(bestDesignsPrecision__delay__d) + "\n")
+    output__f__handle.write("bestDesignsPrecision__delay__d: " + str(bestDesignsPrecision__delay__d) + "\n")
+    output__f__handle.write("precision_best_delay__d: " + str(precision_best_delay__d) + "\n")
+    output__f__handle.write("report__timing__f__best: " + report__timing__f__best + "\n")
+    output__f__handle.write("\n\n ***F:DN info about params" + str(bestDesignsPrecision__delay__d) + "\n")
+    output__f__handle.close()
+
+    if not(activate_check_point__p):
+        append_one_file_to_another("params__hardwired.py", output__f__addr)
+    else:
+        append_one_file_to_another("params__tool_generated.py", output__f__addr)
+
+
 
 def get_delay__before_tuning_and_archive(
         input__obj, precision, bestDesignsPrecision__delay__d,
         currently_targetting_acc_max_delay, acc_max_delay__lower_limit,
-        acc_max_delay__upper_limit, prev__acc_max_delay, report__timing__f,
-        report__timing__f__prev, precision_best_delay__d):
+        acc_max_delay__upper_limit, prev__acc_max_delay, report__timing__f__best,
+        precision_best_delay__d):
 
     attempt__iter__c = -1 #this means we havn't imposed any new constraints
     
@@ -961,11 +1007,11 @@ def get_delay__before_tuning_and_archive(
             precision)
     
     #*** report timing 
-    report__timing__f__prev = \
+    report__timing__f__this_time = \
             read_and_cons_transitional_cells_and_report_timing(
                     input__obj, precision,  currently_targetting_acc_max_delay,
                     acc_max_delay__lower_limit, acc_max_delay__upper_limit, 
-                    prev__acc_max_delay, report__timing__f, attempt__iter__c)
+                    prev__acc_max_delay, report__timing__f__best, report__timing__f__best, attempt__iter__c, True)
     
     #*** F: collect statistics
     currentDesignsPrecision_delay__d,\
@@ -983,12 +1029,11 @@ def get_delay__before_tuning_and_archive(
     archive_design_and_design_info_fist_synth(input__obj)
 
     #*** F: archive results
-    report__timing__f__best,\
     bestDesignsPrecision__delay__d,\
     best_design_worth_so_far,\
-        precision_best_delay__d = archive_best( input__obj,
-                report__timing__f__prev, currentDesignsPrecision_delay__d,
-                design_worth, precision, precision_best_delay__d, True)
+    precision_best_delay__d = update_bests( input__obj,currentDesignsPrecision_delay__d,
+                                            design_worth, precision, precision_best_delay__d, True)
 
+    report__timing__f__this_time = report__timing__f__best
     return (bestDesignsPrecision__delay__d, precision_best_delay__d, design_worth, report__timing__f__best)
 

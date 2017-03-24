@@ -4,8 +4,8 @@ ID = "SCBSD" #best case best sub delay
 clk_period = .4#.250;
 DATA_PATH_BITWIDTH = 5#8
 #-----  -----    -----     -----     -----     -----
-acc_max_delay__upper_limit__initial_value = .060#.066#.180#.300#.156
-acc_max_delay__lower_limit__initial_value = .050#.063#.050#.050#.152
+acc_max_delay__upper_limit__initial_value = .17#.066#.180#.300#.156
+acc_max_delay__lower_limit__initial_value = .05#.063#.050#.050#.152
 #-----  -----    -----     -----     -----     -----
 attempt__upper_bound =2
 #-----  -----    -----     -----     -----     -----
