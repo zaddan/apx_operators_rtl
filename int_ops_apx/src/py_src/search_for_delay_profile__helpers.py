@@ -9,6 +9,7 @@ import copy
 import sys
 
 #*** F:DN
+"""
 def archive_params(dest__f__addr,design_name, ID, clk_period, DATA_PATH_BITWIDTH,
                 acc_max_delay__upper_limit__hard,
                 acc_max_delay__lower_limit, attempt__upper_bound,
@@ -53,7 +54,7 @@ def archive_params(dest__f__addr,design_name, ID, clk_period, DATA_PATH_BITWIDTH
     dest__f__addr.write("report__timing__f__best = " +
         str(report__timing__f__best))
     dest__f__addr.write("op_type = " + str(op_type))
-
+"""
 
 def write_to_delays_striving_for__f(
         targetting_precision, bestDesignsPrecision__delay__d, 
@@ -61,16 +62,33 @@ def write_to_delays_striving_for__f(
     
     delays_striving_for__f__handle = open(input__obj.delays_striving_for__f__na, "w")
     delays_striving_for__f__handle.write("to_be_ignored ")
-    if (input__obj.propagate_info_regarding_previous_transiontal_cells__p): 
-        for precision in sorted(bestDesignsPrecision__delay__d.keys()):
-            if (precision < targetting_precision):
-                delays_striving_for__f__handle.write(str(bestDesignsPrecision__delay__d[precision]) + " ")
+    delays_striving_for__d = copy.copy(bestDesignsPrecision__delay__d)
+    delays_striving_for__d[targetting_precision] = acc_max_delay
 
-    delays_striving_for__f__handle.write(str(acc_max_delay) + " " )
+    if (input__obj.propagate_info_regarding_previous_transiontal_cells__p):
+        for precision in sorted(delays_striving_for__d.keys()):
+                delays_striving_for__f__handle.write(str(delays_striving_for__d[precision]) + " ")
+
     delays_striving_for__f__handle.write(str(input__obj.clk_period) + " ")
     delays_striving_for__f__handle.write("to_be_ignored")
     delays_striving_for__f__handle.close()
 
+
+def communicate_precisions_striving_for__f(
+        targetting_precision, bestDesignsPrecision__delay__d,
+        acc_max_delay,  input__obj):
+
+    precisions_striving_for__f__handle = open(input__obj.precisions_striving_for__f__na, "w")
+    precisions_striving_for__f__handle.write("to_be_ignored ")
+    precisions_striving_for__d = copy.copy(bestDesignsPrecision__delay__d)
+    precisions_striving_for__d[targetting_precision] = acc_max_delay
+
+    if (input__obj.propagate_info_regarding_previous_transiontal_cells__p):
+        for precision in sorted(precisions_striving_for__d.keys()):
+                precisions_striving_for__f__handle.write(str(precision) + " ")
+
+    precisions_striving_for__f__handle.write("to_be_ignored")
+    precisions_striving_for__f__handle.close()
 
 
 #*** F:DN updating old_transitional cells (to contain new info found)
@@ -112,8 +130,6 @@ def archive_design_and_design_info_fist_synth(input__obj):
             input__obj.none_transitioning_cells__log__na+"_first_syn")
 
 
-
-
 #*** F:DN obvious based on the name
 def restore_design_and_design_info_best_case_found(input__obj):
     os.system("cp " + input__obj.syn__file__addr+"_best_case" + " " + input__obj.syn__file__addr)
@@ -128,8 +144,6 @@ def restore_design_and_design_info_first_case(input__obj):
             " " + input__obj.transitioning_cells__log__na)
     os.system("cp " + input__obj.none_transitioning_cells__log__na+"_first_case"+\
                     " " + input__obj.none_transitioning_cells__log__na)
-
-
 
 
 #----------------------------------------------------
@@ -365,7 +379,7 @@ def find_and_update_transitioning_cells(input__obj):
     transitioning_cell__log__file_handle.close()
     none_transitioning_cell__log__file_handle.close()
 
-
+""""
 def read_resyn_and_report(
         syn__file__na,
         syn__wrapper_module__na, 
@@ -415,16 +429,15 @@ def read_resyn_and_report(
     resyn__file__addr = base_to_dump_results__dir + "/" + resyn__file__na 
     os.system("echo starting dot_v file  >> " + output__file__na)
     os.system("cat  " + resyn__file__addr + "  >> " + output__file__na)
+"""
 
 def calc_design_worth(design_arrival_times__d, precision):
-    total = 0 
-    counter = 0
-    for precision_key in design_arrival_times__d.keys():
-        if precision_key <= precision:
-            total += design_arrival_times__d[precision_key]
-            counter +=1
-    return -1*(float(total)/float(counter))
-    #return -1*numpy.mean(design_arrival_times__d.values())
+#    total = 0
+#    counter = 0
+#     for precision_key in design_arrival_times__d.keys():
+#         total += design_arrival_times__d[precision_key]
+    #return -1*(float(total)/float(counter))
+    return -1*numpy.mean(design_arrival_times__d.values())
 
 
 
@@ -474,14 +487,17 @@ def parse_file_to_get_slack(src_file):
 #         investigated, and for the rest it sets them to the clk value
 def parse_file_to_get_design_arrival_times(\
         src_file,
+        precisions_covered_so_far__l,
         precision,
         input__obj):
             
-    precision__lower_limit  = input__obj.precision__lower_limit
-    precision__higher_limit = input__obj.precision__higher_limit
+    #precision__lower_limit  = input__obj.precision__lower_limit
+    #precision__higher_limit = input__obj.precision__higher_limit
     start_looking = False 
     design_arrival_times__d = {}
-    precision__parsing_for = precision__lower_limit
+    counter = 0
+    #precision__parsing_for = precision__lower_limit
+    precision__parsing_for = sorted(precisions_covered_so_far__l)[0]
     try:
         f = open(src_file)
     except IOError:
@@ -500,10 +516,14 @@ def parse_file_to_get_design_arrival_times(\
                             ("time") in word_list:
                                 if (float(word_list[-1]) >=0): #this is b/c arrival time is repeated for the same precision, and the 2nd one is negative
                                     design_arrival_times__d[precision__parsing_for] = (float(word_list[-1]))
-                                    precision__parsing_for +=1
+                                    counter += 1
+                                    if (counter >= len(precisions_covered_so_far__l)):
+                                        break
+                                    precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
+                                    #precision__parsing_for +=1
                                     last_arrival__t__seen = float(word_list[-1])
-    for precision__el in range(precision + 1, precision__higher_limit+1):
-        design_arrival_times__d[precision__el] = (last_arrival__t__seen)
+#    for precision__el in range(precision + 1, precision__higher_limit+1):
+#        design_arrival_times__d[precision__el] = (last_arrival__t__seen)
 
     return design_arrival_times__d
 
@@ -526,8 +546,9 @@ def read_and_cons_transitional_cells_and_resyn(
     attempt__iter__c  = attempt__iter__c
     ID = input__obj.ID
     delays_striving_for__f__na = input__obj.delays_striving_for__f__na
-   
-    #*** F:DN variabes 
+    precisions_striving_for__f__na = input__obj.precisions_striving_for__f__na
+
+    #*** F:DN variabes
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
             "set CLKGATED_BITWIDTH "  +str(CLKGATED_BITWIDTH) + ";" + \
@@ -539,6 +560,7 @@ def read_and_cons_transitional_cells_and_resyn(
             "set acc_max_delay " + str(acc_max_delay)+ ";" \
             "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
             "set ID " + str(ID)+ ";"+\
+            "set precisions_striving_for__f__na " + precisions_striving_for__f__na + ";" + \
             "set delays_striving_for__f__na " + delays_striving_for__f__na + ";"
 
     #*** F:AN for now set the syn__file__na to mac
@@ -596,8 +618,8 @@ def read_and_cons_transitional_cells_and_report_timing(
     attempt__iter__c  = attempt__iter__c
     ID = input__obj.ID
     delays_striving_for__f__na = input__obj.delays_striving_for__f__na
-    
-    #*** F:DN variabes 
+    precisions_striving_for__f__na = input__obj.precisions_striving_for__f__na
+    #*** F:DN variabes
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
             "set CLKGATED_BITWIDTH "  +str(CLKGATED_BITWIDTH) + ";" + \
@@ -610,6 +632,7 @@ def read_and_cons_transitional_cells_and_report_timing(
             "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
             "set ID " + str(ID)+ ";"+\
             "set delete_prev_output__p " + str(delete_prev_output__p)+ ";"+\
+            "set precisions_striving_for__f__na " + precisions_striving_for__f__na + ";"+\
             "set delays_striving_for__f__na " + delays_striving_for__f__na + ";"
 
     
@@ -638,15 +661,19 @@ def read_and_cons_transitional_cells_and_report_timing(
     setup_info +=  "acc_max_delay__upper_limit:"+str(acc_max_delay__upper_limit) +"\n"
     setup_info +=  "prev__acc_max_delay:"+str(prev__acc_max_delay) +"\n"
     os.system("echo \" " + setup_info + " \" > " + output__file__na)
+    os.system("echo \" " + "***F:DNtcl parameters "+ " \" > " + output__file__na)
+    os.system("echo \" " + tcl_parametrs + " \" >> " + output__file__na)
     os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
             ../tcl_src/"+tcl_file_name +" >> " + output__file__na)
+
 
     return output__file__na
 
 def grep_for_and_update_transitional_cells(
         input__obj,
+        precisions_covered_so_far__l,
         precision):
-    precision__lower_limit = input__obj.precision__lower_limit
+    #precision__lower_limit = input__obj.precision__lower_limit
     syn__file__na = input__obj.syn__file__na
     syn__file__addr = input__obj.syn__file__addr
     timing_per_cell__log__addr = input__obj.timing_per_cell__log__addr
@@ -674,17 +701,15 @@ def grep_for_and_update_transitional_cells(
     transitioning_cell__log__file_handle.close()
 
     #*** F:DN if propage the info, setup the limits properly for iteration 
-    if (propagate_info_regarding_previous_transiontal_cells__p):
-        precision_to_find_transitional_cells__lower_limit = precision__lower_limit
-    else:
-        precision_to_find_transitional_cells__lower_limit = precision
-    precision_to_find_transitional_cells__upper_limit = precision + 1
+#    if (propagate_info_regarding_previous_transiontal_cells__p):
+#        precision_to_find_transitional_cells__lower_limit = precision__lower_limit
+#    else:
+#        precision_to_find_transitional_cells__lower_limit = precision
+#    precision_to_find_transitional_cells__upper_limit = precision + 1
 
     #*** F:DN iterate through various precisions and generate transitional cells
-    for precision__el in range(
-            precision_to_find_transitional_cells__lower_limit, 
-            precision_to_find_transitional_cells__upper_limit):
-        #*** F:DN hardwire bits to zero 
+    for precision__el in sorted(precisions_covered_so_far__l):
+        #*** F:DN hardwire bits to zero
         hardwire_apx_bits_to_zero(input__obj, precision__el)
 
         #*** F:DN find cells responsible for the none_apx part of the result
@@ -708,6 +733,7 @@ def grep_for_and_update_transitional_cells(
                 
 def collect_syn_design_statistics(\
         input__obj,
+        precisions_covered_so_far__l,
         currently_targetting_acc_max_delay,
         precision,
         bestDesignsPrecision__delay__d, attempt__iter__c):
@@ -717,8 +743,8 @@ def collect_syn_design_statistics(\
     clk_period = input__obj.clk_period
     attempt__iter__c = attempt__iter__c
     ID = input__obj.ID
-    precision__lower_limit = input__obj.precision__lower_limit
-    precision__higher_limit = input__obj.precision__higher_limit
+    #precision__lower_limit = input__obj.precision__lower_limit
+    #precision__higher_limit = input__obj.precision__higher_limit
 
 
     my_dir ="/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
@@ -735,6 +761,7 @@ def collect_syn_design_statistics(\
     currentDesignsPrecision_delay__d =\
             parse_file_to_get_design_arrival_times(
                     file_to_look_for_slack_in,
+                    precisions_covered_so_far__l,
                     precision,
                     input__obj)
     slack_acceptable__p = is_slack_acceptable(\
@@ -805,7 +832,8 @@ def update__targetting_acc_max_delay(slack_acceptable__p,
         prev__targeted_acc_max_delay,
         currently_targetting_acc_max_delay,
         acc_max_delay__upper_limit,
-        acc_max_delay__lower_limit, updated_boundary__p):
+        acc_max_delay__lower_limit, updated_boundary__p, bestDesignsPrecision__delay__d,
+        precision):
 
     done_searching__p = False
         
@@ -815,6 +843,7 @@ def update__targetting_acc_max_delay(slack_acceptable__p,
     #*** F:DN adjust the delays
     if not(slack_acceptable__p):
         acc_max_delay__lower_limit = prev__targeted_acc_max_delay
+        acc_max_delay__upper_limit = min(acc_max_delay__upper_limit, bestDesignsPrecision__delay__d[precision])
     else:
         if (not(updated_boundary__p)): #if updated boundary, that means both lower and upper already updated
             acc_max_delay__upper_limit = prev__targeted_acc_max_delay
@@ -842,7 +871,8 @@ def find_best_delay__using_binary_search(
         best_design_worth_so_far,
         precision_best_delay__d,
         report__timing__f__best,
-        activate_check_point__p
+        activate_check_point__p,
+        precision__l__order
 ):
     
     #*** F:DN intialized some vars
@@ -853,23 +883,28 @@ def find_best_delay__using_binary_search(
     prev__targeted_acc_max_delay = -1
     updated_boundary__p = False
     #*** F:DN find transitional cells 
-    grep_for_and_update_transitional_cells(input__obj, precision)
+
+    precisions_covered_so_far__l = bestDesignsPrecision__delay__d.keys()
+    grep_for_and_update_transitional_cells(input__obj, precisions_covered_so_far__l, precision)
     report__timing__f__this_time = report__timing__f__best
     while (True):
-        
+
         #*** F:DN update what max_delay (and some other vars) we are aiming for
         prev__targeted_acc_max_delay, currently_targetting_acc_max_delay,\
         acc_max_delay__lower_limit, acc_max_delay__upper_limit, updated_boundary__p, done_searching__p = \
         update__targetting_acc_max_delay( #@@
         slack_acceptable__p, prev__targeted_acc_max_delay,\
         currently_targetting_acc_max_delay, acc_max_delay__upper_limit,\
-        acc_max_delay__lower_limit, updated_boundary__p)
+        acc_max_delay__lower_limit, updated_boundary__p, bestDesignsPrecision__delay__d,
+        precision)
 
         #*** F: exit out if necessary
         if (done_searching__p):
             break
-        
+
         #*** archive the target (for tcl file)
+        communicate_precisions_striving_for__f(precision, bestDesignsPrecision__delay__d,
+                                               currently_targetting_acc_max_delay,  input__obj)
         write_to_delays_striving_for__f(precision, bestDesignsPrecision__delay__d,
         currently_targetting_acc_max_delay, input__obj)
 
@@ -883,7 +918,7 @@ def find_best_delay__using_binary_search(
                     currently_targetting_acc_max_delay, precision, attempt__iter__c)
             
             #*** F:DN Update Transitional Celss Lists
-            grep_for_and_update_transitional_cells(input__obj, precision)
+            grep_for_and_update_transitional_cells(input__obj, precisions_covered_so_far__l, precision)
 
             #*** F:DN read, cons and report
             report__timing__f__this_time = \
@@ -901,6 +936,7 @@ def find_best_delay__using_binary_search(
             slack_met_for_precision_under_investigation, design_worth = \
             collect_syn_design_statistics( #@@
             input__obj,
+            precisions_covered_so_far__l,
             currently_targetting_acc_max_delay,
             precision,
             bestDesignsPrecision__delay__d,
@@ -923,6 +959,7 @@ def find_best_delay__using_binary_search(
             if(slack_acceptable__p):
                 break
         #*** F:expand acc_max_delay__upper 
+        #*** F:DN commented out for the sake of clk exploreation 
         if (bestDesignsPrecision__delay__d[precision]\
                 >= acc_max_delay__upper_limit__hard):
             acc_max_delay__lower_limit__hard,\
@@ -934,13 +971,20 @@ def find_best_delay__using_binary_search(
 
             updated_boundary__p = True
             acc_max_delay__lower_limit = acc_max_delay__lower_limit__hard
+         
         #*** F:DN  restore the best found so far
         restore_design_and_design_info_best_case_found(input__obj)
         report__timing__f__this_time = report__timing__f__best
+        archive_results(input__obj, precision, bestDesignsPrecision__delay__d, precision_best_delay__d,
+                        report__timing__f__best, activate_check_point__p)
         if (updated_boundary__p): #we through the towel (adjust the boundaries) and leave
             break
     
-    acc_max_delay__lower_limit__hard = bestDesignsPrecision__delay__d[precision]
+    #*** F:DN commented out for the sake of clk exploreation 
+    if (precision__l__order == "incr"):
+        acc_max_delay__lower_limit__hard = bestDesignsPrecision__delay__d[precision]
+    else:
+        acc_max_delay__upper_limit__hard = bestDesignsPrecision__delay__d[precision]
 
     #*** F:DN archiveing the results
     archive_results(input__obj, precision, bestDesignsPrecision__delay__d, precision_best_delay__d,
@@ -999,11 +1043,14 @@ def get_delay__before_tuning_and_archive(
     currently_targetting_acc_max_delay = 0
 
     #*** F:DN set target for tcl 
+    communicate_precisions_striving_for__f(precision,
+            bestDesignsPrecision__delay__d, currently_targetting_acc_max_delay,  input__obj)
     write_to_delays_striving_for__f(precision,
             bestDesignsPrecision__delay__d, currently_targetting_acc_max_delay,  input__obj)
     
     #*** find transitional cells 
-    grep_for_and_update_transitional_cells(input__obj,
+    precisions_covered_so_far__l = bestDesignsPrecision__delay__d.keys()
+    grep_for_and_update_transitional_cells(input__obj,precisions_covered_so_far__l,
             precision)
     
     #*** report timing 
@@ -1020,6 +1067,7 @@ def get_delay__before_tuning_and_archive(
     design_worth = \
         collect_syn_design_statistics(
                 input__obj,
+                precisions_covered_so_far__l,
                 currently_targetting_acc_max_delay,
                 precision,
                 bestDesignsPrecision__delay__d,

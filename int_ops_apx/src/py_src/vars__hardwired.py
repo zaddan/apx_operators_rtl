@@ -4,9 +4,20 @@ prev__targeted_acc_max_delay = -1 #initialized to a none sense value
 currentDesignsPrecision_delay__d =  {}
 bestDesignsPrecision__delay__d = {}
 precision_best_delay__d = {}
-for i in range(precision__lower_limit, precision__higher_limit+1):
-    bestDesignsPrecision__delay__d[i] = 10
-    precision_best_delay__d[i] = 10
+
+#for i in range(precision__lower_limit, precision__higher_limit+1):
+#    bestDesignsPrecision__delay__d[i] = 10
+#    precision_best_delay__d[i] = 10
+#
+
+if (space_search__direction == "forward"):
+    precision__to_start_width = precisions__curious_about__l[0]
+else:
+    precision_to_start_width = precisions__curious_about__l[0]
+
+bestDesignsPrecision__delay__d[precision__to_start_width] = 10
+precision_best_delay__d[precision__to_start_width] = 10
+
 
 best_design_worth_so_far = -1
 prev__acc_max_delay = -1
@@ -19,8 +30,12 @@ report__timing__f = "starting point"
 report__timing__f__prev = "starting point"
 report__timing__f__best = "starting point"
 
-precision_acc_max_delay_resulting_in_best_design__d = {}
-delays_striving_for__f__na = "delays_striving_for.txt" #this file
+#precision_acc_max_delay_resulting_in_best_design__d = {}
+delays_striving_for__f__na = "delays_striving_for"+ str(ID) +".txt" #this file
 #                           keeps track of the best delays found for each
 #                           precision, so it can be retrieved in the tcl
+
+precisions_striving_for__f__na = "precisions_striving_for" + str(ID) +".txt" #this file
+#                           keeps track of the best delays found for each
+#
 

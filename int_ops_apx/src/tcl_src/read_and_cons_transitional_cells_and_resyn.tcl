@@ -145,6 +145,12 @@ set non_transition_cells__l__string__length [llength $non_transition_cells__l__s
 set non_transition_cells__l__string [lrange  $non_transition_cells__l__string  0 [expr $non_transition_cells__l__string__length -2]]
 set non_transition_cells__l__string__length [llength $non_transition_cells__l__string]
 
+set fp_2 [open $transition_cells__base_addr/$precisions_striving_for__f__na]
+set file_data_2 [read $fp_2]
+close $fp_2
+set Pn__l__string [split $file_data_2 "\n"]
+set Pn__l [split $Pn__l__string " "]
+
 #puts [lindex $non_transition_cells__l__string 0]
 #exit
 #set non_transition_cells__l [split $non_transition_cells__l__string " "]
@@ -176,15 +182,49 @@ set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
 echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
 echo "*** F:DN before putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN all paths" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-
+#echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#echo "*** F:DN all paths" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#
 #echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #echo "*** F: after putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #----------------------------------------------------
 
+
+
+
+#***F:DN before constrainting
+#*** probing in. Note that probing into the design for timing requires 
+##               a different way as opposed to imposing
+echo "*** F:DN transitional cells" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+set const [expr [lindex $delays_striving_for__l 1]]
+set counter 1
+foreach non_transition_cells__l__e $non_transition_cells__l__string {
+    reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
+    set const [expr [lindex $delays_striving_for__l $counter]]
+    set_max_delay $const -to [all_outputs]
+    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+    set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
+    
+    #*** F:DN probing in 
+    set precision_to_be_shown [lindex $Pn__l $counter]
+    set my_string  ***PRECISION:$precision_to_be_shown 
+    echo $my_string >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+    report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+
+    #echo $first_el >> non_transition_cells__l__acquired__in_tcl
+    incr counter
+}
+reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
+                               # might take precedence
+set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
+echo "*** F:DN all paths report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+
+
+#***F:DN now imposing the constraints
+reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
 set priority_array  $acc_reg_a_b_c_joined 
 foreach pt $all_input__pt { 
     if {[lsearch -exact $priority_array $pt] >= 0} {
@@ -206,17 +246,22 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
     incr counter
 }
 
-set offset [expr $non_transition_cells__l__string__length - 1]
-#*** F:report the timing for transitional cells
-echo "*** F:DN transitional cells" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-foreach non_transition_cells__l__e $non_transition_cells__l__string {
-    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
-    set precision_to_be_shown [expr $Pn - $offset]
-    set my_string  ***PRECISION:$precision_to_be_shown 
-    echo $my_string >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-    set offset [expr $offset - 1] 
-    report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-}
+#set offset [expr $non_transition_cells__l__string__length - 1]
+##*** F:report the timing for transitional cells
+#echo "*** F:DN transitional cells" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#set counter 1
+#foreach non_transition_cells__l__e $non_transition_cells__l__string {
+#    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+#    set precision_to_be_shown [lindex $Pn__l $counter]
+#    #set precision_to_be_shown [expr $Pn - $offset]
+#    set my_string  ***PRECISION:$precision_to_be_shown 
+#    echo $my_string >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#    #set offset [expr $offset - 1] 
+#    incr counter
+#    report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#}
+#
+
 
 echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}

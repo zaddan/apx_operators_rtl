@@ -37,6 +37,8 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set attempt__iter__c -2;set ID SCBSD;set delays_striving_for__f__na delays_striving_for.txt;
 #set delay_prev_output__p  False
 ##----------------------------------------------------
+#set clk_period 0.4;set DATA_PATH_BITWIDTH 5;set CLKGATED_BITWIDTH 2;set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH5_DATA_PATH_BITWIDTH5;set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH5_DATA_PATH_BITWIDTH5__only_clk_cons_resynthesizedSCBSD.v;set transition_cells__base_addr  /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src;set transitioning_cells__log__na transitioning_cells_after_resynSCBSD.txt ;set Pn 3;set acc_max_delay 0.092;set attempt__iter__c 0;set ID SCBSD;set delete_prev_output__p False;set precisions_striving_for__f__na precisions_striving_for.txt;set delays_striving_for__f__na delays_striving_for.txt; 
+#
 set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
 set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
@@ -141,6 +143,14 @@ set non_transition_cells__l__string [lrange  $non_transition_cells__l__string 0 
 set non_transition_cells__l__string__length [llength $non_transition_cells__l__string]
 
 
+
+set fp_2 [open $transition_cells__base_addr/$precisions_striving_for__f__na]
+set file_data_2 [read $fp_2]
+close $fp_2
+set Pn__l__string [split $file_data_2 "\n"]
+set Pn__l [split $Pn__l__string " "]
+
+
 #set non_transition_cells__l [split $non_transition_cells__l__string " "]
 
 #*** F:DN read the design
@@ -205,18 +215,6 @@ foreach pt $all_input__pt {
 #set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
 
 
-set const [expr [lindex $delays_striving_for__l 1]]
-set_max_delay $const -to [all_outputs]
-set counter 2
-foreach non_transition_cells__l__e $non_transition_cells__l__string {
-    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
-    set const [expr [lindex $delays_striving_for__l $counter]]
-    set_max_delay $const -through $non_transition_cells__l -to [all_outputs]
-    #echo $first_el >> non_transition_cells__l__acquired__in_tcl
-    incr counter
-}
-
-
 
 #*** F:DN compile
 #compile_ultra -timing_high_effort_script -no_autoungroup 
@@ -229,17 +227,17 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
 #*** F:DN report the results
 set report_file__prefix  ${DESIGN_NAME}__only_clk_cons
 #report_timing -sort_by group -nworst 1000 -significant_digits 4 >  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-report_timing -sort_by group -significant_digits 4 >  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-echo "now through and exclude" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-echo "*** transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-
+#report_timing -sort_by group -significant_digits 4 >  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+#echo "now through and exclude" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+#echo "*** transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+#
 # Change this back
 #report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+# report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #** up to here
 
 #...   ...    ..  ...  ..    ..    ...      ..
-echo "*** non transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+# echo "*** non transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #report_timing -sort_by slack -exclude $transition_cells__l -nworst 30000 -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #report_timing -sort_by slack -from a[0] -to [all_outputs] >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #....................................................
@@ -264,16 +262,41 @@ echo "*** F:DN transitional cells report" >> ${REPORTS_DIR}/data_collected/${all
 #
 set offset [expr $non_transition_cells__l__string__length - 1]
 
-#report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+
+set const [expr [lindex $delays_striving_for__l 1]]
+set counter 1
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
-    set precision_to_be_shown [expr $Pn - $offset]
+    reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
+    set const [expr [lindex $delays_striving_for__l $counter]]
+    set_max_delay $const -to [all_outputs]
+    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+    set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
+    
+    #*** F:DN probing in 
+    set precision_to_be_shown [lindex $Pn__l $counter]
     set my_string  ***PRECISION:$precision_to_be_shown 
     echo $my_string >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
     report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-    set offset [expr $offset - 1] 
+
+    #echo $first_el >> non_transition_cells__l__acquired__in_tcl
+    incr counter
 }
 
+
+#
+##report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#set counter 1
+#foreach non_transition_cells__l__e $non_transition_cells__l__string {
+#    #set precision_to_be_shown [expr $Pn - $offset]
+#    set precision_to_be_shown [lindex $Pn__l $counter]
+#    set my_string  ***PRECISION:$precision_to_be_shown 
+#    echo $my_string >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+#    report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#    #set offset [expr $offset - 1] 
+#    incr counter
+#}
+#
 reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
                                # might take precedence
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure

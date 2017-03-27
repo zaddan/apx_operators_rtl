@@ -20,9 +20,9 @@ class input__class():
         #-----  -----    -----     -----     -----     -----
         self.attempt__upper_bound = vars__f__addr.attempt__upper_bound
         #-----  -----    -----     -----     -----     -----
-        self.precision__lower_limit = vars__f__addr.precision__lower_limit
-        self.precision__higher_limit = vars__f__addr.precision__higher_limit
-        self.precision__step_size = vars__f__addr.precision__step_size
+        #self.precision__lower_limit = vars__f__addr.precision__lower_limit
+        #self.precision__higher_limit = vars__f__addr.precision__higher_limit
+        #self.precision__step_size = vars__f__addr.precision__step_size
         #-----  -----    -----     -----     -----     -----
         self.propagate_info_regarding_previous_transiontal_cells__p = \
                 vars__f__addr.propagate_info_regarding_previous_transiontal_cells__p
@@ -44,10 +44,14 @@ class input__class():
                 "__only_clk_cons_resynthesized" + str(vars__f__addr.ID) +".v" # this the wrapper
 
 
-        self.delays_striving_for__f__na = "delays_striving_for.txt" #this file
+        self.delays_striving_for__f__na = vars__f__addr.delays_striving_for__f__na
         #                           keeps track of the best delays found for each
         #                           precision, so it can be retrieved in the tcl
         #                           file for imposing the constraints(best delays)
+
+        self.precisions__curious_about__l = vars__f__addr.precisions__curious_about__l
+        self.precisions_striving_for__f__na = vars__f__addr.precisions_striving_for__f__na
+        self.precisions__l__order = vars__f__addr.precision__l__order
         self.base__dir = "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
         self.base_to_dump_reports__dir =\
                 "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/logs_2"
