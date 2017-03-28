@@ -533,7 +533,8 @@ def read_and_cons_transitional_cells_and_resyn(
         input__obj, 
         acc_max_delay, 
         precision,
-        attempt__iter__c):
+        attempt__iter__c,
+        report__timing__f__best):
     syn__file__na = input__obj.syn__file__na
     syn__wrapper_module__na = input__obj.syn__wrapper_module__na
     transition_cells__base_addr = input__obj.transition_cells__base_addr
@@ -585,6 +586,7 @@ def read_and_cons_transitional_cells_and_resyn(
     setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
     setup_info +=  "precision:"+str(precision) +"\n"
     setup_info +=  "acc_max_delay:"+str(acc_max_delay) +"\n"
+    setup_info += "report__timing__f__best: " + report__timing__f__best + "\n"
     os.system("echo \" " + setup_info + " \" > " + output__file__na)
     os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
             ../tcl_src/"+tcl_file_name +" >>" + output__file__na)
@@ -730,7 +732,6 @@ def grep_for_and_update_transitional_cells(
         os.system("cp  " + syn__file__addr +"_original_synthesis" + " " + syn__file__addr) 
 
 
-                
 def collect_syn_design_statistics(\
         input__obj,
         precisions_covered_so_far__l,
@@ -915,7 +916,7 @@ def find_best_delay__using_binary_search(
             report__timing__f__prev_time = report__timing__f__this_time
             #*** F:DN read, constraint and resyn
             read_and_cons_transitional_cells_and_resyn(input__obj,  
-                    currently_targetting_acc_max_delay, precision, attempt__iter__c)
+                    currently_targetting_acc_max_delay, precision, attempt__iter__c, report__timing__f__best)
             
             #*** F:DN Update Transitional Celss Lists
             grep_for_and_update_transitional_cells(input__obj, precisions_covered_so_far__l, precision)
@@ -942,6 +943,7 @@ def find_best_delay__using_binary_search(
             bestDesignsPrecision__delay__d,
             attempt__iter__c)
 
+
             #*** F:DN archive best (if this iteration is the best)
             if (design_worth > best_design_worth_so_far):
                 bestDesignsPrecision__delay__d,\
@@ -954,6 +956,8 @@ def find_best_delay__using_binary_search(
             #        precision (regardless of other precisions)
             precision_best_delay__d[precision]= \
                 min(currentDesignsPrecision_delay__d[precision],precision_best_delay__d[precision])
+
+            generate__vars__tool_generated(input__obj, precision, bestDesignsPrecision__delay__d, precision_best_delay__d)
 
             #*** F:DN if met, stop trying
             if(slack_acceptable__p):
@@ -1018,13 +1022,11 @@ def archive_results(input__obj, precision, bestDesignsPrecision__delay__d, preci
     output__f__handle.write("bestDesignsPrecision__delay__d: " + str(bestDesignsPrecision__delay__d) + "\n")
     output__f__handle.write("precision_best_delay__d: " + str(precision_best_delay__d) + "\n")
     output__f__handle.write("report__timing__f__best: " + report__timing__f__best + "\n")
+    output__f__handle.write("activate_check_point__p: " + str(activate_check_point__p)+ "\n")
     output__f__handle.write("\n\n ***F:DN info about params" + str(bestDesignsPrecision__delay__d) + "\n")
     output__f__handle.close()
 
-    if not(activate_check_point__p):
-        append_one_file_to_another("params__hardwired.py", output__f__addr)
-    else:
-        append_one_file_to_another("params__tool_generated.py", output__f__addr)
+    append_one_file_to_another("params__hardwired.py", output__f__addr)
 
 
 
@@ -1085,3 +1087,24 @@ def get_delay__before_tuning_and_archive(
     report__timing__f__this_time = report__timing__f__best
     return (bestDesignsPrecision__delay__d, precision_best_delay__d, design_worth, report__timing__f__best)
 
+
+def generate__vars__tool_generated(input__obj, precision, bestDesignsPrecision__delay__d, precision_best_delay__d):
+    clk_period = input__obj.clk_period
+    DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
+    CLKGATED_BITWIDTH = input__obj.CLKGATED_BITWIDTH
+    base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
+    ID = input__obj.ID
+    Pn = precision
+    output__file__addr = base_to_dump_reports__dir +\
+                   "/"+"mac"+ "_" + \
+            str(DATA_PATH_BITWIDTH)+"__"+\
+            "clk" + "_"+ str(clk_period) + "__"+ \
+            "Pn" + "_" + str(Pn) + "__"+\
+            "id"+"_"+str(ID)+"__"+\
+            "vars__tool_generated.txt"
+    os.system("cp vars__hardwired.py " + output__file__addr)
+    output__file__handle = open(output__file__addr, "a+")
+    for key__el in bestDesignsPrecision__delay__d.keys():
+        output__file__handle.write("bestDesignsPrecision__delay__d[" + str(key__el) + "]= " + str(bestDesignsPrecision__delay__d[key__el]) + "\n")
+        output__file__handle.write("precision_best_delay__d[" + str(key__el) + "]= " + str(precision_best_delay__d[key__el]) + "\n")
+    output__file__handle.close()

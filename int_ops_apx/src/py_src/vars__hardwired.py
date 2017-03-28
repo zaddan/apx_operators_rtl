@@ -39,3 +39,19 @@ precisions_striving_for__f__na = "precisions_striving_for" + str(ID) +".txt" #th
 #                           keeps track of the best delays found for each
 #
 
+
+#*** F:AN to use a checkpoint follow the steps bellow:
+#    1. activate_check_point__P = True
+#    2.  cp .v file (that you want to start from) to the resynthesis$(ID).v file
+#    3.  cp ...vars__tool_generated.txt (which is in the logs_2 folder) to vars__tool_generated.py (in py_src folder)
+#    4.  modify  precisions__curious_about__l  (in params__hardwired.py file)
+#    5.  modify acc_max_delay__upper_limit__initial_value (to whatever you want, but not all the values are sane)
+#    6.  modify acc_max_delay__lower_limit__initial_value (to whatever you want, but not all the values are sane)
+
+#**** F:AN when using checkpionts
+#    All the info, will be overwritten based on the the resynthesized file. this means that bestDesignsPrecision__delay__d,
+#   and precision_best_delay__d will acquire the values found from the resynthesized file (which is copied). hence, what
+#   we really care about is precisions_best_delay (if we want to know across runs, what is the best). however, what
+#   really matter is the keys within these two dictionaries. cause they are used to impose the constraints
+
+

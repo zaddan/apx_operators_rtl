@@ -2,11 +2,12 @@ design_name = "conf_int_mac__noFF__arch_agnos"
 ID = "SCBSD" #best case best sub delay
     
 space_search__direction = "forward"
-clk_period = .4#.250;
-DATA_PATH_BITWIDTH = 5#8
+clk_period = .48#.250;
+DATA_PATH_BITWIDTH = 32#8
 #-----  -----    -----     -----     -----     -----
 acc_max_delay__upper_limit__initial_value = .160#.066#.180#.300#.156
 acc_max_delay__lower_limit__initial_value = .08#.063#.050#.050#.152
+
 #-----  -----    -----     -----     -----     -----
 attempt__upper_bound = 2
 #-----  -----    -----     -----     -----     -----
@@ -15,7 +16,7 @@ attempt__upper_bound = 2
 #precision__lower_limit = 3;
 #precision__higher_limit = 4#7
 #precision__step_size = 2
-precisions__curious_about__l = [4,3]
+precisions__curious_about__l = [24]
 #precision__l__order = "incr" #increasing
 precision__l__order = "decr" #decreasing
 #*** F:DN if following predicate is true, we propagate the transitional
