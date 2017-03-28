@@ -11,12 +11,12 @@ precision_best_delay__d = {}
 #
 
 if (space_search__direction == "forward"):
-    precision__to_start_width = precisions__curious_about__l[0]
+    precision__to_start_with = precisions__curious_about__l[0]
 else:
-    precision_to_start_width = precisions__curious_about__l[0]
+    precision__to_start_with = precisions__curious_about__l[0]
 
-bestDesignsPrecision__delay__d[precision__to_start_width] = 10
-precision_best_delay__d[precision__to_start_width] = 10
+bestDesignsPrecision__delay__d[precision__to_start_with] = 10
+precision_best_delay__d[precision__to_start_with] = 10
 
 
 best_design_worth_so_far = -1

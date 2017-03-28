@@ -11,7 +11,7 @@ class input__class():
         else:
             #params__f__addr = params__tool_generated
             vars__f__addr = vars__tool_generated
-        
+
         self.design_name = vars__f__addr.design_name
         self.ID = vars__f__addr.ID
         self.clk_period = vars__f__addr.clk_period
@@ -28,8 +28,9 @@ class input__class():
                 vars__f__addr.propagate_info_regarding_previous_transiontal_cells__p
         #-----  -----    -----     -----     -----     -----
         self.op_type = vars__f__addr.op_type
-        
-        
+
+        self.precision__to_start_with =  vars__f__addr.precision__to_start_with
+
         #---------------------------------------------------- 
         #*** F:DN Derivded Params
         #---------------------------------------------------- 
@@ -57,17 +58,20 @@ class input__class():
                 "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/logs_2"
         self.base_to_dump_results__dir =\
                 "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
-        self.base_to_dump_reports__dir_2 =\
+        self.base_to_dump_reports__dir_temp =\
                 "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
+        self.base_to_dump_reports__dir_original =\
+            "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
+
 
         self.tool_chain__log__f__na = self.op_type+"_" + \
                 str(self.DATA_PATH_BITWIDTH)+"__"+\
                 "clk" + "_"+ str(self.clk_period) + "__"+ \
                 "id"+"_"+str(self.ID)+"__"+\
                 "tool_chain__log.txt" 
-        self.tool_chain__log__f__addr = self.base_to_dump_reports__dir_2 +\
-                "/"+self.tool_chain__log__f__na
-        self.tool_chain__log__handle = open(self.tool_chain__log__f__addr, "w")
+#        self.tool_chain__log__f__addr = self.base_to_dump_reports__dir_temp +\
+#                "/"+self.tool_chain__log__f__na
+        #self.tool_chain__log__handle = open(self.tool_chain__log__f__addr, "w")
         self.syn__file__addr = self.base__dir + "/" + self.syn__file__na
         self.timing_per_cell__log__na = "timing_per_cell__log"+str(self.ID)+".txt"
         self.timing_per_cell__log__addr = self.timing_per_cell__log__na

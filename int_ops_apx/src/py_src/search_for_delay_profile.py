@@ -6,8 +6,8 @@ import os
 import pylab
 from search_for_delay_profile__helpers import *
 import copy
+from time import gmtime, strftime
 from input__file import *
-
 #----------------------------------------------------
 #---- F: Main 
 #----------------------------------------------------
@@ -47,7 +47,6 @@ def main():
     acc_max_delay__upper_limit__hard = acc_max_delay__upper_limit__initial_value
     acc_max_delay__lower_limit__hard = acc_max_delay__lower_limit__initial_value
     #-----  -----    -----     -----     -----     -----
-    precision = input__obj.precisions__curious_about__l[0]
     #precision__step_size = input__obj.precision__step_size
     #precision__higher_limit = input__obj.precision__higher_limit
     #precision__lower_limit = input__obj.precision__higher_limit
@@ -55,19 +54,42 @@ def main():
     prev__acc_max_delay = input__obj.init_prev__acc_max_delay
     report__timing__f__best = input__obj.init__report__timing__f
     propagate_info_regarding_previous_transiontal_cells__p = input__obj.propagate_info_regarding_previous_transiontal_cells__p
-
+    #-----  -----    -----     -----     -----     -----
+    precision = input__obj.precision__to_start_with
+    #-----  -----    -----     -----     -----     -----
+    remove__progress_flow_chart(input__obj) #removing the previous flow chart
+    
+    input__obj.base_to_dump_reports__dir_temp = input__obj.base_to_dump_reports__dir_temp+"/" + strftime("%Y_%m_%d__%H_%M_%S", gmtime())
+    input__obj.base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir_temp+"/details"
 
     #----------------------------------------------------
     #*** F:DN Body
     #---------------------------------------------------- 
+    #*** F:DN take a backup (move to a new folder) of previous results 
+    """"
+    if (os.path.isdir(input__obj.base_to_dump_reports__dir_temp)):
+        backup_dir__n = "batch__"+ strftime("%Y_%m_%d__%H_%M_%S", gmtime())
+        backup_dir__addr = input__obj.base_to_dump_reports__dir_original+"/"+input__obj.ID+"/"+backup_dir__n
+        os.system("mkdir " + backup_dir__addr)
+        os.system("mv " + input__obj.base_to_dump_reports__dir_temp + " " +\
+                backup_dir__addr)
+    """
+
+    #*** F:DN make a temporary directory for results
+    os.system("mkdir " + input__obj.base_to_dump_reports__dir_temp)
+    os.system("mkdir " + input__obj.base_to_dump_reports__dir)
+    behzad_readMe__addr =  input__obj.base_to_dump_reports__dir_temp+"/"+"behzad_readME"
+    os.system("cp " + "params__hardwired.py" +  " " + behzad_readMe__addr)
+    os.system("echo " + "activate_check_point__p=" + str(activate_check_point__p) + " >> " + behzad_readMe__addr)
+
     precision__counter = 0
-    clk__l = [.4]
+    clk__l = [.48]
     #*** F:DN synth design with the clk (only const is the clk)
     for clk in clk__l:
         input__obj.clk_period = clk
 #
-#        if not(activate_check_point__p):
-#            synth_design_with_only_clk_constraint(input__obj)
+        if not(activate_check_point__p):
+            synth_design_with_only_clk_constraint(input__obj)
 
         #*** F:DN iterate through precisions and find best delay for each
         #*** F:AN the upper bound can not be higher than 32(hence 32 not included
@@ -137,7 +159,16 @@ def main():
                 restore_design_and_design_info_first_case(input__obj)
                 report__timing__f__prev = "starting point"
 
-    #tool_chain__log__handle.close()
+    """"
+    #*** F:DN takinga back up of the results
+    backup_dir__n = "batch__"+ strftime("%Y_%m_%d__%H_%M_%S", gmtime())
+    backup_dir__addr = input__obj.base_to_dump_reports__dir_original+"/"+input__obj.ID+"/"+backup_dir__n
+    os.system("mkdir " + backup_dir__addr)
+    os.system("mv " + input__obj.base_to_dump_reports__dir_temp + " " +\
+            backup_dir__addr)
+    """
+
+#tool_chain__log__handle.close()
 #----------------------------------------------------
 #--- F: Main
 #----------------------------------------------------

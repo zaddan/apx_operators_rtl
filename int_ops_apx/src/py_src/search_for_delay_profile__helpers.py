@@ -72,6 +72,7 @@ def write_to_delays_striving_for__f(
     delays_striving_for__f__handle.write(str(input__obj.clk_period) + " ")
     delays_striving_for__f__handle.write("to_be_ignored")
     delays_striving_for__f__handle.close()
+    return delays_striving_for__d
 
 
 def communicate_precisions_striving_for__f(
@@ -116,6 +117,11 @@ def append_one_file_to_another(old_transitioning_cells__log__na,
 #*** F:DN obvious based on the name
 def archive_design_and_design_info_best_case_found(input__obj):
     os.system("cp " + input__obj.syn__file__addr + " " + input__obj.syn__file__addr+"_best_case")
+    os.system("cp " + input__obj.transitioning_cells__log__na + " " +\
+            input__obj.transitioning_cells__log__na+"_best_case")
+
+    os.system("cp " + input__obj.syn__file__addr + " " + input__obj.base_to_dump_reports__dir)
+
     os.system("cp " + input__obj.transitioning_cells__log__na + " " +\
             input__obj.transitioning_cells__log__na+"_best_case")
     os.system("cp " + input__obj.none_transitioning_cells__log__na + " " +\
@@ -544,11 +550,24 @@ def read_and_cons_transitional_cells_and_resyn(
     CLKGATED_BITWIDTH  = input__obj.CLKGATED_BITWIDTH
     base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
     base_to_dump_results__dir = input__obj.base_to_dump_results__dir
+    base_to_dump_reports__dir_temp = input__obj.base_to_dump_reports__dir_temp
     attempt__iter__c  = attempt__iter__c
     ID = input__obj.ID
     delays_striving_for__f__na = input__obj.delays_striving_for__f__na
     precisions_striving_for__f__na = input__obj.precisions_striving_for__f__na
+    
+    
+    op_type = input__obj.op_type
+    evol_log__addr = base_to_dump_reports__dir_temp + "/"+op_type+ "_" + \
+            str(DATA_PATH_BITWIDTH) +"__"+ \
+            "clk" + "_" + str(clk_period) + "__"+ \
+            "acc_max_del" + "_" + str(acc_max_delay)+"__"+\
+            "Pn"+ "_" + str(precision)+"__"+\
+            "atmpt"+"_"+str(attempt__iter__c) + "__"+\
+            "id"+"_"+str(ID)+"__"+\
+            "evol_log.txt"
 
+    
     #*** F:DN variabes
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
@@ -562,6 +581,7 @@ def read_and_cons_transitional_cells_and_resyn(
             "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
             "set ID " + str(ID)+ ";"+\
             "set precisions_striving_for__f__na " + precisions_striving_for__f__na + ";" + \
+            "set all_data__file__addr " + evol_log__addr + ";" + \
             "set delays_striving_for__f__na " + delays_striving_for__f__na + ";"
 
     #*** F:AN for now set the syn__file__na to mac
@@ -617,10 +637,23 @@ def read_and_cons_transitional_cells_and_report_timing(
     DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
     CLKGATED_BITWIDTH  = input__obj.CLKGATED_BITWIDTH
     base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
+    base_to_dump_reports__dir_temp = input__obj.base_to_dump_reports__dir_temp
     attempt__iter__c  = attempt__iter__c
     ID = input__obj.ID
     delays_striving_for__f__na = input__obj.delays_striving_for__f__na
     precisions_striving_for__f__na = input__obj.precisions_striving_for__f__na
+    
+    op_type = input__obj.op_type
+    evol_log__addr = base_to_dump_reports__dir_temp + "/"+op_type+ "_" + \
+            str(DATA_PATH_BITWIDTH) +"__"+ \
+            "clk" + "_" + str(clk_period) + "__"+ \
+            "acc_max_del" + "_" + str(acc_max_delay)+"__"+\
+            "Pn"+ "_" + str(precision)+"__"+\
+            "atmpt"+"_"+str(attempt__iter__c) + "__"+\
+            "id"+"_"+str(ID)+"__"+\
+            "evol_log.txt"
+
+    
     #*** F:DN variabes
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
@@ -635,6 +668,7 @@ def read_and_cons_transitional_cells_and_report_timing(
             "set ID " + str(ID)+ ";"+\
             "set delete_prev_output__p " + str(delete_prev_output__p)+ ";"+\
             "set precisions_striving_for__f__na " + precisions_striving_for__f__na + ";"+\
+            "set all_data__file__addr " + evol_log__addr + ";" + \
             "set delays_striving_for__f__na " + delays_striving_for__f__na + ";"
 
     
@@ -744,11 +778,10 @@ def collect_syn_design_statistics(\
     clk_period = input__obj.clk_period
     attempt__iter__c = attempt__iter__c
     ID = input__obj.ID
+    my_dir = input__obj.base_to_dump_reports__dir_temp
     #precision__lower_limit = input__obj.precision__lower_limit
     #precision__higher_limit = input__obj.precision__higher_limit
-
-
-    my_dir ="/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
+    #my_dir ="/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
        #*** F:AN this needs to change to add or something later 
     file_to_look_for_slack_in = my_dir + "/"+ str(op_type)+"_"+\
             str(DATA_PATH_BITWIDTH)+\
@@ -819,13 +852,13 @@ def expand__acc_max_delay__upper_limit(\
         bestDesignsPrecision__delay__d__precision):
     
     expansion__factor = .1
-    tool_chain__log__handle = input__obj.tool_chain__log__handle
+    #tool_chain__log__handle = input__obj.tool_chain__log__handle
     acc_max_delay__upper_limit__expanded = (1 + expansion__factor) * bestDesignsPrecision__delay__d__precision
     acc_max_delay__lower_limit__expanded = bestDesignsPrecision__delay__d__precision
-    tool_chain__log__handle.write("acc_max_delay__upper_limit of " + \
-            str(acc_max_delay__upper_limit__hard) + " was not high enough for"+ \
-            " precision: " +str(precision) + ". we expanded the upper\
-            limite to " + str(acc_max_delay__upper_limit__expanded))
+#    tool_chain__log__handle.write("acc_max_delay__upper_limit of " + \
+#            str(acc_max_delay__upper_limit__hard) + " was not high enough for"+ \
+#            " precision: " +str(precision) + ". we expanded the upper\
+#            limite to " + str(acc_max_delay__upper_limit__expanded))
     return (acc_max_delay__lower_limit__expanded, acc_max_delay__upper_limit__expanded)
 
 
@@ -838,7 +871,7 @@ def update__targetting_acc_max_delay(slack_acceptable__p,
 
     done_searching__p = False
         
-    prev__targeted_acc_max_delay__bu =  prev__targeted_acc_max_delay
+    #prev__targeted_acc_max_delay__bu =  prev__targeted_acc_max_delay
     prev__targeted_acc_max_delay = currently_targetting_acc_max_delay
 
     #*** F:DN adjust the delays
@@ -853,7 +886,7 @@ def update__targetting_acc_max_delay(slack_acceptable__p,
     currently_targetting_acc_max_delay = \
             float("{0:.3f}".format(currently_targetting_acc_max_delay)) #up to 2
     if not(updated_boundary__p) and ((acc_max_delay__upper_limit == acc_max_delay__lower_limit) or\
-            (prev__targeted_acc_max_delay__bu == currently_targetting_acc_max_delay)):
+            (prev__targeted_acc_max_delay == currently_targetting_acc_max_delay)):
                     done_searching__p = True
     
     updated_boundary__p = False
@@ -862,6 +895,58 @@ def update__targetting_acc_max_delay(slack_acceptable__p,
 
     #return (prev__targeted_acc_max_delay, currently_targetting_acc_max_delay,
     #        acc_max_delay__lower_limit, acc_max_delay__upper_limit, done_searching__p)
+
+
+def remove__progress_flow_chart(input__obj):
+    base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
+    syn__file__na = input__obj.syn__file__na
+    clk_period  = input__obj.clk_period
+    DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
+    CLKGATED_BITWIDTH  = input__obj.CLKGATED_BITWIDTH
+
+    ID = input__obj.ID
+    output__f__addr = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
+                      str(DATA_PATH_BITWIDTH) +"__"+ \
+                      "clk" + "_" + str(clk_period) + "__"+ \
+                      "id"+"_"+str(ID)+"__"+ \
+                      "progress_flow_chart.txt"
+
+    if (os.path.isdir(input__obj.base_to_dump_reports__dir_temp)):
+        progress_flow_chart__f__handle = open(output__f__addr, "w")
+        progress_flow_chart__f__handle.close()
+
+
+
+def update__progress_flow_chart(input__obj, precision, delays_striving_for__d, attempt__iter__c, precision_best_delay__d,
+                                bestDesignsPrecision__delay__d,  currentDesignsPrecision_delay__d):
+    base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
+    syn__file__na = input__obj.syn__file__na
+    clk_period  = input__obj.clk_period
+    DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
+    CLKGATED_BITWIDTH  = input__obj.CLKGATED_BITWIDTH
+
+    ID = input__obj.ID
+    output__f__addr = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
+                      str(DATA_PATH_BITWIDTH) +"__"+ \
+                      "clk" + "_" + str(clk_period) + "__"+ \
+                      "id"+"_"+str(ID)+"__"+ \
+                      "progress_flow_chart.txt"
+
+    progress_flow_chart__f__handle = open(output__f__addr, "a+")
+    progress_flow_chart__f__handle.write("--------------------------------------------------\n")
+    progress_flow_chart__f__handle.write("*** F:DN goal:\n")
+    progress_flow_chart__f__handle.write("clk:" + str(clk_period) + " " + "Pn:" + str(precision) + " " +\
+                                         "delays_striving_for__d:" + str(delays_striving_for__d) + " " +\
+                                         "attempt:" + str(attempt__iter__c) + "\n")
+    progress_flow_chart__f__handle.write("*** F:DN results:\n")
+    progress_flow_chart__f__handle.write("currentDesignsPrecision_delay__d:" + str(currentDesignsPrecision_delay__d)  + "\n")
+    progress_flow_chart__f__handle.write("bestDesignPrecision__delay__d:" + str(bestDesignsPrecision__delay__d) +\
+                                             " " + "precision_best_delay__d" + str(precision_best_delay__d) + " " + "\n")
+    progress_flow_chart__f__handle.write("--------------------------------------------------\n")
+    progress_flow_chart__f__handle.close()
+
+
+
 
 
 def find_best_delay__using_binary_search(
@@ -906,7 +991,7 @@ def find_best_delay__using_binary_search(
         #*** archive the target (for tcl file)
         communicate_precisions_striving_for__f(precision, bestDesignsPrecision__delay__d,
                                                currently_targetting_acc_max_delay,  input__obj)
-        write_to_delays_striving_for__f(precision, bestDesignsPrecision__delay__d,
+        delays_striving_for__d = write_to_delays_striving_for__f(precision, bestDesignsPrecision__delay__d,
         currently_targetting_acc_max_delay, input__obj)
 
 
@@ -958,23 +1043,12 @@ def find_best_delay__using_binary_search(
                 min(currentDesignsPrecision_delay__d[precision],precision_best_delay__d[precision])
 
             generate__vars__tool_generated(input__obj, precision, bestDesignsPrecision__delay__d, precision_best_delay__d)
-
+            update__progress_flow_chart(input__obj, precision, delays_striving_for__d, attempt__iter__c, precision_best_delay__d,
+                                        bestDesignsPrecision__delay__d, currentDesignsPrecision_delay__d)
             #*** F:DN if met, stop trying
             if(slack_acceptable__p):
                 break
-        #*** F:expand acc_max_delay__upper 
-        #*** F:DN commented out for the sake of clk exploreation 
-        if (bestDesignsPrecision__delay__d[precision]\
-                >= acc_max_delay__upper_limit__hard):
-            acc_max_delay__lower_limit__hard,\
-                acc_max_delay__upper_limit__hard = \
-                expand__acc_max_delay__upper_limit(#@@
-                    input__obj, acc_max_delay__upper_limit__hard,
-                    precision,
-                    bestDesignsPrecision__delay__d[precision])
 
-            updated_boundary__p = True
-            acc_max_delay__lower_limit = acc_max_delay__lower_limit__hard
          
         #*** F:DN  restore the best found so far
         restore_design_and_design_info_best_case_found(input__obj)
@@ -984,11 +1058,28 @@ def find_best_delay__using_binary_search(
         if (updated_boundary__p): #we through the towel (adjust the boundaries) and leave
             break
     
-    #*** F:DN commented out for the sake of clk exploreation 
+    #//TODO integrate this
+#    #*** F:expand acc_max_delay__upper
+#    #*** F:DN commented out for the sake of clk exploreation
+#    if (bestDesignsPrecision__delay__d[precision]\
+#            >= acc_max_delay__upper_limit__hard):
+#        acc_max_delay__lower_limit__hard,\
+#            acc_max_delay__upper_limit__hard = \
+#            expand__acc_max_delay__upper_limit(#@@
+#                input__obj, acc_max_delay__upper_limit__hard,
+#                precision,
+#                bestDesignsPrecision__delay__d[precision])
+#
+#        updated_boundary__p = True
+#        acc_max_delay__lower_limit = acc_max_delay__lower_limit__hard
+
+
+    #*** F:DN commented out for the sake of clk exploreation
     if (precision__l__order == "incr"):
         acc_max_delay__lower_limit__hard = bestDesignsPrecision__delay__d[precision]
     else:
         acc_max_delay__upper_limit__hard = bestDesignsPrecision__delay__d[precision]
+
 
     #*** F:DN archiveing the results
     archive_results(input__obj, precision, bestDesignsPrecision__delay__d, precision_best_delay__d,

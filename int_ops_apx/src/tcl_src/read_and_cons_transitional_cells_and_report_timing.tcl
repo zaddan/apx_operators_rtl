@@ -175,7 +175,8 @@ set AC_NAME $DESIGN_NAME
 #----------------------------------------------------
 #**** F:DN collect data before increasing pressure(time wise) on the design
 #----------------------------------------------------
-set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_del_${acc_max_delay}__Pn_${Pn}__atmpt_${attempt__iter__c}__id_${ID}__evol_log.txt
+#set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_del_${acc_max_delay}__Pn_${Pn}__atmpt_${attempt__iter__c}__id_${ID}__evol_log.txt
+
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
 #echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #echo "*** F:DN before putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
@@ -184,12 +185,13 @@ set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesu
 #echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
 if {$delete_prev_output__p} {
-    file delete ${REPORTS_DIR}/data_collected/${all_data__file__na}
+    file delete $all_data__file__addr
+    #${REPORTS_DIR}/data_collected/${all_data__file__na}
 }
 
-echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F: after resynthesis" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "**************** " >> $all_data__file__addr
+echo "*** F: after resynthesis" >> $all_data__file__addr
+echo "**************** " >> $all_data__file__addr
 #----------------------------------------------------
 
 
@@ -252,8 +254,8 @@ report_net
 #....................................................
 #*** F:DN dumping the result in one log file
 #set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__evol_log.txt
-echo $all_data__file__na >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN transitional cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo $all_data__file__addr >> $all_data__file__addr
+echo "*** F:DN transitional cells report" >> $all_data__file__addr
 
 #set non_transition_cells__l__length_minus_1 [expr [llength $non_transition_cells__l__string] - 1]
 #set non_transition_cells__l__e [lindex $non_transition_cells__l__string $non_transition_cells__l__length_minus_1]
@@ -275,8 +277,8 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
     #*** F:DN probing in 
     set precision_to_be_shown [lindex $Pn__l $counter]
     set my_string  ***PRECISION:$precision_to_be_shown 
-    echo $my_string >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-    report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+    echo $my_string >> $all_data__file__addr
+    report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  $all_data__file__addr
 
     #echo $first_el >> non_transition_cells__l__acquired__in_tcl
     incr counter
@@ -300,11 +302,11 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
 reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
                                # might take precedence
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
-echo "*** F:DN all paths report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_area -hierarchy -nosplit >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "*** F:DN all paths report" >> $all_data__file__addr
+report_timing -sort_by slack -significant_digits 4 >>  $all_data__file__addr
+echo "*** F:DN power report" >> $all_data__file__addr
+report_power >>  $all_data__file__addr
+report_area -hierarchy -nosplit >>  $all_data__file__addr
 
 get_cells
 
