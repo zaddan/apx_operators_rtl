@@ -69,7 +69,7 @@ set lib_dir_1 "/usr/local/packages/synopsys_32.28_07292013/SAED32_EDK/lib"
 set lib_dir_2 "/home/polaris/behzad/behzad_local/verilog_files/libraries"
 set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"
 set search_path [concat  $search_path $lib_dir_3]
-set  std_library  "noAging.db" 
+#set  std_library  "noAging.db" 
 set target_library $std_library; #$std_library_2" 
 set link_library $std_library; #$std_library_2"
 #...   ...    ..  ...  ..    ..    ...      ..
@@ -192,7 +192,9 @@ if {$delete_prev_output__p} {
 echo "**************** " >> $all_data__file__addr
 echo "*** F: after resynthesis" >> $all_data__file__addr
 echo "**************** " >> $all_data__file__addr
+echo $std_library >> $all_data__file__addr
 #----------------------------------------------------
+#
 
 
 #set_max_delay $acc_max_delay -to [all_outputs]

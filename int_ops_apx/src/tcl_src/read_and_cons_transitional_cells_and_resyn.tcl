@@ -225,14 +225,15 @@ report_timing -sort_by slack -significant_digits 4 >>  $all_data__file__addr
 
 #***F:DN now imposing the constraints
 reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
-set priority_array  $acc_reg_a_b_c_joined 
-foreach pt $all_input__pt { 
-    if {[lsearch -exact $priority_array $pt] >= 0} {
-        group_path -name priority -from $pt -critical_range 0.5 -priority 100 -weight 100
-    } else {
-        group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
-    }
-}
+
+#set priority_array  $acc_reg_a_b_c_joined 
+#foreach pt $all_input__pt { 
+#    if {[lsearch -exact $priority_array $pt] >= 0} {
+#        group_path -name priority -from $pt -critical_range 0.5 -priority 100 -weight 100
+#    } else {
+#        group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
+#    }
+#}
 
 #*** F:DN constrain according to the constaints
 set const [expr [lindex $delays_striving_for__l 1]]
