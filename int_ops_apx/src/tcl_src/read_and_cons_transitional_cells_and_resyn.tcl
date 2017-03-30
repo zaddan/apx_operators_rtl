@@ -221,6 +221,9 @@ reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
 echo "*** F:DN all paths report" >> $all_data__file__addr
 report_timing -sort_by slack -significant_digits 4 >>  $all_data__file__addr
+echo "*** F:DN power report" >> $all_data__file__addr
+report_power >>  $all_data__file__addr
+report_area -hierarchy -nosplit >>  $all_data__file__addr
 
 
 #***F:DN now imposing the constraints
@@ -239,10 +242,18 @@ reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays
 set const [expr [lindex $delays_striving_for__l 1]]
 set_max_delay $const -to [all_outputs]
 set counter 2
+
+group_path -name priority_$counter -to [all_outputs] -critical_range .8 -weight [expr 5 - $counter]
+
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
     set non_transition_cells__l [split  $non_transition_cells__l__e " "]
     set const [expr [lindex $delays_striving_for__l $counter]]
-    set_max_delay $const -through $non_transition_cells__l -to [all_outputs]
+    
+#    group_path -name priority_$counter -to [all_outputs] -critical_range .5 -weight [expr 5 - $counter]
+#    group_path -default -through $non_transition_cells__l -to [all_outputs]
+    
+    set_max_delay $const -through $non_transition_cells__l -to [all_outputs] 
+    #set_max_delay $const -group_path priority_$counter -to [all_outputs]
     #echo $first_el >> non_transition_cells__l__acquired__in_tcl
     incr counter
 }
@@ -264,10 +275,6 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
 #
 
 
-echo "*** F:DN power report" >> $all_data__file__addr
-report_power >>  $all_data__file__addr
-report_area -hierarchy -nosplit >>  $all_data__file__addr
-
 
 #*** F:DN compile
 compile_ultra -timing_high_effort_script -no_autoungroup 
@@ -276,6 +283,9 @@ compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 optimize_netlist -area
 #compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 #read_saif -auto_map_names -input ~/behzad_local/verilog_files/apx_operators/int_ops_apx/DUT.saif -instance test_bench_tb/acc_adder_u -verbose 
+
+
+report_timing -sort_by group -significant_digits 4 >>  $all_data__file__addr
 
 
 #*** F:DN report the results

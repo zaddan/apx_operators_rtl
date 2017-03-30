@@ -1,14 +1,16 @@
 #reading a file and reporting it's timing (and other things)
 
-set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
 #----------------------------------------------------
 #---- Parameters
 #----------------------------------------------------
 #*** F:DN name of the design
+#set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
+set design_dir_addr "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
+
 set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32
+
 #*** F:DN where the source code is
-#set synth__file ${design_dir_addr}/hardwired_to_zero__24.v;#the synthesized verilog file
-set synth__file ${design_dir_addr}/blah.v;#the synthesized verilog file
+set synth__file ${design_dir_addr}/blah_18.v;#the synthesized verilog file
 
 #----------------------------------------------------
 #--- variables
@@ -21,8 +23,9 @@ set OP_BITWIDTH $DATA_PATH_WIDTH; #operator bitwidth
 
 set WDIR "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn"
 #~/behzad_local/verilog_files/synthesis
-set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
-#~/behzad_local/verilog_files/apx_operators/int_ops_apx
+#set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
+set RTLDIR "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
+
 set REPORTS_DIR ${WDIR}/reports
 
 

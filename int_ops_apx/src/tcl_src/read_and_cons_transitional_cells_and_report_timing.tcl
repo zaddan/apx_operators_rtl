@@ -196,17 +196,16 @@ echo $std_library >> $all_data__file__addr
 #----------------------------------------------------
 #
 
-
 #set_max_delay $acc_max_delay -to [all_outputs]
-
-set priority_array  $acc_reg_a_b_c_joined 
-foreach pt $all_input__pt { 
-    if {[lsearch -exact $priority_array $pt] >= 0} {
-        group_path -name priority -from $pt -critical_range 0.5 -priority 100 -weight 100
-    } else {
-        group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
-    }
-}
+#
+#set priority_array  $acc_reg_a_b_c_joined 
+#foreach pt $all_input__pt { 
+#    if {[lsearch -exact $priority_array $pt] >= 0} {
+#        group_path -name priority -from $pt -critical_range 0.5 -priority 100 -weight 100
+#    } else {
+#        group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
+#    }
+#}
 
 
 #ungroup -all -flatten

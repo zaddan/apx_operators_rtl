@@ -164,7 +164,7 @@ def synth_design_with_only_clk_constraint(input__obj):
     CLKGATED_BITWIDTH = input__obj.CLKGATED_BITWIDTH
     base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
     ID = input__obj.ID
-
+    op_type = input__obj.op_type
     #----------------------------------------------------
     #--- F:DN Variables
     #----------------------------------------------------
@@ -182,7 +182,7 @@ def synth_design_with_only_clk_constraint(input__obj):
 #            "__only_clk_contraint__synth_log.txt"
     
     synthesis__output__file__na = base_to_dump_reports__dir +\
-            "/"+"mac"+ "_" + \
+            "/"+op_type+ "_" + \
             str(DATA_PATH_BITWIDTH)+"__"+\
             "clk" + "_"+ str(clk_period) + "__"+ \
             "id"+"_"+str(ID)+"__"+\
@@ -220,6 +220,7 @@ def hardwire_apx_bits_to_zero(input__obj, precision):
     next_line_modify = False 
     ignore = False #*** F:DN ignoring certain lines
     apx_bit__c = DATA_PATH_BITWIDTH - precision 
+    op_type = input__obj.op_type
     #*** F:DN Body
     #*** F:DN parse the file 
     try:
@@ -239,23 +240,29 @@ def hardwire_apx_bits_to_zero(input__obj, precision):
                     modified__line = line
                 elif next_line_modify:
                     next_line_modify = False 
-                    modified__line = "clk, rst, a_in, b_in, c_in, d );\n"
+                    if (op_type == "mac"):
+                        modified__line = "clk, rst, a_in, b_in, c_in, d );\n"
+                    else:
+                        modified__line = "clk, rst, a_in, b_in, d );\n"
                     modified__line += " input ["+str(DATA_PATH_BITWIDTH- \
                             apx_bit__c)+":0]a_in;\n"
                     modified__line += "input ["+str(DATA_PATH_BITWIDTH- \
                             apx_bit__c)+":0]b_in;\n"
-                    modified__line += "input ["+str(DATA_PATH_BITWIDTH- \
-                            2*apx_bit__c)+":0]c_in;\n"
+                    if (op_type == "mac"):
+                        modified__line += "input ["+str(DATA_PATH_BITWIDTH- \
+                                                        2*apx_bit__c)+":0]c_in;\n"
                     modified__line += "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a;\n"
                     modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b;\n"
-                    modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]c;\n"
+                    if (op_type == "mac"):
+                        modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]c;\n"
                     modified__line += "assign a = {a_in["+\
                             str(DATA_PATH_BITWIDTH - apx_bit__c)+":0],"+ str(apx_bit__c)\
                             +"\'b0};\n" 
                     modified__line += "assign b = {b_in["+\
                             str(DATA_PATH_BITWIDTH - apx_bit__c)+":0],"+ str(apx_bit__c)\
                             +"\'b0};\n" 
-                    modified__line += "assign c = {c_in["+\
+                    if (op_type == "mac"):
+                        modified__line += "assign c = {c_in["+\
                             str(DATA_PATH_BITWIDTH - 2*apx_bit__c)+":0],"+ str(2*apx_bit__c)\
                             +"\'b0};\n" 
                     ignore = True 
@@ -264,6 +271,8 @@ def hardwire_apx_bits_to_zero(input__obj, precision):
                             continue
                 elif ("input" in line) and ("["+str(DATA_PATH_BITWIDTH-1)+":0]" in line) and \
                         ("b" in line) and ignore:
+                            if not(op_type == "mac"):
+                                ignore = False
                             continue
                 elif ("input" in line) and ("["+str(DATA_PATH_BITWIDTH-1)+":0]" in line) and \
                         ("c" in line) and ignore: 
@@ -300,6 +309,7 @@ def find_delay_through_each_cell(input__obj, precision, lib__n):
     CLKGATED_BITWIDTH = input__obj.CLKGATED_BITWIDTH
     base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
     ID = input__obj.ID
+    op_type = input__obj.op_type
     
     #*** F:DN Parameters 
     tcl_file__na =  "../tcl_src/find_delay_through_each_cell.tcl"
@@ -315,7 +325,7 @@ def find_delay_through_each_cell(input__obj, precision, lib__n):
             "set output__timing__log__na " + timing_per_cell__log__addr + ";"
     
     #*** F:AN for now set the syn__file__na to mac
-    syn__file__na = "mac"
+    syn__file__na = op_type
     output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
             str(clk_period) + "_"+ \
             str(DATA_PATH_BITWIDTH) +"__"+ \
@@ -537,6 +547,7 @@ def parse_file_to_get_design_arrival_times(\
 
     return design_arrival_times__d, clk__acquired
 
+
 #*** F:DN resynthesize the design while constraining the paths that goes
 #         through the cells responsible for the non_apx part of the result
 def read_and_cons_transitional_cells_and_resyn(
@@ -559,8 +570,7 @@ def read_and_cons_transitional_cells_and_resyn(
     ID = input__obj.ID
     delays_striving_for__f__na = input__obj.delays_striving_for__f__na
     precisions_striving_for__f__na = input__obj.precisions_striving_for__f__na
-    
-    
+
     op_type = input__obj.op_type
     evol_log__addr = base_to_dump_reports__dir_temp + "/"+op_type+ "_" + \
             str(DATA_PATH_BITWIDTH) +"__"+ \
@@ -589,7 +599,7 @@ def read_and_cons_transitional_cells_and_resyn(
             "set delays_striving_for__f__na " + delays_striving_for__f__na + ";"
 
     #*** F:AN for now set the syn__file__na to mac
-    syn__file__na = "mac"
+    syn__file__na = op_type
     output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
             str(DATA_PATH_BITWIDTH) +"__"+ \
             "clk" + "_" + str(clk_period) + "__"+ \
@@ -679,7 +689,7 @@ def read_and_cons_transitional_cells_and_report_timing(
 
     
     #*** F:AN for now set the syn__file__na to mac
-    syn__file__na = "mac"
+    syn__file__na = op_type
     output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
             str(DATA_PATH_BITWIDTH) +"__"+ \
             "clk" + "_" + str(clk_period) + "__"+ \
@@ -1197,8 +1207,9 @@ def generate__vars__tool_generated(input__obj, precision, bestDesignsPrecision__
     base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
     ID = input__obj.ID
     Pn = precision
+    op_type = input__obj.op_type
     output__file__addr = base_to_dump_reports__dir +\
-                   "/"+"mac"+ "_" + \
+                   "/"+op_type+ "_" + \
             str(DATA_PATH_BITWIDTH)+"__"+\
             "clk" + "_"+ str(clk_period) + "__"+ \
             "Pn" + "_" + str(Pn) + "__"+\

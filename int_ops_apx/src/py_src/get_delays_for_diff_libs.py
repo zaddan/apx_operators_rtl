@@ -17,12 +17,16 @@ def main():
     #---------------------------------------------------- 
     #*** F:DN Parameters
     #---------------------------------------------------- 
-    #libs__l = ["/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/noAging.db"] 
-    lib__dir__addr = "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/various_temps__db__selected" 
+#    libs__l =\
+#            ["/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/aging_and_no_aging__db/noAging.db"] 
+    #*** F:AN if you want to get all the libs in a directory, provide it bellow 
+    #lib__dir__addr = "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/various_temps__db__selected" 
+    lib__dir__addr = "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/various_temps__db__all_values" 
     libs__l = getNameOfFilesInAFolder(lib__dir__addr)
 
+    
+    #*** F:AN don't touch. It should be false 
     activate_check_point__p = False
-
     #---------------------------------------------------- 
     #*** F:DN initializing the variables
     #---------------------------------------------------- 
@@ -64,9 +68,15 @@ def main():
     #-----  -----    -----     -----     -----     -----
     remove__progress_flow_chart(input__obj) #removing the previous flow chart
     
-    input__obj.base_to_dump_reports__dir_temp = input__obj.base_to_dump_reports__dir_temp+"/" + strftime("%Y_%m_%d__%H_%M_%S", gmtime())
+    
+    if not(os.path.isdir(input__obj.base_to_dump_reports__dir_temp+"/" +\
+            input__obj.ID)):
+        print "this directory doesn't exist"
+        sys.exit
+    input__obj.base_to_dump_reports__dir_temp =\
+            input__obj.base_to_dump_reports__dir_temp+"/" +\
+            input__obj.ID+"/"+strftime("%Y_%m_%d__%H_%M_%S", gmtime())
     input__obj.base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir_temp+"/details"
-
     #----------------------------------------------------
     #*** F:DN Body
     #---------------------------------------------------- 
@@ -87,15 +97,14 @@ def main():
     os.system("cp " + "params__hardwired.py" +  " " + behzad_readMe__addr)
     os.system("echo " + "activate_check_point__p=" + str(activate_check_point__p) + " >> " + behzad_readMe__addr)
 
-    precision__counter = 0
-    #*** F:DN synth design with the clk (only const is the clk)
-       
-
+    #*** F:DN this forces the get_delay__before_tuning_and_archive func
+    #         to go through all the precisions mentioned in precisions__curi..
+    for Pn in precisions__curious_about__l:
+        bestDesignsPrecision__delay__d[Pn] = 0
+    
+    #*** iterate through libraries and get the delay (for Pns)
     for lib__n in libs__l:
         currently_targetting_acc_max_delay =  acc_max_delay__upper_limit__hard
-        #*** F:DN get delays before any tuninig (before design compiler designing)
-        #*** F:AN bestDesignsPrecision__delay_d and currently_targetting_acc_max_delay
-        #         values don't really mater in the follwing function
         bestDesignsPrecision__delay__d, precision_best_delay__d, best_design_worth_so_far, report__timing__f__best = \
         get_delay__before_tuning_and_archive( #@
                 input__obj, precision, bestDesignsPrecision__delay__d,
@@ -105,7 +114,6 @@ def main():
 
             
 
-#tool_chain__log__handle.close()
 #----------------------------------------------------
 #--- F: Main
 #----------------------------------------------------
@@ -113,12 +121,16 @@ main()
 
 
 #----------------------------------------------------
-#*** F:DN: instructions on how to use this module
+#*** F:HTN: instructions on how to use this module
 #----------------------------------------------------
+#**** F: precisions__curious_about__l determine which precisions we will show
+#        the delay for
 #1. cpy the .v file that you are interested in getting the delay from. obviously
 #              you should copy it to the file that is read by the python
 #              submodule. e.g:
 #  cp best_mac_32_by_32.v conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32__only_clk_cons_resynthesizedSCBSD.v
 #              run the python file
+#   note that we don't need to use params__tool_generated at all b/c the 
+#   precisions__curious_about__l would be explored
 
 

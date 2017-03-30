@@ -16,7 +16,7 @@ def main():
     #---------------------------------------------------- 
     #*** F:DN Parameters
     #---------------------------------------------------- 
-    activate_check_point__p = True
+    activate_check_point__p = False
 
     #---------------------------------------------------- 
     #*** F:DN initializing the variables
@@ -33,7 +33,7 @@ def main():
     #-----  -----    -----     -----     -----     -----
     first_time__p = input__obj.init__first_time__p #this variable allows us to archive the transitional
                          #cells and also the design in the first iteration
-                         # this is helpfull when the acc_mac__upper limit 
+                         # this is helpfull when the acc_max__upper limit
                          # is chosen lower than what the tool can find
     #-----  -----    -----     -----     -----     -----
 #    report__timing__f__prev = input__obj.init__report__timing__f__prev
@@ -59,9 +59,17 @@ def main():
     #-----  -----    -----     -----     -----     -----
     remove__progress_flow_chart(input__obj) #removing the previous flow chart
     
-    input__obj.base_to_dump_reports__dir_temp = input__obj.base_to_dump_reports__dir_temp+"/" + strftime("%Y_%m_%d__%H_%M_%S", gmtime())
-    input__obj.base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir_temp+"/details"
+    
+    if not(os.path.isdir(input__obj.base_to_dump_reports__dir_temp+"/" +\
+            input__obj.ID)):
+        print "this directory doesn't exist"
+        sys.exit
 
+    input__obj.base_to_dump_reports__dir_temp =\
+            input__obj.base_to_dump_reports__dir_temp+"/" +\
+            input__obj.ID+"/"+strftime("%Y_%m_%d__%H_%M_%S", gmtime())
+    
+    input__obj.base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir_temp+"/details"
     #----------------------------------------------------
     #*** F:DN Body
     #---------------------------------------------------- 

@@ -1,6 +1,12 @@
-design_name = "conf_int_mac__noFF__arch_agnos"
-ID = "SCBSD" #best case best sub delay
-    
+#design_name = "conf_int_mac__noFF__arch_agnos"
+#op_type = "mac"
+design_name = "conf_int_mul__noFF__arch_agnos"
+op_type = "mul"
+
+#ID = "SCBSD" #best case best sub delay
+ID = "DFDL" #Delay for different libraries
+ID = "DEBUG" #Delay for different libraries
+
 space_search__direction = "forward" #this mens that we go through
                                     #precision_curious__l in from left to right
 clk_period = .48#.250;
@@ -24,6 +30,5 @@ precision__l__order = "incr" #increasing
 #         cells found from one proecision to another
 propagate_info_regarding_previous_transiontal_cells__p = True
         
-op_type = "mac" 
-                
+
 
