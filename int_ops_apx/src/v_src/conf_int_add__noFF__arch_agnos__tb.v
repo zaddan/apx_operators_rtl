@@ -10,8 +10,8 @@ end
 module test_bench_tb;
   reg [31:0] input_a; //input_a
   reg [31:0] input_b; //input_b
-  reg apx_ctl; 
-  wire [31:0] output_c_acc; 
+  //reg [31:0] input_c; 
+  wire [31:0] d; 
   reg rst;
   reg clk;
   
@@ -19,7 +19,7 @@ module test_bench_tb;
   parameter OP_BITWIDTH = 32;
   parameter DATA_PATH_BITWIDTH = 32;
 
-  parameter clk_period = 2;
+  parameter clk_period = 5;
   parameter half_clk_period = clk_period/2;
   //reg [100*8:0] base_folder_str;
   //base_folder_str = "../../build/functional";
@@ -46,7 +46,6 @@ module test_bench_tb;
     rst <= 1'b1;
     #(30*clk_period)
     rst <= 1'b0;
-    apx_ctl <= 1'b1; 
     #(20*clk_period) 
     rst <= 1'b1;
   end
@@ -63,7 +62,7 @@ module test_bench_tb;
 
   integer f;
 initial begin
-    $sdf_annotate(`sdf_file_addr,add); 
+    //$sdf_annotate(`sdf_file_addr,add); 
     f = $fopen(`output_addr,"w");
 end
 
@@ -75,23 +74,24 @@ begin
     for (i=0; i < number_of_input_pairs; i = i + 1)begin
         input_a <= data[2*i];
         input_b <= data[2*i + 1];
+        //input_c <= data[3*i + 2];
         #(clk_period)
         //#(100*clk_period)
         //$display("input_a: %d input_b %d\n", $signed(input_a), $signed(input_b));
-        $fwrite(f,"%d %d %d\n",$signed(data[2*i]), $signed(data[2*i + 1 ]), $signed(output_c_acc));
+        $fwrite(f,"%d %d %d\n",$signed(data[2*i]), $signed(data[2*i + 1 ]), $signed(d));
     end
 end
 
 
 //generate waves, only for ncverilog
-/*
+
 initial
 begin
     $shm_open ("my_waves.shm"); //necessary to dump the signals
     //$Dumpvars(1,test_bench_tb );
-    $shm_probe("AS"); //probing for all the signals 
+    $shm_probe("AC"); //probing for all the signals 
 end
-*/
+
 
 //finish
 initial
@@ -103,23 +103,28 @@ end
 
 
 //--- behvarioal
-conf_int_add__noFF__arch_agnos #(OP_BITWIDTH, DATA_PATH_BITWIDTH) add( 
+/*
+conf_int_add__noFF__arch_agnos#(OP_BITWIDTH, DATA_PATH_BITWIDTH) add( 
     .clk(clk),
     .rst(rst),
     .a(input_a),
     .b(input_b),
-    .c(output_c_acc));
-
+    .c(input_c), 
+    .d(d));
+*/
 
 //--- synthesized
-/*
-unconfig_int_add_OP_BITWIDTH32_DATA_PATH_BITWIDTH32 add(
+conf_int_add__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32 add(
     .clk(clk),
     .rst(rst),
     .a(input_a),
     .b(input_b),
-    .c(output_c_acc));
-*/
+    .d(d));
+
+
+
+
+
 
 
 /* only for ncverilog
@@ -130,6 +135,16 @@ initial begin
 end
 */
 
+//----------------------------------------------------
+// *** F:HWN to test, 
+//      1) cpy the adder you want in the add_to_test.v file (in this folder)
+//      2) run the ncverilog commmand:
+//ncverilog -v /home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/verilog_files/*.v /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src/conf_int_add__noFF__arch_agnos__tb.v /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src/add_to_test.v +access+r |tee log 
+//      3) make sure results.txt is updated (in the ../../build/functional dir)
+//      4) go to test_operators and run test_verilog_vs_c.py (with appropriate parameter values)
+
+
+//----------------------------------------------------
 endmodule
 
 
