@@ -96,18 +96,18 @@ set AC_NAME $DESIGN_NAME
 #----------------------------------------------------
 #**** F:DN collect data before increasing pressure(time wise) on the design
 #----------------------------------------------------
-set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__atmpt_${attempt__iter__c}__id_${ID}__evol_log.txt
+#set all_data__file__addr ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__atmpt_${attempt__iter__c}__id_${ID}__evol_log.txt
 set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
-echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN before resyntheis " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_area -hierarchy -nosplit >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-#echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-#echo "*** F: after putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-#echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "**************** " > ${all_data__file__addr}
+echo "*** F:DN before resyntheis " >> ${all_data__file__addr}
+echo "**************** " >> ${all_data__file__addr}
+report_timing -sort_by slack -significant_digits 4 >>  ${all_data__file__addr}
+echo "*** F:DN power report" >> ${all_data__file__addr}
+report_power >>  ${all_data__file__addr}
+report_area -hierarchy -nosplit >>  ${all_data__file__addr}
+#echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__addr}
+#echo "*** F: after putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__addr}
+#echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__addr}
 #----------------------------------------------------
 
 set_max_delay $clk_period -to [all_outputs]
@@ -140,28 +140,28 @@ report_net
 
 
 #set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
-echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN after resynthesis " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-report_area -hierarchy -nosplit >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+echo "**************** " >> ${all_data__file__addr}
+echo "*** F:DN after resynthesis " >> ${all_data__file__addr}
+echo "**************** " >> ${all_data__file__addr}
+report_timing -sort_by slack -significant_digits 4 >>  ${all_data__file__addr}
+echo "*** F:DN power report" >> ${all_data__file__addr}
+report_power >>  ${all_data__file__addr}
+report_area -hierarchy -nosplit >>  ${all_data__file__addr}
 
 
 
 #....................................................
 #*** F:DN dumping the result in one log file
-#set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__log.txt
-#echo $all_data__file__na >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-#echo "*** F:DN transitional cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-#report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#set all_data__file__addr ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__log.txt
+#echo $all_data__file__addr >> ${REPORTS_DIR}/data_collected/${all_data__file__addr}
+#echo "*** F:DN transitional cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__addr}
+#report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__addr}
 #set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
 #                                             #all paths meet the clk
-#echo "*** F:DN all cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-#report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-#echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
-#report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
+#echo "*** F:DN all cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__addr}
+#report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__addr}
+#echo "*** F:DN power report" >> ${REPORTS_DIR}/data_collected/${all_data__file__addr}
+#report_power >>  ${REPORTS_DIR}/data_collected/${all_data__file__addr}
 #
 
 #*** F:DN save the design

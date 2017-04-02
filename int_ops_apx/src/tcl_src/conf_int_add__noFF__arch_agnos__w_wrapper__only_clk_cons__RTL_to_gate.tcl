@@ -1,5 +1,5 @@
 #----------------------------------------------------
-#*** F:DN this file syntheizes an arch agnos design for a mac 
+#*** F:DN this file syntheizes an arch agnos design for a add 
 #         where the only contraint is the clk itself.
 #----------------------------------------------------
 
@@ -14,11 +14,6 @@
 #set CLKGATED_BITWIDTH 4; #numebr of apx bits
 #set clk_period .7;#.63;#.68;#.7
 #set ID 0
-#set clk_period 0.7;set DATA_PATH_BITWIDTH  5;set CLKGATED_BITWIDTH 2; set ID SCBSD;
-
-
-
-
 #----------------------------------------------------
 set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
 puts $clk_period
@@ -32,7 +27,7 @@ set WDIR "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_
 set RTLDIR  "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src"
 #~/behzad_local/verilog_files/apx_operators/int_ops_apx
 set REPORTS_DIR ${WDIR}/reports
-set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper
+set DESIGN_NAME conf_int_add__noFF__arch_agnos__w_wrapper
 set RESULTS_DIR ${WDIR}/results
 set DCRM_FINAL_TIMING_REPORT timing.rpt
 set DCRM_FINAL_AREA_REPORT area.rpt
@@ -58,20 +53,9 @@ define_design_lib WORK -path ./WORK_1
 set verilogout_show_unconnected_pins "true"
 
 
-# *** F:AN required to preserve the net name
-#          . for us i.e net c
-#
-#set hdlin_keep_signal_name user
-#set enable_keep_signal_dt_net true
-#set enable_keep_signal true
-
 #*** F:DN read the design
 analyze -format verilog [list  ${design_dir_addr}/${DESIGN_NAME}.v]
 elaborate $my_toplevel -parameters $OP_BITWIDTH,$DATA_PATH_BITWIDTH
-
-
-
-
 check_design
 link
 
@@ -83,6 +67,9 @@ set_input_delay -max 0 -clock clk [get_ports b*]
 set_input_delay -max 0 -clock clk [get_ports a*]     
 set_dont_touch_network [get_clocks clk]
 
+#set hdlin_keep_signal_name user
+#set enable_keep_signal_dt_net true
+#set enable_keep_signal true
 
 set compile_delete_unloaded_sequential_cells false
 set compile_seqmap_propagate_constants false
@@ -95,7 +82,7 @@ group_path -name clk -from clk
 
 
 #*** F:DN compile
-set_dp_smartgen_options -mult_arch nand
+#set_dp_smartgen_options -mult_arch nand
 compile_ultra -timing_high_effort_script -no_autoungroup 
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup

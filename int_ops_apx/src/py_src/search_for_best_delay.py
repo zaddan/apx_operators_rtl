@@ -1,148 +1,135 @@
 #----------------------------------------------------
-# --- use this file for sweeping the clock to find the best
-#     delay associated with a a design (of different Precision)
-#     e.g best delay as/w 32x32 or 30x30 
+# --- use this file for sweeping the clock and also imposing of different
+# constrains on various bits 
 #----------------------------------------------------
 import os
 import pylab
 from search_for_delay_profile__helpers import *
-
-
+import copy
+from time import gmtime, strftime
+from input__file import *
 #----------------------------------------------------
 #---- F: Main 
 #----------------------------------------------------
 def main():
     
     #---------------------------------------------------- 
-    #*** F:DN Parameters 
+    #*** F:DN Parameters
     #---------------------------------------------------- 
-    design_name = "conf_int_mac__noFF__arch_agnos"
-    wrapper_module__na = design_name +"__w_wrapper"
-    #clk_period = .46; #*** F:AN use the value in the for loop
-    clk__upper_limit = .455#.450
-    clk__lower_limit = .425
-    clk__upper_limit__initial_value = clk__upper_limit 
-    #clk_values__c = 2    #*** F:DN this value determines how many clk values
-                          #         you want to have in an equidistance fashion
-                          #         between the upper and lower limits
-    DATA_PATH_BITWIDTH__lower_bound = 30
-    DATA_PATH_BITWIDTH__upper_bound = 32
-    #DATA_PATH_BITWIDTH = 32
-    DATA_PATH_BITWIDTH__step_size = 1 
-    CLKGATED_BITWIDTH = 4; #numebr of apx bits
-    attempt__upper_bound = 4
-    ID = "SCBD" #finding base(S) case(C) best(B) delay(D)
+    activate_check_point__p = False
+
+    #---------------------------------------------------- 
+    #*** F:DN initializing the variables
+    #---------------------------------------------------- 
+    input__obj = input__class(activate_check_point__p) # this also includes params
+                                                   # for now
+    prev__targeted_acc_max_delay = input__obj.init__prev__targeted_acc_max_delay
+    currentDesignsPrecision_delay__d = \
+            input__obj.init__currentDesignsPrecision_delay__d
+
+    best_design_worth_so_far = input__obj.init__best_design_worth_so_far
     #-----  -----    -----     -----     -----     -----
+    first_time__p = input__obj.init__first_time__p #this variable allows us to archive the transitional
+                         #cells and also the design in the first iteration
+                         # this is helpfull when the acc_max__upper limit
+                         # is chosen lower than what the tool can find
+    #-----  -----    -----     -----     -----     -----
+#    report__timing__f__prev = input__obj.init__report__timing__f__prev
+#    report__timing__f__best =  input__obj.init__report__timing__f__best
+#
+    precision__l__order = input__obj.precisions__l__order
+    #-----  -----    -----     -----     -----     -----
+    acc_max_delay__upper_limit__initial_value = input__obj.init__acc_max_delay__upper_limit__initial_value
+    acc_max_delay__lower_limit__initial_value = input__obj.init__acc_max_delay__lower_limit__initial_value
+    #-----  -----    -----     -----     -----     -----
+    acc_max_delay__upper_limit__hard = acc_max_delay__upper_limit__initial_value
+    acc_max_delay__lower_limit__hard = acc_max_delay__lower_limit__initial_value
+    #-----  -----    -----     -----     -----     -----
+    #precision__step_size = input__obj.precision__step_size
+    #precision__higher_limit = input__obj.precision__higher_limit
+    #precision__lower_limit = input__obj.precision__higher_limit
+    DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
+    precisions__curious_about__l = [DATA_PATH_BITWIDTH]
+
+    bestDesignsPrecision__delay__d = {}
+    bestDesignsPrecision__delay__d[DATA_PATH_BITWIDTH] = 1000
+    precision_best_delay__d = {}
+    precision_best_delay__d [DATA_PATH_BITWIDTH] =  10000
+
+    prev__acc_max_delay = input__obj.init_prev__acc_max_delay
+    report__timing__f__best = input__obj.init__report__timing__f
+    propagate_info_regarding_previous_transiontal_cells__p = input__obj.propagate_info_regarding_previous_transiontal_cells__p
+    #-----  -----    -----     -----     -----     -----
+    precision = DATA_PATH_BITWIDTH
+    #-----  -----    -----     -----     -----     -----
+    remove__progress_flow_chart(input__obj) #removing the previous flow chart
     
-    #---------------------------------------------------- 
-    #*** F:DN Variables
-    #---------------------------------------------------- 
-    #clk__step_size = -(clk__upper_limit - clk__lower_limit)/float(clk_values__c)
-    #clk__step_size =  float("{0:.3f}".format(clk__step_size)) #up to 2
-    base__dir = "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
-    base_to_dump_reports__dir =\
-            "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/logs_2"
-    base_to_dump_results__dir =\
-            "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/results"
+    
+    if not(os.path.isdir(input__obj.base_to_dump_reports__dir_temp+"/" +\
+            input__obj.ID)):
+        print "this directory doesn't exist"
+        sys.exit
 
-
-    #---------------------------------------------------- 
+    input__obj.base_to_dump_reports__dir_temp =\
+            input__obj.base_to_dump_reports__dir_temp+"/" +\
+            input__obj.ID+"/"+strftime("%Y_%m_%d__%H_%M_%S", gmtime())
+    
+    input__obj.base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir_temp+"/details"
+    #----------------------------------------------------
     #*** F:DN Body
     #---------------------------------------------------- 
-    #*** F:DN synthesize the design with clk constraint
-    for DATA_PATH_BITWIDTH in range (\
-            DATA_PATH_BITWIDTH__lower_bound,
-            DATA_PATH_BITWIDTH__upper_bound,
-            DATA_PATH_BITWIDTH__step_size):
-        OP_BITWIDTH = DATA_PATH_BITWIDTH 
-        syn__module__na = design_name+"_OP_BITWIDTH"+str(OP_BITWIDTH)+"_DATA_PATH_BITWIDTH"+str(DATA_PATH_BITWIDTH)
-        syn__wrapper_module__na = design_name+"__w_wrapper_OP_BITWIDTH"+str(OP_BITWIDTH)+"_DATA_PATH_BITWIDTH"+str(DATA_PATH_BITWIDTH)
-        syn__file__na = syn__wrapper_module__na +"__only_clk_cons_synthesized"+str(ID)+".v" # this the wrapper
-        syn__file__addr = base__dir + "/" + syn__file__na
-        
-        clk__el = clk__upper_limit__initial_value
-        slack_met = True
-        #*** F:DN initial synthesis 
-        clk_period = clk__el 
-        synth_design_with_only_clk_constraint(\
-                wrapper_module__na, 
-                syn__file__addr, 
-                clk_period, 
-                DATA_PATH_BITWIDTH,
-                CLKGATED_BITWIDTH,
-                base_to_dump_reports__dir, 
-                ID)
-        
-        while (True): 
-            if (slack_met):
-                clk__upper_limit = clk__el
-            else:
-                clk__lower_limit = clk__el
-                #clk__upper_limit = best_delay_so_far
-            prev__clk = clk__el  #recording the previous clk
-            clk__el = float(clk__upper_limit + clk__lower_limit)/float(2)
-            clk__el =  float("{0:.3f}".format(clk__el)) #up to 2
-            #*** F:DN if two clks has reached each other or
-            #         the clk hasn't changed in two cycles, break (1)
-            if (clk__upper_limit == clk__lower_limit) or (prev__clk == clk__el):
-                break
-            clk_period = clk__el 
-            for attempt__iter__c in range(0, attempt__upper_bound): 
-                read_resyn_and_report(\
-                        syn__file__na,
-                        syn__wrapper_module__na, 
-                        clk_period, 
-                        DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, 
-                        base_to_dump_reports__dir,
-                        base_to_dump_results__dir,
-                        attempt__iter__c,
-                        clk__upper_limit,
-                        clk__lower_limit,
-                        prev__clk,
-                        ID)
-                
-                my_dir =\
-                        "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected"
-                #*** F:AN this needs to change to add or something later 
-                op_type = "mac" 
-                #*** F:DN if slack met break 
-                file_to_look_for_slack_in = my_dir + "/"+ str(op_type)+"_"+\
-                        str(DATA_PATH_BITWIDTH)+"__clk_"+\
-                        str(clk_period)+"__atmpt_"+str(attempt__iter__c)+\
-                        "__id_"+str(ID)+ "__evol_log.txt"
-                slack_met = parse_file_to_get_slack(file_to_look_for_slack_in)
-                if (slack_met):
-                    break
-                else:
-                    best_delay_so_far = parse_file_to_get_best_delay(file_to_look_for_slack_in)
-                syn__file__na = syn__wrapper_module__na +\
-                        "__only_clk_cons_resynthesized" + str(ID) +".v" # this the wrapper
-                syn__file__addr = base__dir + "/" + syn__file__na
+    #*** F:DN take a backup (move to a new folder) of previous results 
+    """"
+    if (os.path.isdir(input__obj.base_to_dump_reports__dir_temp)):
+        backup_dir__n = "batch__"+ strftime("%Y_%m_%d__%H_%M_%S", gmtime())
+        backup_dir__addr = input__obj.base_to_dump_reports__dir_original+"/"+input__obj.ID+"/"+backup_dir__n
+        os.system("mkdir " + backup_dir__addr)
+        os.system("mv " + input__obj.base_to_dump_reports__dir_temp + " " +\
+                backup_dir__addr)
+    """
+
+    #*** F:DN make a temporary directory for results
+    os.system("mkdir " + input__obj.base_to_dump_reports__dir_temp)
+    os.system("mkdir " + input__obj.base_to_dump_reports__dir)
+    behzad_readMe__addr =  input__obj.base_to_dump_reports__dir_temp+"/"+"behzad_readME"
+    os.system("cp " + "params__hardwired.py" +  " " + behzad_readMe__addr)
+    os.system("echo " + "activate_check_point__p=" + str(activate_check_point__p) + " >> " + behzad_readMe__addr)
+
+    precision__counter = 0
+    #*** F:DN synth design with the clk (only const is the clk)
+    
+    currently_targetting_acc_max_delay =  acc_max_delay__upper_limit__hard
+    input__obj.clk_period = currently_targetting_acc_max_delay
+    if not(activate_check_point__p):
+        synth_design_with_only_clk_constraint(input__obj)
+    else:
+        bestDesignsPrecision__delay__d, precision_best_delay__d, best_design_worth_so_far, report__timing__f__best = \
+                get_delay__before_tuning_and_archive( #@
+                        input__obj, precision, bestDesignsPrecision__delay__d,
+                        currently_targetting_acc_max_delay, acc_max_delay__lower_limit__hard,
+                        acc_max_delay__upper_limit__hard, prev__acc_max_delay, report__timing__f__best,
+                        precision_best_delay__d)
+
+    report__timing__f__best, bestDesignsPrecision__delay__d,\
+    acc_max_delay__lower_limit__hard, acc_max_delay__upper_limit__hard, prev__acc_max_delay,\
+    precision_best_delay__d = \
+    find_best_delay__using_binary_search( #@
+            input__obj, 
+            precision, currently_targetting_acc_max_delay,
+            acc_max_delay__lower_limit__hard, acc_max_delay__upper_limit__hard,
+            bestDesignsPrecision__delay__d,
+            best_design_worth_so_far,
+            precision_best_delay__d,
+            report__timing__f__best,
+            activate_check_point__p,
+            precision__l__order)
             
 
+#tool_chain__log__handle.close()
 #----------------------------------------------------
 #--- F: Main
 #----------------------------------------------------
 main()
 
 
-#----------------------------------------------------
-#--- F: Issues
-#----------------------------------------------------
-# (1) I have notices that sometimes when I am looking for a low clk(T0)
-# it won't meet, but it'll meet a clk that is fairly close(T1) and 
-# when I change the lower bound and try to look for the new clk(T2) (which 
-# say is higher than the "fairly close(T1)" clock, it won't meet the "new
-# clk(T2)". This is why, you should look inside all the log files to see
-#           whether you can find a clk that was lower than the latest clk found
-# **** F:AN: Issue (1) is why, you should look inside all the log files to see
-#           whether you can find a clk that was lower than the latest clk found
 
-
-
-#----------------------------------------------------
-#--- F: Notes
-#----------------------------------------------------
-#*** (1) the reason that the clks might not ever reach each other
-#        is b/c of rounding. Rounding might cause the avg to never
-#        actually pull up a clk (or down) to the other

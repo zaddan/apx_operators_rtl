@@ -19,8 +19,6 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
     return $reg_l_flattened
 }
 
-
-
 #----------------------------------------------------
 #*** F:DN Parameters
 #----------------------------------------------------
@@ -38,7 +36,8 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set attempt__iter__c 0
 #set ID 0
 #set delays_striving_for__f__na "blah"
-#set clk_period 0.25;set DATA_PATH_BITWIDTH 8;set CLKGATED_BITWIDTH 4;set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH8_DATA_PATH_BITWIDTH8;set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH8_DATA_PATH_BITWIDTH8__only_clk_cons_synthesizedSCBSD.v;set transition_cells__base_addr  /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src;set transitioning_cells__log__na transitioning_cellsSCBSD.txt ;set Pn 5;set acc_max_delay 0.154;set attempt__iter__c 0;set ID SCBSD;set delays_striving_for__f__na delays_striving_for.txt;
+#set clk_period 0.7;set DATA_PATH_BITWIDTH 5;set CLKGATED_BITWIDTH 2;set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH5_DATA_PATH_BITWIDTH5;set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH5_DATA_PATH_BITWIDTH5__only_clk_cons_resynthesizedSCBSD.v;set transition_cells__base_addr  /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src;set transitioning_cells__log__na transitioning_cells_after_resynSCBSD.txt ;set Pn 4;set acc_max_delay 0.236;set attempt__iter__c 1;set ID SCBSD;set precisions_striving_for__f__na precisions_striving_forSCBSD.txt;set all_data__file__addr /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/SCBSD/2017_04_01__21_47_52/mac_5__clk_0.7__acc_max_del_0.236__Pn_4__atmpt_1__id_SCBSD__evol_log.txt;set delays_striving_for__f__na delays_striving_forSCBSD.txt;
+#
 ##----------------------------------------------------
 set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
@@ -105,8 +104,14 @@ set acc_reg_b_l [make-reg_l "b" $a_and_b_apx_bit__upper_bound $DATA_PATH_BITWIDT
 set acc_reg_c_l [make-reg_l "c" $c_and_d_apx_bit__upper_bound $DATA_PATH_BITWIDTH]
 set acc_reg_d_l [make-reg_l "d"  $c_and_d_apx_bit__upper_bound $DATA_PATH_BITWIDTH]
 set acc_reg_a_b_joined [concat $acc_reg_a_l $acc_reg_b_l]
+
 set acc_reg_a_b_c_joined [concat $acc_reg_a_b_joined $acc_reg_c_l]
-set all_input__pt [concat $all_reg_a_b_c_joined]
+
+
+#*** F:AN I got rid of c b/c now it doesn't show up in any of the designs
+set all_input__pt [concat $all_reg_a_b_joined]
+#set all_input__pt [concat $all_reg_a_b_c_joined]
+
 #---    ---      ---       ---       ---       ---
 puts $apx_reg_a_b_c_joined 
 puts $apx_reg_a_b_c_joined
@@ -174,12 +179,26 @@ set compile_enable_register_merging false
 set compile_seqmap_enable_output_inversion false
 set AC_NAME $DESIGN_NAME
 
+# *** F:AN if noFF in the output of the design, use the following
+set outputs_of_interest [get_object_name [all_outputs]]
+## *** F:AN if FF in the output of the design, use the following
+##set outputs_of_interest [get_object_name [get_pins -of_objects my_mac/reg_c_reg* -filter "direction == out"]]
+# 
+
 #----------------------------------------------------
 #**** F:DN collect data before increasing pressure(time wise) on the design
 #----------------------------------------------------
 #set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_delay_${acc_max_delay}__Pn_${Pn}__log.txt
 #set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_del_${acc_max_delay}__Pn_${Pn}__atmpt_${attempt__iter__c}__id_${ID}__evol_log.txt
-set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
+
+
+
+
+
+
+set_max_delay $clk_period -to $outputs_of_interest ;#modifying the constraint to makesure
+
+
 echo "**************** " > $all_data__file__addr
 echo "*** F:DN before putting pressure " >> $all_data__file__addr
 #echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
@@ -201,11 +220,11 @@ echo "*** F:DN transitional cells" >> $all_data__file__addr
 set const [expr [lindex $delays_striving_for__l 1]]
 set counter 1
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
-    reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
+    reset_path -to  $outputs_of_interest ;# need this b/c ow the other set_max_delays 
     set const [expr [lindex $delays_striving_for__l $counter]]
-    set_max_delay $const -to [all_outputs]
+    set_max_delay $const -to $outputs_of_interest
     set non_transition_cells__l [split  $non_transition_cells__l__e " "]
-    set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
+    set_max_delay $clk_period -through $non_transition_cells__l -to $outputs_of_interest
     
     #*** F:DN probing in 
     set precision_to_be_shown [lindex $Pn__l $counter]
@@ -216,9 +235,9 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
     #echo $first_el >> non_transition_cells__l__acquired__in_tcl
     incr counter
 }
-reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
+reset_path -to  $outputs_of_interest ;# need this b/c ow the other set_max_delays 
                                # might take precedence
-set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
+set_max_delay $clk_period -to $outputs_of_interest ;#modifying the constraint to makesure
 echo "*** F:DN all paths report" >> $all_data__file__addr
 report_timing -sort_by slack -significant_digits 4 >>  $all_data__file__addr
 echo "*** F:DN power report" >> $all_data__file__addr
@@ -227,33 +246,40 @@ report_area -hierarchy -nosplit >>  $all_data__file__addr
 
 
 #***F:DN now imposing the constraints
-reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
+reset_path -to  $outputs_of_interest ;# need this b/c ow the other set_max_delays 
 
+
+#*** F:AN I got rid of c b/c now it doesn't show up in any of the designs
 #set priority_array  $acc_reg_a_b_c_joined 
-#foreach pt $all_input__pt { 
-#    if {[lsearch -exact $priority_array $pt] >= 0} {
-#        group_path -name priority -from $pt -critical_range 0.5 -priority 100 -weight 100
-#    } else {
-#        group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
-#    }
-#}
+set priority_array  $acc_reg_a_b_joined 
+
+foreach pt $all_input__pt { 
+    if {[lsearch -exact $priority_array $pt] >= 0} {
+        group_path -name priority -from $pt -critical_range 0.5 -priority 100 -weight 100
+    } else {
+        group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
+    }
+}
+
+
+
 
 #*** F:DN constrain according to the constaints
 set const [expr [lindex $delays_striving_for__l 1]]
-set_max_delay $const -to [all_outputs]
+set_max_delay $const -to $outputs_of_interest
 set counter 2
 
-group_path -name priority_$counter -to [all_outputs] -critical_range .8 -weight [expr 5 - $counter]
+#group_path -name priority_$counter -to $outputs_of_interest -critical_range .8 -weight [expr 5 - $counter]
 
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
     set non_transition_cells__l [split  $non_transition_cells__l__e " "]
     set const [expr [lindex $delays_striving_for__l $counter]]
     
-#    group_path -name priority_$counter -to [all_outputs] -critical_range .5 -weight [expr 5 - $counter]
-#    group_path -default -through $non_transition_cells__l -to [all_outputs]
+#    group_path -name priority_$counter -to $outputs_of_interest -critical_range .5 -weight [expr 5 - $counter]
+#    group_path -default -through $non_transition_cells__l -to $outputs_of_interest
     
-    set_max_delay $const -through $non_transition_cells__l -to [all_outputs] 
-    #set_max_delay $const -group_path priority_$counter -to [all_outputs]
+    set_max_delay $const -through $non_transition_cells__l -to $outputs_of_interest 
+    #set_max_delay $const -group_path priority_$counter -to $outputs_of_interest
     #echo $first_el >> non_transition_cells__l__acquired__in_tcl
     incr counter
 }
@@ -300,7 +326,7 @@ echo "*** transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.
 #...   ...    ..  ...  ..    ..    ...      ..
 echo "*** non transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #report_timing -sort_by slack -exclude $transition_cells__l -nworst 30000 -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-#report_timing -sort_by slack -from a[0] -to [all_outputs] >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+#report_timing -sort_by slack -from a[0] -to [$outputs_of_interest] >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #....................................................
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${report_file__prefix}__area.rpt
 report_power > ${REPORTS_DIR}/${report_file__prefix}__power.rpt
@@ -316,7 +342,7 @@ report_net
 #echo $all_data__file__na >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #echo "*** F:DN transitional cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}
-#set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
+#set_max_delay $clk_period -to [$outputs_of_interest] ;#modifying the constraint to makesure
 #                                             #all paths meet the clk
 #echo "*** F:DN all cells report" >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #report_timing -sort_by slack -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}

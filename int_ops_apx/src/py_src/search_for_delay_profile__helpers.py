@@ -8,6 +8,20 @@ import numpy
 import copy
 import sys
 
+
+def modify_line_with_c(line, input__obj, precision):
+    DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
+    apx_bit__c = DATA_PATH_BITWIDTH - precision
+    word_list = line.split()
+    index_of_thword_to_be_replaced = word_list.index(".c(d),")
+
+#    word_list[index_of_thword_to_be_replaced] = """.c({d["""+ \
+#                                          str(DATA_PATH_BITWIDTH - 1) + ":" + str(DATA_PATH_BITWIDTH - 2*apx_bit__c - 1)+ "],"+ str(2*apx_bit__c)+ """\'""" + """b0}),"""
+
+    word_list[index_of_thword_to_be_replaced] = ".c(d_mod),"
+    line_after_modification = " ".join(word_list)
+    return line_after_modification
+
 #*** F:DN
 """
 def archive_params(dest__f__addr,design_name, ID, clk_period, DATA_PATH_BITWIDTH,
@@ -221,8 +235,19 @@ def hardwire_apx_bits_to_zero(input__obj, precision):
     ignore = False #*** F:DN ignoring certain lines
     apx_bit__c = DATA_PATH_BITWIDTH - precision 
     op_type = input__obj.op_type
+
+    #*** F:AN switch this manually. if you set it to mac, it'll try to parse and generate
+    #         for a design with registers. If you switch this to mac_noFF it does the other obvious thing
+    if (op_type == "mac"):
+        #modified_op_type = "mac"
+        modified_op_type = "mac_noFF"
+    else:
+        modified_op_type = op_type
+
     #*** F:DN Body
     #*** F:DN parse the file 
+    saw_minus_1_wrapper__p = False
+    minus_1_wrapper   = "conf_int_mac__noFF__arch_agnos__w_wrapper_minus_1_OP_BITWIDTH5_DATA_PATH_BITWIDTH5"
     try:
         f = open(original_syn_copy__file__addr)
     except IOError:
@@ -240,44 +265,62 @@ def hardwire_apx_bits_to_zero(input__obj, precision):
                     modified__line = line
                 elif next_line_modify:
                     next_line_modify = False 
-                    if (op_type == "mac"):
+                    if (modified_op_type == "mac_noFF"): #simply skipping this now
                         modified__line = "clk, rst, a_in, b_in, c_in, d );\n"
                     else:
                         modified__line = "clk, rst, a_in, b_in, d );\n"
                     modified__line += " input ["+str(DATA_PATH_BITWIDTH- \
-                            apx_bit__c)+":0]a_in;\n"
+                            apx_bit__c-1)+":0]a_in;\n"
                     modified__line += "input ["+str(DATA_PATH_BITWIDTH- \
-                            apx_bit__c)+":0]b_in;\n"
-                    if (op_type == "mac"):
+                            apx_bit__c-1)+":0]b_in;\n"
+                    if (modified_op_type == "mac_noFF"):
                         modified__line += "input ["+str(DATA_PATH_BITWIDTH- \
-                                                        2*apx_bit__c)+":0]c_in;\n"
+                                                        2*apx_bit__c - 1)+":0]c_in;\n"
+
                     modified__line += "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a;\n"
                     modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b;\n"
-                    if (op_type == "mac"):
+                    if (modified_op_type == "mac_noFF"):
                         modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]c;\n"
+
+                    if (modified_op_type == "mac"):
+                        modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]d_mod;\n"
+                        modified__line += """assign d_mod = {d["""+ \
+                                          str(DATA_PATH_BITWIDTH - 1) + ":" + str(DATA_PATH_BITWIDTH - 2*apx_bit__c - 1)+\
+                                          "],"+ str(2*apx_bit__c)+ """\'""" + "b0};\n"
+
                     modified__line += "assign a = {a_in["+\
-                            str(DATA_PATH_BITWIDTH - apx_bit__c)+":0],"+ str(apx_bit__c)\
+                            str(DATA_PATH_BITWIDTH - apx_bit__c - 1)+":0],"+ str(apx_bit__c)\
                             +"\'b0};\n" 
                     modified__line += "assign b = {b_in["+\
-                            str(DATA_PATH_BITWIDTH - apx_bit__c)+":0],"+ str(apx_bit__c)\
+                            str(DATA_PATH_BITWIDTH - apx_bit__c - 1)+":0],"+ str(apx_bit__c)\
                             +"\'b0};\n" 
-                    if (op_type == "mac"):
+                    if (modified_op_type == "mac_noFF"):
                         modified__line += "assign c = {c_in["+\
-                            str(DATA_PATH_BITWIDTH - 2*apx_bit__c)+":0],"+ str(2*apx_bit__c)\
-                            +"\'b0};\n" 
-                    ignore = True 
+                            str(DATA_PATH_BITWIDTH - 2*apx_bit__c - 1)+":0],"+ str(2*apx_bit__c)\
+                            +"\'b0};\n"
+                    ignore = True
                 elif ("input" in line) and ("["+str(DATA_PATH_BITWIDTH-1)+":0]" in line) and \
                         ("a" in line) and ignore :
                             continue
                 elif ("input" in line) and ("["+str(DATA_PATH_BITWIDTH-1)+":0]" in line) and \
                         ("b" in line) and ignore:
-                            if not(op_type == "mac"):
+                            if not((modified_op_type == "mac") or (modified_op_type == "mac_noFF")):
                                 ignore = False
                             continue
                 elif ("input" in line) and ("["+str(DATA_PATH_BITWIDTH-1)+":0]" in line) and \
                         ("c" in line) and ignore: 
                             ignore = False 
                             continue
+                elif (modified_op_type =="mac" and saw_minus_1_wrapper__p ):
+                        if("c(" in line):
+                            modified__line = modify_line_with_c(line, input__obj, precision)
+                            print line
+                            saw_minus_1_wrapper__p = False
+                        else:
+                            modified__line = line
+                elif (modified_op_type == "mac" and "my_mac" in line):
+                        modified__line = line
+                        saw_minus_1_wrapper__p = True
                 else:
                     modified__line = line
                     
@@ -396,31 +439,47 @@ def find_and_update_transitioning_cells(input__obj):
     transitioning_cell__log__file_handle.close()
     none_transitioning_cell__log__file_handle.close()
 
-""""
 def read_resyn_and_report(
-        syn__file__na,
-        syn__wrapper_module__na, 
-        clk_period, 
-        DATA_PATH_BITWIDTH, CLKGATED_BITWIDTH, 
-        base_to_dump_reports__dir, 
-        base_to_dump_results__dir,
-        attempt__iter__c, 
-        clk__upper_limit,
-        clk__lower_limit,
-        prev__clk,
-        ID):
+        input__obj, 
+        acc_max_delay, 
+        precision,
+        attempt__iter__c,
+        report__timing__f__best):
+
+    syn__file__na = input__obj.syn__file__na
+    syn__wrapper_module__na = input__obj.syn__wrapper_module__na
+    transition_cells__base_addr = input__obj.transition_cells__base_addr
+    transitioning_cells__log__na = input__obj.transitioning_cells__log__na
+    clk_period  = acc_max_delay
+    DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
+    CLKGATED_BITWIDTH  = input__obj.CLKGATED_BITWIDTH
+    base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
+    base_to_dump_results__dir = input__obj.base_to_dump_results__dir
+    base_to_dump_reports__dir_temp = input__obj.base_to_dump_reports__dir_temp
+    attempt__iter__c  = attempt__iter__c
+    ID = input__obj.ID
+    delays_striving_for__f__na = input__obj.delays_striving_for__f__na
+    precisions_striving_for__f__na = input__obj.precisions_striving_for__f__na
+    op_type = input__obj.op_type
+    syn__file__na = op_type
     
-    #*** F:DN variabes 
+    evol_log__addr = base_to_dump_reports__dir_temp + "/"+op_type+ "_" + \
+            str(DATA_PATH_BITWIDTH) +"__"+ \
+            "clk" + "_" + str(clk_period) + "__"+ \
+            "atmpt"+"_"+str(attempt__iter__c) + "__"+\
+            "id"+"_"+str(ID)+"__"+\
+            "evol_log.txt"
+
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
             "set CLKGATED_BITWIDTH "  +str(CLKGATED_BITWIDTH) + ";" + \
             "set DESIGN_NAME " + syn__wrapper_module__na + ";" + \
             "set synth_file__na " + syn__file__na  + ";" + \
             "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
+            "set all_data__file__addr " + evol_log__addr + ";" + \
             "set ID " + str(ID)+ ";"
-    
-    #*** F:AN for now set the syn__file__na to mac
-    syn__file__na = "mac"
+
+
     output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
             str(DATA_PATH_BITWIDTH) +"__"+ \
             "clk" + "_" + str(clk_period) + "__"+ \
@@ -428,15 +487,14 @@ def read_resyn_and_report(
             "id"+"_"+str(ID)+"__"+\
             "read_resyn_and_report__log.txt"
     tcl_file_name =  "read_resyn_and_report.tcl"
-    
+
     #----------------------------------------------------
     #--- F: Body
     #----------------------------------------------------
     setup_info =  "clk:"+str(clk_period) +"\n"
-    setup_info +=  "prev__clk:"+str(prev__clk) +"\n"
-    setup_info +=  "clk__lower_limit:"+str(clk__lower_limit) +"\n"
-    setup_info +=  "clk__upper_limit:"+str(clk__upper_limit) +"\n"
     setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
+    setup_info +=  "acc_max_delay:"+str(acc_max_delay) +"\n"
+    setup_info += "report__timing__f__best: " + report__timing__f__best + "\n"
 
     os.system("echo \" " + setup_info + " \" > " + output__file__na)
     os.system("dc_shell-t  -x " + "\"" + tcl_parametrs + "\"" + " -f \
@@ -446,7 +504,8 @@ def read_resyn_and_report(
     resyn__file__addr = base_to_dump_results__dir + "/" + resyn__file__na 
     os.system("echo starting dot_v file  >> " + output__file__na)
     os.system("cat  " + resyn__file__addr + "  >> " + output__file__na)
-"""
+
+
 
 def calc_design_worth(design_arrival_times__d, precision):
 #    total = 0
@@ -766,7 +825,7 @@ def grep_for_and_update_transitional_cells(
 
         #*** F:DN find cells responsible for the none_apx part of the result
         find_delay_through_each_cell(input__obj, precision__el, lib__n)
-        
+
         #*** F:DN find cells responsible for the apx part of the result
         find_and_update_transitioning_cells(input__obj)
 
@@ -966,7 +1025,7 @@ def update__progress_flow_chart(input__obj, precision, delays_striving_for__d, a
 
 
 
-def find_best_delay__using_binary_search(
+def find_best_subdelay__using_binary_search(
         input__obj, 
         precision, currently_targetting_acc_max_delay,
         acc_max_delay__lower_limit__hard, acc_max_delay__upper_limit__hard,
@@ -1221,3 +1280,134 @@ def generate__vars__tool_generated(input__obj, precision, bestDesignsPrecision__
         output__file__handle.write("bestDesignsPrecision__delay__d[" + str(key__el) + "]= " + str(bestDesignsPrecision__delay__d[key__el]) + "\n")
         output__file__handle.write("precision_best_delay__d[" + str(key__el) + "]= " + str(precision_best_delay__d[key__el]) + "\n")
     output__file__handle.close()
+
+def find_best_delay__using_binary_search(
+        input__obj, 
+        precision, currently_targetting_acc_max_delay,
+        acc_max_delay__lower_limit__hard, acc_max_delay__upper_limit__hard,
+        bestDesignsPrecision__delay__d,
+        best_design_worth_so_far,
+        precision_best_delay__d,
+        report__timing__f__best,
+        activate_check_point__p,
+        precision__l__order,
+        lib__n = "noAging.db"
+        ):
+    
+    #*** F:DN intialized some vars
+    attempt__upper_bound = input__obj.attempt__upper_bound
+    acc_max_delay__lower_limit = acc_max_delay__lower_limit__hard
+    acc_max_delay__upper_limit = acc_max_delay__upper_limit__hard
+    slack_acceptable__p = True
+    prev__targeted_acc_max_delay = -1
+    updated_boundary__p = False
+    DATA_PATH_BITWIDTH= input__obj.DATA_PATH_BITWIDTH
+
+    delays_striving_for__d = {}
+    #*** F:DN find transitional cells
+
+    precisions_covered_so_far__l = bestDesignsPrecision__delay__d.keys()
+    report__timing__f__this_time = report__timing__f__best
+    while (True):
+
+        #*** F:DN update what max_delay (and some other vars) we are aiming for
+        prev__targeted_acc_max_delay, currently_targetting_acc_max_delay,\
+        acc_max_delay__lower_limit, acc_max_delay__upper_limit, updated_boundary__p, done_searching__p = \
+        update__targetting_acc_max_delay( #@@
+        slack_acceptable__p, prev__targeted_acc_max_delay,\
+        currently_targetting_acc_max_delay, acc_max_delay__upper_limit,\
+        acc_max_delay__lower_limit, updated_boundary__p, bestDesignsPrecision__delay__d,
+        precision)
+
+        #*** F: exit out if necessary
+        if (done_searching__p):
+            break
+        delays_striving_for__d[DATA_PATH_BITWIDTH] = currently_targetting_acc_max_delay
+        #*** F:DN iterate in quest of a design with the acc_max_delay
+        for attempt__iter__c in range(0,
+                attempt__upper_bound):
+            report__timing__f__prev_time = report__timing__f__this_time
+            #*** F:DN read, constraint and resyn
+            read_resyn_and_report(
+                    input__obj, 
+                    currently_targetting_acc_max_delay, 
+                    precision,
+                    attempt__iter__c,
+                    report__timing__f__best)
+
+            #*** F:CN deign_worth is used to note which design is the best
+            #         so far
+            #*** F:CN slack_acceptabl__p is used to indicate whether the
+            #         condition we are looking for is met or no
+            currentDesignsPrecision_delay__d, slack_acceptable__p,\
+            slack_met_for_precision_under_investigation, design_worth, clk__aqcuired = \
+            collect_syn_design_statistics( #@@
+            input__obj,
+            precisions_covered_so_far__l,
+            currently_targetting_acc_max_delay,
+            precision,
+            bestDesignsPrecision__delay__d,
+            attempt__iter__c)
+
+
+            #*** F:DN archive best (if this iteration is the best)
+            if (design_worth > best_design_worth_so_far):
+                bestDesignsPrecision__delay__d,\
+                best_design_worth_so_far,\
+                _ = update_bests( input__obj, currentDesignsPrecision_delay__d, design_worth,
+                precision, precision_best_delay__d, False)
+                report__timing__f__best = report__timing__f__this_time
+            #...   ...    ..  ...  ..    ..    ...      ..
+            #***F:DN keeping track of the best delay for the
+            #        precision (regardless of other precisions)
+            precision_best_delay__d[precision]= \
+                min(currentDesignsPrecision_delay__d[precision],precision_best_delay__d[precision])
+
+            generate__vars__tool_generated(input__obj, precision, bestDesignsPrecision__delay__d, precision_best_delay__d)
+            update__progress_flow_chart(input__obj, precision, delays_striving_for__d, attempt__iter__c, precision_best_delay__d,
+                                        bestDesignsPrecision__delay__d, currentDesignsPrecision_delay__d, clk__aqcuired)
+            #*** F:DN if met, stop trying
+            if(slack_acceptable__p):
+                break
+
+         
+        #*** F:DN  restore the best found so far
+        restore_design_and_design_info_best_case_found(input__obj)
+        report__timing__f__this_time = report__timing__f__best
+        archive_results(input__obj, precision, bestDesignsPrecision__delay__d, precision_best_delay__d,
+                        report__timing__f__best, activate_check_point__p)
+        if (updated_boundary__p): #we through the towel (adjust the boundaries) and leave
+            break
+    
+    #//TODO integrate this
+#    #*** F:expand acc_max_delay__upper
+#    #*** F:DN commented out for the sake of clk exploreation
+#    if (bestDesignsPrecision__delay__d[precision]\
+#            >= acc_max_delay__upper_limit__hard):
+#        acc_max_delay__lower_limit__hard,\
+#            acc_max_delay__upper_limit__hard = \
+#            expand__acc_max_delay__upper_limit(#@@
+#                input__obj, acc_max_delay__upper_limit__hard,
+#                precision,
+#                bestDesignsPrecision__delay__d[precision])
+#
+#        updated_boundary__p = True
+#        acc_max_delay__lower_limit = acc_max_delay__lower_limit__hard
+
+
+    #*** F:DN commented out for the sake of clk exploreation
+    if (precision__l__order == "incr"):
+        acc_max_delay__lower_limit__hard = bestDesignsPrecision__delay__d[precision]
+    else:
+        acc_max_delay__upper_limit__hard = bestDesignsPrecision__delay__d[precision]
+
+
+    #*** F:DN archiveing the results
+    archive_results(input__obj, precision, bestDesignsPrecision__delay__d, precision_best_delay__d,
+                    report__timing__f__best, activate_check_point__p)
+
+    return (report__timing__f__best, bestDesignsPrecision__delay__d,
+    acc_max_delay__lower_limit__hard, acc_max_delay__upper_limit__hard,prev__targeted_acc_max_delay,
+    precision_best_delay__d)
+
+

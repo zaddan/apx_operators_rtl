@@ -91,11 +91,13 @@ def main():
     os.system("echo " + "activate_check_point__p=" + str(activate_check_point__p) + " >> " + behzad_readMe__addr)
 
     precision__counter = 0
-    clk__l = [.6]
+    clk__l = [.7]
     #*** F:DN synth design with the clk (only const is the clk)
     for clk in clk__l:
         input__obj.clk_period = clk
 #
+        acc_max_delay__upper_limit__hard = acc_max_delay__upper_limit__initial_value
+        acc_max_delay__lower_limit__hard = acc_max_delay__lower_limit__initial_value
         if not(activate_check_point__p):
             synth_design_with_only_clk_constraint(input__obj)
 
@@ -119,7 +121,7 @@ def main():
             report__timing__f__best, bestDesignsPrecision__delay__d,\
             acc_max_delay__lower_limit__hard, acc_max_delay__upper_limit__hard, prev__acc_max_delay,\
             precision_best_delay__d = \
-            find_best_delay__using_binary_search( #@
+            find_best_subdelay__using_binary_search( #@
                     input__obj, 
                     precision, currently_targetting_acc_max_delay,
                     acc_max_delay__lower_limit__hard, acc_max_delay__upper_limit__hard,

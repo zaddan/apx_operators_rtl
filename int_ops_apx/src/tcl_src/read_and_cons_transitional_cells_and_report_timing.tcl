@@ -175,9 +175,12 @@ set AC_NAME $DESIGN_NAME
 #----------------------------------------------------
 #**** F:DN collect data before increasing pressure(time wise) on the design
 #----------------------------------------------------
-#set all_data__file__na ${op_type}_${DATA_PATH_BITWIDTH}__clk_${clk_period}__acc_max_del_${acc_max_delay}__Pn_${Pn}__atmpt_${attempt__iter__c}__id_${ID}__evol_log.txt
+# *** F:AN if noFF in the output of the design, use the following
+set outputs_of_interest [get_object_name [all_outputs]]
+# *** F:AN if FF in the output of the design, use the following
+#set outputs_of_interest [get_object_name [get_pins -of_objects my_mac/reg_c_reg* -filter "direction == out"]]
 
-set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
+set_max_delay $clk_period -to $outputs_of_interest ;#modifying the constraint to makesure
 #echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #echo "*** F:DN before putting pressure " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
 #echo "**************** " >> ${REPORTS_DIR}/data_collected/${all_data__file__na}
@@ -196,7 +199,7 @@ echo $std_library >> $all_data__file__addr
 #----------------------------------------------------
 #
 
-#set_max_delay $acc_max_delay -to [all_outputs]
+#set_max_delay $acc_max_delay -to [$outputs_of_interest]
 #
 #set priority_array  $acc_reg_a_b_c_joined 
 #foreach pt $all_input__pt { 
@@ -215,7 +218,7 @@ echo $std_library >> $all_data__file__addr
 #set_max_delay $acc_max_delay -through $transition_cells__l -to $acc_reg_d_l
 #set_max_delay $clk_period -through $non_transition_cells__l -to $acc_reg_d_l
 
-#set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
+#set_max_delay $clk_period -through $non_transition_cells__l -to [$outputs_of_interest]
 
 
 
@@ -242,7 +245,7 @@ set report_file__prefix  ${DESIGN_NAME}__only_clk_cons
 #...   ...    ..  ...  ..    ..    ...      ..
 # echo "*** non transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #report_timing -sort_by slack -exclude $transition_cells__l -nworst 30000 -significant_digits 4 >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
-#report_timing -sort_by slack -from a[0] -to [all_outputs] >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
+#report_timing -sort_by slack -from a[0] -to [$outputs_of_interest] >>  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt
 #....................................................
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${report_file__prefix}__area.rpt
 report_power > ${REPORTS_DIR}/${report_file__prefix}__power.rpt
@@ -269,11 +272,11 @@ set offset [expr $non_transition_cells__l__string__length - 1]
 set const [expr [lindex $delays_striving_for__l 1]]
 set counter 1
 foreach non_transition_cells__l__e $non_transition_cells__l__string {
-    reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
+    reset_path -to  $outputs_of_interest ;# need this b/c ow the other set_max_delays 
     set const [expr [lindex $delays_striving_for__l $counter]]
-    set_max_delay $const -to [all_outputs]
+    set_max_delay $const -to $outputs_of_interest
     set non_transition_cells__l [split  $non_transition_cells__l__e " "]
-    set_max_delay $clk_period -through $non_transition_cells__l -to [all_outputs]
+    set_max_delay $clk_period -through $non_transition_cells__l -to $outputs_of_interest
     
     #*** F:DN probing in 
     set precision_to_be_shown [lindex $Pn__l $counter]
@@ -300,9 +303,9 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
 #    incr counter
 #}
 #
-reset_path -to  [all_outputs] ;# need this b/c ow the other set_max_delays 
+reset_path -to  $outputs_of_interest ;# need this b/c ow the other set_max_delays 
                                # might take precedence
-set_max_delay $clk_period -to [all_outputs] ;#modifying the constraint to makesure
+set_max_delay $clk_period -to $outputs_of_interest ;#modifying the constraint to makesure
 echo "*** F:DN all paths report" >> $all_data__file__addr
 report_timing -sort_by slack -significant_digits 4 >>  $all_data__file__addr
 echo "*** F:DN power report" >> $all_data__file__addr
