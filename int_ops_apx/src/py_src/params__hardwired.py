@@ -24,7 +24,7 @@ acc_max_delay__upper_limit__initial_value = .423#.066#.180#.300#.156
 acc_max_delay__lower_limit__initial_value = .05#.063#.050#.050#.152
 
 #-----  -----    -----     -----     -----     -----
-attempt__upper_bound = 5
+attempt__upper_bound = 4
 #-----  -----    -----     -----     -----     -----
 #*** F: CN if you want to focuse on one precision, simply pick the
 #       higher_limit one about lower limit

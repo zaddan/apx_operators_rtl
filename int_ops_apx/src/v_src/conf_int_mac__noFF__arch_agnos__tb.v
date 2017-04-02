@@ -10,7 +10,8 @@ end
 module test_bench_tb;
   reg [31:0] input_a; //input_a
   reg [31:0] input_b; //input_b
-  reg [31:0] input_c; 
+  reg [31:0] input_a_delayed; //input_a
+  reg [31:0] input_b_delayed; //input_b
   wire [31:0] d; 
   reg rst;
   reg clk;
@@ -19,7 +20,7 @@ module test_bench_tb;
   parameter OP_BITWIDTH = 32;
   parameter DATA_PATH_BITWIDTH = 32;
 
-  parameter clk_period = 5;
+  parameter clk_period = 10;
   parameter half_clk_period = clk_period/2;
   //reg [100*8:0] base_folder_str;
   //base_folder_str = "../../build/functional";
@@ -31,7 +32,7 @@ module test_bench_tb;
   `define output_addr "../../build/functional/results.txt"
   `define sdf_file_addr "../../build/syn/results/conf_int_add__noFF__arch_agnos_32Bit_32Bit_synthesized.mapped.sdf"
   //variables to read from a file 
-  reg [31:0] data [0:3*number_of_input_pairs - 1];
+  reg [31:0] data [0:2*number_of_input_pairs - 1];
   // initialize the hexadecimal reads from the vectors.txt file
   //initial $readmemh("int_values_in_hex.txt", data);
   
@@ -44,9 +45,9 @@ module test_bench_tb;
   initial
   begin
     rst <= 1'b1;
-    #(30*clk_period)
+    #(1*clk_period)
     rst <= 1'b0;
-    #(20*clk_period) 
+    #(1*clk_period) 
     rst <= 1'b1;
   end
 
@@ -70,15 +71,18 @@ end
 //sample input, generate results, compare results 
 initial
 begin
-    #(60*clk_period)
+    #(2*clk_period)
     for (i=0; i < number_of_input_pairs; i = i + 1)begin
-        input_a <= data[3*i];
-        input_b <= data[3*i + 1];
-        input_c <= data[3*i + 2];
+        input_a <= data[2*i];
+        input_b <= data[2*i + 1];
+        //input_c <= data[*i + 2];
         #(clk_period)
+        input_a_delayed <= input_a;
+        input_b_delayed <= input_b;
         //#(100*clk_period)
-        //$display("input_a: %d input_b %d\n", $signed(input_a), $signed(input_b));
-        $fwrite(f,"%d %d %d %d\n",$signed(data[3*i]), $signed(data[3*i + 1 ]), $signed(data[3*i + 2 ]), $signed(d));
+        //$fwrite("input_a: %d input_b %d\n", $signed(input_a), $signed(input_b));
+        $fwrite(f,"%d %d %d \n",$signed(input_a_delayed), $signed(input_b_delayed), $signed(d));
+        //$fwrite(f,"%d %d %d \n",$signed(data[2*i]), $signed(data[2*i + 1 ]), $signed(d));
     end
 end
 
@@ -103,24 +107,26 @@ end
 
 
 //--- behvarioal
-conf_int_mac__noFF__arch_agnos#(OP_BITWIDTH, DATA_PATH_BITWIDTH) mac( 
+/*
+conf_int_mac__noFF__arch_agnos__w_wrapper #(OP_BITWIDTH, DATA_PATH_BITWIDTH) mac( 
     .clk(clk),
     .rst(rst),
     .a(input_a),
     .b(input_b),
-    .c(input_c), 
+    .d(d));
+*/
+
+conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32 mac(
+    .clk(clk),
+    .rst(rst),
+    .a(input_a),
+    .b(input_b),
     .d(d));
 
 
-//--- synthesized
-/*
-unconfig_int_add_OP_BITWIDTH32_DATA_PATH_BITWIDTH32 add(
-    .clk(clk),
-    .rst(rst),
-    .a(input_a),
-    .b(input_b),
-    .c(output_c_acc));
-*/
+
+
+endmodule
 
 
 /* only for ncverilog
@@ -131,6 +137,14 @@ initial begin
 end
 */
 
-endmodule
+
+//----------------------------------------------------
+// *** F:HWN to test, 
+//      1) cpy the multiplier you want in the mac_to_test.v file (in this folder)
+//      2) run the ncverilog commmand:
+//ncverilog -v /home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/verilog_files/*.v /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src/conf_int_mac__noFF__arch_agnos__tb.v /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/v_src/mac_to_test.v +access+r |tee log 
+//      3) make sure results.txt is updated (in the ../../build/functional dir)
+//      4) check the results manually
+
 
 

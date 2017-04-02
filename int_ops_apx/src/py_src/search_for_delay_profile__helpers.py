@@ -12,14 +12,21 @@ import sys
 def modify_line_with_c(line, input__obj, precision):
     DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
     apx_bit__c = DATA_PATH_BITWIDTH - precision
-    word_list = line.split()
-    index_of_thword_to_be_replaced = word_list.index(".c(d),")
+    word_list = line.split(".")
+    counter = 0
+    for word_list__el in word_list:
+        if "c(" in word_list__el:
+            index_of_thword_to_be_replaced = counter
+            break
+        counter +=1
+
+    #index_of_thword_to_be_replaced = word_list.index(".c(")
 
 #    word_list[index_of_thword_to_be_replaced] = """.c({d["""+ \
 #                                          str(DATA_PATH_BITWIDTH - 1) + ":" + str(DATA_PATH_BITWIDTH - 2*apx_bit__c - 1)+ "],"+ str(2*apx_bit__c)+ """\'""" + """b0}),"""
 
-    word_list[index_of_thword_to_be_replaced] = ".c(d_mod),"
-    line_after_modification = " ".join(word_list)
+    word_list[index_of_thword_to_be_replaced] = "c(d_mod),"
+    line_after_modification = ".".join(word_list)
     return line_after_modification
 
 #*** F:DN
@@ -239,8 +246,10 @@ def hardwire_apx_bits_to_zero(input__obj, precision):
     #*** F:AN switch this manually. if you set it to mac, it'll try to parse and generate
     #         for a design with registers. If you switch this to mac_noFF it does the other obvious thing
     if (op_type == "mac"):
-        #modified_op_type = "mac"
-        modified_op_type = "mac_noFF"
+        # *** F:AN noFF=>FF
+        modified_op_type = "mac"
+        # *** F:AN FF=>noFF
+        #modified_op_type = "mac_noFF"
     else:
         modified_op_type = op_type
 
@@ -587,20 +596,48 @@ def parse_file_to_get_design_arrival_times(\
                 if ("after" in word_list) and ("resynthesis" in word_list):
                     start_looking = True 
                 if start_looking:
+                     #*** F:AN FF=>noFF. uncomment the code bellow
+#                    if ("data" in word_list) and \
+#                            ("arrival" in word_list) and \
+#                            ("time") in word_list:
+#                                if (float(word_list[-1]) >=0): #this is b/c arrival time is repeated for the same precision, and the 2nd one is negative
+#                                    if  (counter == len(precisions_covered_so_far__l)):
+#                                        clk__acquired =  (float(word_list[-1]))
+#                                        #break
+#
+#                                    else:
+#                                        design_arrival_times__d[precision__parsing_for] = (float(word_list[-1]))
+#                                        counter += 1
+#                                        if  (counter < len(precisions_covered_so_far__l)):
+#                                            precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
+#                                        #precision__parsing_for +=1
+
+                    # *** F:DN uncomment the code bellow
+                    # *** F:AN noFF=>FF
                     if ("data" in word_list) and \
                             ("arrival" in word_list) and \
                             ("time") in word_list:
                                 if (float(word_list[-1]) >=0): #this is b/c arrival time is repeated for the same precision, and the 2nd one is negative
                                     if  (counter == len(precisions_covered_so_far__l)):
                                         clk__acquired =  (float(word_list[-1]))
-                                        break
+                                    else:
+                                        design_arrival_times__d[precision__parsing_for] = (float(word_list[-1]))
 
-                                    design_arrival_times__d[precision__parsing_for] = (float(word_list[-1]))
-                                    counter += 1
-                                    if  (counter < len(precisions_covered_so_far__l)):
-                                        precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
-                                    #precision__parsing_for +=1
-                                    last_arrival__t__seen = float(word_list[-1])
+                    if ("library" in word_list) and \
+                            ("setup" in word_list) and \
+                                    ("time") in word_list:
+                        word_list__filtered = filter(lambda x: not(x==''), word_list) #getting rid of '' to extrat data easier
+                        if  (counter == len(precisions_covered_so_far__l)):
+                            clk__acquired +=  -1*(float(word_list__filtered[-2]))
+                            break
+                        design_arrival_times__d[precision__parsing_for] += -1*(float(word_list__filtered[-2]))
+                        counter += 1
+                        if  (counter < len(precisions_covered_so_far__l)):
+                            precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
+                        #precision__parsing_for +=1
+
+
+
 #    for precision__el in range(precision + 1, precision__higher_limit+1):
 #        design_arrival_times__d[precision__el] = (last_arrival__t__seen)
 
@@ -1078,7 +1115,7 @@ def find_best_subdelay__using_binary_search(
                 attempt__upper_bound):
             report__timing__f__prev_time = report__timing__f__this_time
             #*** F:DN read, constraint and resyn
-            read_and_cons_transitional_cells_and_resyn(input__obj,  
+            read_and_cons_transitional_cells_and_resyn(input__obj,
                     currently_targetting_acc_max_delay, precision, attempt__iter__c, report__timing__f__best)
             
             #*** F:DN Update Transitional Celss Lists

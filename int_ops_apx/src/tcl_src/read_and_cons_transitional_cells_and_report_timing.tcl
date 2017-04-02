@@ -80,39 +80,59 @@ define_design_lib WORK -path ./WORK_1
 set verilogout_show_unconnected_pins "true"
 
 
-#*** F:DN lumping registers (wires) together
-#*** F:AN this is highly specific to the module (possibly changes wht add)
 #----------------------------------------------------
-set all_reg_a_l [make-reg_l "a" 0 $DATA_PATH_BITWIDTH]
-set all_reg_b_l [make-reg_l "b" 0 $DATA_PATH_BITWIDTH]
-set all_reg_c_l [make-reg_l "c" 0 $DATA_PATH_BITWIDTH]
-set all_reg_d_l [make-reg_l "d" 0 $DATA_PATH_BITWIDTH]
+#*** F:AN this is applicable to an FFed design. use the other 
+#         code (bellow for noFFed version
+#----------------------------------------------------
+#*** F:AN noFF=>FF
+set input_name_1 "my_mac/mac/a_reg_reg"
+set input_name_2 "my_mac/mac/b_reg_reg"
+set input_name_3 "mac/c_reg"
+#set output_name_1 "d_reg_reg"
+#....................................................
+#*** F:AN FF=>noFF
+#set input_name_1 "a"
+#set input_name_2 "b"
+#set input_name_3 "c"
+#set output_name_1 "d"
+
+#*** F:DN lumping registers (wires) together
+set all_reg_a_l [make-reg_l $input_name_1 0 $DATA_PATH_BITWIDTH]
+set all_reg_b_l [make-reg_l $input_name_2 0 $DATA_PATH_BITWIDTH]
+set all_reg_c_l [make-reg_l $input_name_3 0 $DATA_PATH_BITWIDTH]
+#set all_reg_d_l [make-reg_l $output_name_1 0 $DATA_PATH_BITWIDTH]
 set all_reg_a_b_joined [concat $all_reg_a_l $all_reg_b_l]
 set all_reg_a_b_c_joined [concat $all_reg_a_b_joined $all_reg_c_l]
 #---    ---      ---       ---       ---       ---
 set a_and_b_apx_bit__upper_bound [expr $DATA_PATH_BITWIDTH - $Pn] 
 set c_and_d_apx_bit__upper_bound [ expr 2 * [expr $DATA_PATH_BITWIDTH - $Pn]] 
-set apx_reg_a_l [make-reg_l "a" 0 $a_and_b_apx_bit__upper_bound]
-set apx_reg_b_l [make-reg_l "b" 0 $a_and_b_apx_bit__upper_bound]
-set apx_reg_c_l [make-reg_l "c" 0 $c_and_d_apx_bit__upper_bound]
-set apx_reg_d_l [make-reg_l "d" 0 $c_and_d_apx_bit__upper_bound]
+set apx_reg_a_l [make-reg_l $input_name_1 0 $a_and_b_apx_bit__upper_bound]
+set apx_reg_b_l [make-reg_l $input_name_2 0 $a_and_b_apx_bit__upper_bound]
+set apx_reg_c_l [make-reg_l $input_name_3 0 $c_and_d_apx_bit__upper_bound]
+#set apx_reg_d_l [make-reg_l $output_name_1 0 $c_and_d_apx_bit__upper_bound]
 set apx_reg_a_b_joined [concat $apx_reg_a_l $apx_reg_b_l]
 set apx_reg_a_b_c_joined [concat $apx_reg_a_b_joined $apx_reg_c_l]
 #---    ---      ---       ---       ---       ---
-set acc_reg_a_l [make-reg_l "a" $a_and_b_apx_bit__upper_bound $DATA_PATH_BITWIDTH]
-set acc_reg_b_l [make-reg_l "b" $a_and_b_apx_bit__upper_bound $DATA_PATH_BITWIDTH]
-set acc_reg_c_l [make-reg_l "c" $c_and_d_apx_bit__upper_bound $DATA_PATH_BITWIDTH]
-set acc_reg_d_l [make-reg_l "d"  $c_and_d_apx_bit__upper_bound $DATA_PATH_BITWIDTH]
+set acc_reg_a_l [make-reg_l $input_name_1 $a_and_b_apx_bit__upper_bound $DATA_PATH_BITWIDTH]
+set acc_reg_b_l [make-reg_l $input_name_2 $a_and_b_apx_bit__upper_bound $DATA_PATH_BITWIDTH]
+set acc_reg_c_l [make-reg_l $input_name_3 $c_and_d_apx_bit__upper_bound $DATA_PATH_BITWIDTH]
+#set acc_reg_d_l [make-reg_l $output_name_1  $c_and_d_apx_bit__upper_bound $DATA_PATH_BITWIDTH]
 set acc_reg_a_b_joined [concat $acc_reg_a_l $acc_reg_b_l]
+
 set acc_reg_a_b_c_joined [concat $acc_reg_a_b_joined $acc_reg_c_l]
+
+
+
+
+
 set all_input__pt [concat $all_reg_a_b_c_joined]
 #---    ---      ---       ---       ---       ---
 puts $apx_reg_a_b_c_joined 
 puts $apx_reg_a_b_c_joined
-puts $apx_reg_d_l
+#puts $apx_reg_d_l
 puts $acc_reg_a_b_c_joined 
 puts $acc_reg_a_b_c_joined
-puts $acc_reg_d_l
+#puts $acc_reg_d_l
 #----------------------------------------------------
 
 set fp_1 [open $transition_cells__base_addr/$delays_striving_for__f__na]
@@ -175,10 +195,11 @@ set AC_NAME $DESIGN_NAME
 #----------------------------------------------------
 #**** F:DN collect data before increasing pressure(time wise) on the design
 #----------------------------------------------------
-# *** F:AN if noFF in the output of the design, use the following
-set outputs_of_interest [get_object_name [all_outputs]]
-# *** F:AN if FF in the output of the design, use the following
-#set outputs_of_interest [get_object_name [get_pins -of_objects my_mac/reg_c_reg* -filter "direction == out"]]
+# *** F:AN FF=>noFF
+#set outputs_of_interest [get_object_name [all_outputs]]
+#*** F:AND noFF=>FF
+set outputs_of_interest [get_object_name [get_pins -of_objects my_mac/c_reg_reg* -filter "direction == in"]]
+
 
 set_max_delay $clk_period -to $outputs_of_interest ;#modifying the constraint to makesure
 #echo "**************** " > ${REPORTS_DIR}/data_collected/${all_data__file__na}
