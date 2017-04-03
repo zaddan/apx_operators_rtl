@@ -51,7 +51,7 @@ module test_bench_tb;
     rapx <= 1'b0;
     #(20*clk_period) 
     racc <= 1'b1;
-    rapx <= 1'b0;
+    rapx <= 1'b1;
 end
   
   

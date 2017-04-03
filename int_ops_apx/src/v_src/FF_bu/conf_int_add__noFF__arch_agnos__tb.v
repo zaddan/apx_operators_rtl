@@ -23,7 +23,7 @@ module test_bench_tb;
   parameter OP_BITWIDTH = 32;
   parameter DATA_PATH_BITWIDTH = 32;
 
-  parameter clk_period = 5;
+  parameter clk_period = 10;
   parameter half_clk_period = clk_period/2;
   //reg [100*8:0] base_folder_str;
   //base_folder_str = "../../build/functional";
@@ -125,7 +125,7 @@ conf_int_add__noFF__arch_agnos#(OP_BITWIDTH, DATA_PATH_BITWIDTH) add(
 */
 
 //--- synthesized
-conf_int_add__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32 add(
+conf_int_add__noFF__arch_agnos__w_wrapper_OP_BITWIDTH28_DATA_PATH_BITWIDTH32 add(
     .clk(clk),
     .racc(racc),
     .rapx(rapx),

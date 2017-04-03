@@ -181,7 +181,110 @@ def synth_design_with_only_clk_constraint(input__obj, precision):
     os.system("cat " + syn__file__addr + " >> " + synthesis__output__file__na)
 
 
-#*** F:DN hardwire the bits that will be approimxated (by modifying the 
+
+def get_arg_value(old_module_call, arg__n):
+
+    word_list = old_module_call.split(".")
+    counter = 0
+    for word_list__el in word_list:
+        if arg__n +"(" in word_list__el:
+            index_of_thword_to_be_replaced = counter
+            break
+        counter +=1
+
+    only_arg__l = word_list[index_of_thword_to_be_replaced].replace("(","@").replace(")","@").split("@")[1:-1]
+    return "".join(only_arg__l)
+
+
+def module_call_change(sub_module__n, input__obj, precision, old_module_call):
+    DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
+    apx_bit__c = DATA_PATH_BITWIDTH - precision
+    a_arg = get_arg_value(old_module_call, "a")
+    b_arg = get_arg_value(old_module_call, "b")
+    op_type = input__obj.op_type
+    modified__line = "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a_temp__acc;\n"
+    modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b_temp__acc;\n"
+    modified__line += "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a_temp__apx;\n"
+    modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b_temp__apx;\n"
+
+    modified__line += "assign a_temp__acc = " +  a_arg + ";\n"
+    modified__line += "assign b_temp__acc = " +  b_arg + ";\n"
+
+    modified__line += "assign a_temp__apx = " +  "{a_temp__acc["+\
+                            str(DATA_PATH_BITWIDTH -1 )+":"+str(apx_bit__c)+"],"+ str(apx_bit__c)\
+                            +"\'b0};\n"
+    modified__line += "assign b_temp__apx = " +  "{b_temp__acc["+\
+                            str(DATA_PATH_BITWIDTH - 1)+":" + str(apx_bit__c)+"],"+ str(apx_bit__c)\
+                            +"\'b0};\n"
+
+    modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d(d_internal));\n"
+    return modified__line
+
+    """
+    modified__line =
+    return
+                if (wrapper_module__na in line):
+                    next_line_modify = True
+                    modified__line = line
+                elif next_line_modify:
+                    next_line_modify = False
+                    if (modified_op_type == "mac_noFF"): #simply skipping this now
+                        modified__line = "clk, racc, rapx, a_in, b_in, c_in, d );\n"
+                    else:
+                        modified__line = "clk, racc, rapx, a_in, b_in, d );\n"
+                    modified__line += " input ["+str(DATA_PATH_BITWIDTH- \
+                            apx_bit__c-1)+":0]a_in;\n"
+                    modified__line += "input ["+str(DATA_PATH_BITWIDTH- \
+                            apx_bit__c-1)+":0]b_in;\n"
+                    if (modified_op_type == "mac_noFF"):
+                        modified__line += "input ["+str(DATA_PATH_BITWIDTH- \
+                                                        2*apx_bit__c - 1)+":0]c_in;\n"
+
+                    modified__line += "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a;\n"
+                    modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b;\n"
+                    if (modified_op_type == "mac_noFF"):
+                        modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]c;\n"
+
+                    modified__line += "assign a = {a_in["+\
+                            str(DATA_PATH_BITWIDTH - apx_bit__c - 1)+":0],"+ str(apx_bit__c)\
+                            +"\'b0};\n"
+                    modified__line += "assign b = {b_in["+\
+                            str(DATA_PATH_BITWIDTH - apx_bit__c - 1)+":0],"+ str(apx_bit__c)\
+                            +"\'b0};\n"
+                    if (modified_op_type == "mac_noFF"):
+                        modified__line += "assign c = {c_in["+\
+                            str(DATA_PATH_BITWIDTH - 2*apx_bit__c - 1)+":0],"+ str(2*apx_bit__c)\
+                            +"\'b0};\n"
+                    ignore = True
+                elif ("input" in line) and ("["+str(DATA_PATH_BITWIDTH-1)+":0]" in line) and \
+                        ("a" in line) and ignore :
+                            continue
+                elif ("input" in line) and ("["+str(DATA_PATH_BITWIDTH-1)+":0]" in line) and \
+                        ("b" in line) and ignore:
+                            if not((modified_op_type == "mac") or (modified_op_type == "mac_noFF")):
+                                ignore = False
+                            continue
+                elif ("input" in line) and ("["+str(DATA_PATH_BITWIDTH-1)+":0]" in line) and \
+                        ("c" in line) and ignore:
+                            ignore = False
+                            continue
+                elif (modified_op_type =="mac" and saw_minus_1_wrapper__p ):
+                        if("c(" in line):
+                            modified__line = modify_line_with_c(line, input__obj, precision)
+                            print line
+                            saw_minus_1_wrapper__p = False
+                        else:
+                            modified__line = line
+                elif (modified_op_type == "mac" and "my_mac" in line):
+                        modified__line = line
+                        saw_minus_1_wrapper__p = True
+                else:
+                    modified__line = line
+
+    """
+
+
+#*** F:DN hardwire the bits that will be approimxated (by modifying the
 #         synthesized design
 def hardwire_apx_bits_to_zero(input__obj, precision):
     syn__file__addr = input__obj.syn__file__addr
@@ -203,18 +306,16 @@ def hardwire_apx_bits_to_zero(input__obj, precision):
 
     #*** F:AN switch this manually. if you set it to mac, it'll try to parse and generate
     #         for a design with registers. If you switch this to mac_noFF it does the other obvious thing
-    if (op_type == "mac"):
-        # *** F:AN noFF=>FF
-        modified_op_type = "mac"
-        # *** F:AN FF=>noFF
-        #modified_op_type = "mac_noFF"
-    else:
-        modified_op_type = op_type
 
     #*** F:DN Body
     #*** F:DN parse the file 
     saw_minus_1_wrapper__p = False
     minus_1_wrapper   = "conf_int_mac__noFF__arch_agnos__w_wrapper_minus_1_OP_BITWIDTH5_DATA_PATH_BITWIDTH5"
+    sub_module__n = input__obj.syn__module__na
+    collect__module_call__p = False
+    old_module_call = ""
+    started_collecting_module_call__p = False
+    done_collecting_module_call__p = False
     try:
         f = open(original_syn_copy__file__addr)
     except IOError:
@@ -225,72 +326,24 @@ def hardwire_apx_bits_to_zero(input__obj, precision):
         f = open(original_syn_copy__file__addr)
         with f:
             for line in f:
-                #*** F:AN this is very specific to the module itself and will
-                #         change for other modules (e.g an adder)
-                if (wrapper_module__na in line):
-                    next_line_modify = True
-                    modified__line = line
-                elif next_line_modify:
-                    next_line_modify = False 
-                    if (modified_op_type == "mac_noFF"): #simply skipping this now
-                        modified__line = "clk, racc, rapx, a_in, b_in, c_in, d );\n"
-                    else:
-                        modified__line = "clk, racc, rapx, a_in, b_in, d );\n"
-                    modified__line += " input ["+str(DATA_PATH_BITWIDTH- \
-                            apx_bit__c-1)+":0]a_in;\n"
-                    modified__line += "input ["+str(DATA_PATH_BITWIDTH- \
-                            apx_bit__c-1)+":0]b_in;\n"
-                    if (modified_op_type == "mac_noFF"):
-                        modified__line += "input ["+str(DATA_PATH_BITWIDTH- \
-                                                        2*apx_bit__c - 1)+":0]c_in;\n"
+                if (sub_module__n in line and op_type+"__inst" in line):
+                    started_collecting_module_call__p = True
+                    write_modified__module__call__p = True
+                if(started_collecting_module_call__p):
+                    old_module_call += line
+                if (started_collecting_module_call__p and ";" in line):
+                    done_collecting_module_call__p = True
 
-                    modified__line += "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a;\n"
-                    modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b;\n"
-                    if (modified_op_type == "mac_noFF"):
-                        modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]c;\n"
+                if (started_collecting_module_call__p and not(done_collecting_module_call__p)):
+                    continue
 
-                    if (modified_op_type == "mac"):
-                        modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]d_mod;\n"
-                        modified__line += """assign d_mod = {d["""+ \
-                                          str(DATA_PATH_BITWIDTH - 1) + ":" + str(DATA_PATH_BITWIDTH - 2*apx_bit__c - 1)+\
-                                          "],"+ str(2*apx_bit__c)+ """\'""" + "b0};\n"
-
-                    modified__line += "assign a = {a_in["+\
-                            str(DATA_PATH_BITWIDTH - apx_bit__c - 1)+":0],"+ str(apx_bit__c)\
-                            +"\'b0};\n" 
-                    modified__line += "assign b = {b_in["+\
-                            str(DATA_PATH_BITWIDTH - apx_bit__c - 1)+":0],"+ str(apx_bit__c)\
-                            +"\'b0};\n" 
-                    if (modified_op_type == "mac_noFF"):
-                        modified__line += "assign c = {c_in["+\
-                            str(DATA_PATH_BITWIDTH - 2*apx_bit__c - 1)+":0],"+ str(2*apx_bit__c)\
-                            +"\'b0};\n"
-                    ignore = True
-                elif ("input" in line) and ("["+str(DATA_PATH_BITWIDTH-1)+":0]" in line) and \
-                        ("a" in line) and ignore :
-                            continue
-                elif ("input" in line) and ("["+str(DATA_PATH_BITWIDTH-1)+":0]" in line) and \
-                        ("b" in line) and ignore:
-                            if not((modified_op_type == "mac") or (modified_op_type == "mac_noFF")):
-                                ignore = False
-                            continue
-                elif ("input" in line) and ("["+str(DATA_PATH_BITWIDTH-1)+":0]" in line) and \
-                        ("c" in line) and ignore: 
-                            ignore = False 
-                            continue
-                elif (modified_op_type =="mac" and saw_minus_1_wrapper__p ):
-                        if("c(" in line):
-                            modified__line = modify_line_with_c(line, input__obj, precision)
-                            print line
-                            saw_minus_1_wrapper__p = False
-                        else:
-                            modified__line = line
-                elif (modified_op_type == "mac" and "my_mac" in line):
-                        modified__line = line
-                        saw_minus_1_wrapper__p = True
+                if (started_collecting_module_call__p and done_collecting_module_call__p):
+                    modified__line = module_call_change(sub_module__n, input__obj, precision, old_module_call)
+                    started_collecting_module_call__p = False
+                    done_collecting_module_call__p  = False
                 else:
                     modified__line = line
-                    
+
 
                 modified_syn__file__handle.write(modified__line)
 #                if (done_modifiying): 

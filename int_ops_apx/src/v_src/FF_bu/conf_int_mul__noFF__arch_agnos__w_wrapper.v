@@ -13,6 +13,29 @@ input rapx;
 input [DATA_PATH_BITWIDTH -1:0] a;
 input [DATA_PATH_BITWIDTH-1:0] b;
 output [DATA_PATH_BITWIDTH-1:0] d;
+
+assign  d = (a * b);
+
+endmodule
+
+
+
+module conf_int_mul__noFF__arch_agnos__w_wrapper( clk, racc, rapx, a, b, d
+);
+//--- parameters
+//parameter BT_RND = 0
+parameter OP_BITWIDTH = 16; //operator bit width
+parameter DATA_PATH_BITWIDTH = 16; //flip flop Bit width
+
+
+//--- input,outputs
+input [DATA_PATH_BITWIDTH -1:0] a;
+input [DATA_PATH_BITWIDTH-1:0] b;
+output [DATA_PATH_BITWIDTH-1:0] d;
+input clk;
+input racc;
+input rapx;
+
 reg [DATA_PATH_BITWIDTH -1:0] a_reg;
 reg [DATA_PATH_BITWIDTH-1:0] b_reg;
 reg [DATA_PATH_BITWIDTH-1:0] c_reg;
@@ -71,35 +94,9 @@ begin
 end
 
 //--- flop design
-assign  d_internal = (a_reg * b_reg);
 assign d = c_reg;
 
-
-
-
-endmodule
-
-
-module conf_int_mul__noFF__arch_agnos__w_wrapper( clk, racc, rapx, a, b, d
-);
-
-//--- parameters
-//parameter BT_RND = 0
-parameter OP_BITWIDTH = 16; //operator bit width
-parameter DATA_PATH_BITWIDTH = 16; //flip flop Bit width
-
-
-//--- input,outputs
-input [DATA_PATH_BITWIDTH -1:0] a;
-input [DATA_PATH_BITWIDTH-1:0] b;
-output [DATA_PATH_BITWIDTH-1:0] d;
-input clk;
-input racc;
-input rapx;
-
-
-
-conf_int_mul__noFF__arch_agnos #(OP_BITWIDTH, DATA_PATH_BITWIDTH) mul(.clk(clk), .racc(racc), .rapx(rapx), .a(a), .b(b), 
-    .d(d));
+conf_int_mul__noFF__arch_agnos #(OP_BITWIDTH, DATA_PATH_BITWIDTH) mul__inst(.clk(clk), .racc(racc), .rapx(rapx), .a(a_reg), .b(b_reg), 
+    .d(d_internal));
 
 endmodule 
