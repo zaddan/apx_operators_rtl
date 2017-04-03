@@ -1,10 +1,10 @@
 #----------------------------------------------------
 # *** F:AN pick one of the following tuples
-#design_name = "conf_int_mac__noFF__arch_agnos"
-#op_type = "mac"
+design_name = "conf_int_mac__noFF__arch_agnos"
+op_type = "mac"
 
-design_name = "conf_int_mul__noFF__arch_agnos"
-op_type = "mul"
+#design_name = "conf_int_mul__noFF__arch_agnos"
+#op_type = "mul"
 
 #design_name = "conf_int_add__noFF__arch_agnos"
 #op_type = "add"

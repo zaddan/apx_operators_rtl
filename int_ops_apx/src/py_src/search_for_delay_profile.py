@@ -99,8 +99,8 @@ def main():
 #
         acc_max_delay__upper_limit__hard = acc_max_delay__upper_limit__initial_value
         acc_max_delay__lower_limit__hard = acc_max_delay__lower_limit__initial_value
-        if not(activate_check_point__p):
-            synth_design_with_only_clk_constraint(input__obj, precision)
+#        if not(activate_check_point__p):
+#            synth_design_with_only_clk_constraint(input__obj, precision)
 
         #*** F:DN iterate through precisions and find best delay for each
         #*** F:AN the upper bound can not be higher than 32(hence 32 not included

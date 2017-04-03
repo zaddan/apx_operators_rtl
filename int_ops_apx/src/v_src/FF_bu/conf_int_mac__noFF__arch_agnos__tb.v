@@ -121,7 +121,7 @@ conf_int_mac__noFF__arch_agnos__w_wrapper #(OP_BITWIDTH, DATA_PATH_BITWIDTH) mac
     .d(d));
 */
 
-conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH4_DATA_PATH_BITWIDTH32 mac(
+conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH28_DATA_PATH_BITWIDTH32 mac(
     .clk(clk),
     .racc(racc),
     .rapx(rapx),

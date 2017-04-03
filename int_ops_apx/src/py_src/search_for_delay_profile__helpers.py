@@ -204,11 +204,19 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call):
     op_type = input__obj.op_type
     modified__line = "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a_temp__acc;\n"
     modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b_temp__acc;\n"
+    if (op_type == "mac"):
+        modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]c_temp__acc;\n"
+
     modified__line += "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a_temp__apx;\n"
     modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b_temp__apx;\n"
+    if (op_type == "mac"):
+        modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]c_temp__apx;\n"
 
     modified__line += "assign a_temp__acc = " +  a_arg + ";\n"
     modified__line += "assign b_temp__acc = " +  b_arg + ";\n"
+    if (op_type == "mac"):
+        modified__line += "assign c_temp__acc = " +  get_arg_value(old_module_call, "c_in") + ";\n"
+
 
     modified__line += "assign a_temp__apx = " +  "{a_temp__acc["+\
                             str(DATA_PATH_BITWIDTH -1 )+":"+str(apx_bit__c)+"],"+ str(apx_bit__c)\
@@ -216,8 +224,17 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call):
     modified__line += "assign b_temp__apx = " +  "{b_temp__acc["+\
                             str(DATA_PATH_BITWIDTH - 1)+":" + str(apx_bit__c)+"],"+ str(apx_bit__c)\
                             +"\'b0};\n"
+    if (op_type == "mac"):
+        modified__line += "assign c_temp__apx = " +  "{c_temp__acc["+\
+                            str(DATA_PATH_BITWIDTH -1 )+":"+str(2*apx_bit__c)+"],"+ str(2*apx_bit__c)\
+                            +"\'b0};\n"
 
-    modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d(d_internal));\n"
+
+
+    if (op_type == "mac"):
+         modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .c_in(c_temp__apx), .d(d_internal));\n"
+    else:
+        modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d(d_internal));\n"
     return modified__line
 
     """
