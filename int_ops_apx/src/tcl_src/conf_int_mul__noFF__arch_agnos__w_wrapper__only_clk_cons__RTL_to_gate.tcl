@@ -15,7 +15,7 @@
 #set clk_period .7;#.63;#.68;#.7
 #set ID 0
 #----------------------------------------------------
-set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
+#set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
 puts $clk_period
 
 

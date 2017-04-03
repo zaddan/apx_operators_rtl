@@ -36,7 +36,7 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 ##----------------------------------------------------
 set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
-set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
+#set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
 puts $clk_period
 
 #----------------------------------------------------

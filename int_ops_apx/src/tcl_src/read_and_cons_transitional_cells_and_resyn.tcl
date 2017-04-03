@@ -39,9 +39,9 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set clk_period 0.7;set DATA_PATH_BITWIDTH 5;set CLKGATED_BITWIDTH 2;set DESIGN_NAME conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH5_DATA_PATH_BITWIDTH5;set synth_file__na conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH5_DATA_PATH_BITWIDTH5__only_clk_cons_resynthesizedSCBSD.v;set transition_cells__base_addr  /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src;set transitioning_cells__log__na transitioning_cells_after_resynSCBSD.txt ;set Pn 4;set acc_max_delay 0.236;set attempt__iter__c 1;set ID SCBSD;set precisions_striving_for__f__na precisions_striving_forSCBSD.txt;set all_data__file__addr /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/SCBSD/2017_04_01__21_47_52/mac_5__clk_0.7__acc_max_del_0.236__Pn_4__atmpt_1__id_SCBSD__evol_log.txt;set delays_striving_for__f__na delays_striving_forSCBSD.txt;
 #
 ##----------------------------------------------------
-set op_type mac;# change this to add when doing add, it is used in the 
+#set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
-set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
+#set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
 puts $clk_period
 
 #----------------------------------------------------
@@ -84,10 +84,21 @@ set verilogout_show_unconnected_pins "true"
 #         code (bellow for noFFed version
 #----------------------------------------------------
 #*** F:AN noFF=>FF
-set input_name_1 "my_mac/mac/a_reg_reg"
-set input_name_2 "my_mac/mac/b_reg_reg"
-set input_name_3 "mac/c_reg"
-#set output_name_1 "d_reg_reg"
+if {$op_type == "mac"} {
+    set input_name_1 "my_mac/mac/a_reg_reg"
+    set input_name_2 "my_mac/mac/b_reg_reg"
+    set input_name_3 "mac/c_reg"
+}
+if {$op_type == "mul"} {
+    set input_name_1 "mul/a_reg_reg"
+    set input_name_2 "mul/b_reg_reg"
+    set input_name_3 "mul/c_reg"
+}
+if {$op_type == "add"} {
+    set input_name_1 "add/a_reg_reg"
+    set input_name_2 "add/b_reg_reg"
+    set input_name_3 "add/c_reg"
+}
 #....................................................
 #*** F:AN FF=>noFF
 #set input_name_1 "a"
@@ -195,10 +206,18 @@ set compile_enable_register_merging false
 set compile_seqmap_enable_output_inversion false
 set AC_NAME $DESIGN_NAME
 
+#*** F:AN noFF=>FF
+if {$op_type == "mac"} {
+    set outputs_of_interest [get_object_name [get_pins -of_objects my_mac/c_reg_reg* -filter "direction == in"]]
+}
+if {$op_type == "mul"} {
+    set outputs_of_interest [get_object_name [get_pins -of_objects mul/c_reg_reg* -filter "direction == in"]]
+}
+if {$op_type == "add"} {
+    set outputs_of_interest [get_object_name [get_pins -of_objects add/c_reg_reg* -filter "direction == in"]]
+}
 # *** F:AN FF=>noFF
 #set outputs_of_interest [get_object_name [all_outputs]]
-#*** F:AND noFF=>FF
-set outputs_of_interest [get_object_name [get_pins -of_objects my_mac/c_reg_reg* -filter "direction == in"]]
 
 
 #----------------------------------------------------

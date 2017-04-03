@@ -56,6 +56,7 @@ def main():
     propagate_info_regarding_previous_transiontal_cells__p = input__obj.propagate_info_regarding_previous_transiontal_cells__p
     #-----  -----    -----     -----     -----     -----
     precision = input__obj.precision__to_start_with
+    assert (2*precision > input__obj.DATA_PATH_BITWIDTH)
     #-----  -----    -----     -----     -----     -----
     remove__progress_flow_chart(input__obj) #removing the previous flow chart
     
@@ -99,7 +100,7 @@ def main():
         acc_max_delay__upper_limit__hard = acc_max_delay__upper_limit__initial_value
         acc_max_delay__lower_limit__hard = acc_max_delay__lower_limit__initial_value
 #        if not(activate_check_point__p):
-#            synth_design_with_only_clk_constraint(input__obj)
+#            synth_design_with_only_clk_constraint(input__obj, precision)
 
         #*** F:DN iterate through precisions and find best delay for each
         #*** F:AN the upper bound can not be higher than 32(hence 32 not included
@@ -138,6 +139,7 @@ def main():
             if (precision__counter >= len(precisions__curious_about__l)):
                 break
             precision = precisions__curious_about__l[precision__counter]
+            assert (2*precision > input__obj.DATA_PATH_BITWIDTH)
             precision_best_delay__d[precision]  = 10
             bestDesignsPrecision__delay__d[precision]  = 10
             #*** F:DN need tuo update the lowerlimit so the next precision

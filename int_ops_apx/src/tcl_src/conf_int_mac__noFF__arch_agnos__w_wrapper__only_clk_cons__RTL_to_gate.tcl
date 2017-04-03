@@ -20,7 +20,7 @@
 
 
 #----------------------------------------------------
-set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
+#set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
 puts $clk_period
 
 

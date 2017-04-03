@@ -29,53 +29,7 @@ def modify_line_with_c(line, input__obj, precision):
     line_after_modification = ".".join(word_list)
     return line_after_modification
 
-#*** F:DN
-"""
-def archive_params(dest__f__addr,design_name, ID, clk_period, DATA_PATH_BITWIDTH,
-                acc_max_delay__upper_limit__hard,
-                acc_max_delay__lower_limit, attempt__upper_bound,
-                precision__lower_limit,precision__higher_limit, 
-                precision__step_size,
-                propagate_info_regarding_previous_transiontal_cells__p, 
-                prev__targeted_acc_max_delay, currentDesignsPrecision_delay__d, 
-                precision_best_delay__d,
-                best_design_worth_so_far,
-                bestDesignsPrecision__delay__d, 
-                first_time__p, report__timing__f__prev, report__timing__f__best,
-                op_type):
-    
-    dest__f__handle = open(dest__f__addr, "w")
-    dest__f__addr.write("design_name = " + design_name)
-    dest__f__addr.write("ID = " + str(ID)) 
-    dest__f__addr.write("clk_period = " + str(clk_period)) 
-    dest__f__addr.write("DATA_PATH_BITWIDTH = " + str(DATA_PATH_BITWIDTH))
-    dest__f__addr.write("acc_max_delay__upper_limit__hard = " +
-            str(acc_max_delay__upper_limit__hard))
-    dest__f__addr.write("acc_max_delay__lower_limit__hard  = " +
-            str(acc_max_delay__lower_limit))
-    dest__f__addr.write("attempt__upper_bound = " + str(attempt__upper_bound))
-    dest__f__addr.write("precision__higher_limit = " +
-            str(precision__higher_limit))
-    dest__f__addr.write("precision__lower_limit = " +
-            str(precision__lower_limit))
-    dest__f__addr.write("precision__step_size = " + str(precision__step_size))
-    dest__f__addr.write("propagate_info_regarding_previous_transiontal_cells__p = " + str(propagate_info_regarding_previous_transiontal_cells__p))
-    dest__f__addr.write("prev__targeted_acc_max_delay = " + str(prev__targeted_acc_max_delay))
-    dest__f__addr.write("currentDesignsPrecision_delay__d = " +
-    str(currentDesignsPrecision_delay__d))
-    dest__f__addr.write("precision_best_delay__d = " +
-    str(precision_best_delay__d))
-    dest__f__addr.write("best_design_worth_so_far = " +
-    str(best_design_worth_so_far))
-    dest__f__addr.write("first_time__p = " + str(first_time__p))
-    dest__f__addr.write("report__timing__f__prev = " +
-        str(report__timing__f__prev))
-    dest__f__addr.write("bestDesignsPrecision__delay__d = " +
-        str(bestDesignsPrecision__delay__d))
-    dest__f__addr.write("report__timing__f__best = " +
-        str(report__timing__f__best))
-    dest__f__addr.write("op_type = " + str(op_type))
-"""
+
 
 def write_to_delays_striving_for__f(
         targetting_precision, bestDesignsPrecision__delay__d, 
@@ -177,21 +131,25 @@ def restore_design_and_design_info_first_case(input__obj):
 #----------------------------------------------------
 #*** F:DN reponsible for syntheszing the design of interest with the clk of 
 #          interest. The only constraint (on all paths) is the clk itself
-def synth_design_with_only_clk_constraint(input__obj):
+def synth_design_with_only_clk_constraint(input__obj, precision):
     wrapper_module__na = input__obj.wrapper_module__na
     syn__file__addr = input__obj.syn__file__addr
     clk_period = input__obj.clk_period
     DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
     CLKGATED_BITWIDTH = input__obj.CLKGATED_BITWIDTH
+    OP_BITWITH = 1 #This doesn't really matter, since
     base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
     ID = input__obj.ID
     op_type = input__obj.op_type
+    OP_BITWIDTH = precision
     #----------------------------------------------------
     #--- F:DN Variables
     #----------------------------------------------------
-    tcl_parametrs = "set clk_period " + str(clk_period) + ";set DATA_PATH_BITWIDTH \
-            "+str(DATA_PATH_BITWIDTH) + ";set CLKGATED_BITWIDTH " + \
-            str(CLKGATED_BITWIDTH) + "; set ID " + str(ID) + ";"
+    tcl_parametrs = "set clk_period " + str(clk_period) + \
+                    ";set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + \
+                    ";set CLKGATED_BITWIDTH " + str(CLKGATED_BITWIDTH) +\
+                    ";set OP_BITWIDTH " + str(OP_BITWIDTH) +\
+                    "; set ID " + str(ID) + ";"
     
     
     #*** F:AN for now just use mac in the name 
@@ -275,9 +233,9 @@ def hardwire_apx_bits_to_zero(input__obj, precision):
                 elif next_line_modify:
                     next_line_modify = False 
                     if (modified_op_type == "mac_noFF"): #simply skipping this now
-                        modified__line = "clk, rst, a_in, b_in, c_in, d );\n"
+                        modified__line = "clk, racc, rapx, a_in, b_in, c_in, d );\n"
                     else:
-                        modified__line = "clk, rst, a_in, b_in, d );\n"
+                        modified__line = "clk, racc, rapx, a_in, b_in, d );\n"
                     modified__line += " input ["+str(DATA_PATH_BITWIDTH- \
                             apx_bit__c-1)+":0]a_in;\n"
                     modified__line += "input ["+str(DATA_PATH_BITWIDTH- \
@@ -362,7 +320,7 @@ def find_delay_through_each_cell(input__obj, precision, lib__n):
     base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir
     ID = input__obj.ID
     op_type = input__obj.op_type
-    
+    OP_BITWITH = precision
     #*** F:DN Parameters 
     tcl_file__na =  "../tcl_src/find_delay_through_each_cell.tcl"
     os.system("pwd")
@@ -371,6 +329,7 @@ def find_delay_through_each_cell(input__obj, precision, lib__n):
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
             "set CLKGATED_BITWIDTH " + str(CLKGATED_BITWIDTH) + ";" + \
+            "set OP_BITWIDTH " + str(OP_BITWITH) + ";" +\
             "set DESIGN_NAME " + syn__wrapper_module__na + ";" + \
             "set synth_file__na " + syn__file__na + ";" + \
             "set std_library " + lib__n+ ";" + \
@@ -471,7 +430,9 @@ def read_resyn_and_report(
     precisions_striving_for__f__na = input__obj.precisions_striving_for__f__na
     op_type = input__obj.op_type
     syn__file__na = op_type
-    
+    OP_BITWIDTH = precision
+
+
     evol_log__addr = base_to_dump_reports__dir_temp + "/"+op_type+ "_" + \
             str(DATA_PATH_BITWIDTH) +"__"+ \
             "clk" + "_" + str(clk_period) + "__"+ \
@@ -482,6 +443,7 @@ def read_resyn_and_report(
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
             "set CLKGATED_BITWIDTH "  +str(CLKGATED_BITWIDTH) + ";" + \
+            "set OP_BITWIDTH "  +str(OP_BITWIDTH) + ";" + \
             "set DESIGN_NAME " + syn__wrapper_module__na + ";" + \
             "set synth_file__na " + syn__file__na  + ";" + \
             "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
@@ -666,6 +628,7 @@ def read_and_cons_transitional_cells_and_resyn(
     ID = input__obj.ID
     delays_striving_for__f__na = input__obj.delays_striving_for__f__na
     precisions_striving_for__f__na = input__obj.precisions_striving_for__f__na
+    OP_BITWIDTH = precision
 
     op_type = input__obj.op_type
     evol_log__addr = base_to_dump_reports__dir_temp + "/"+op_type+ "_" + \
@@ -682,12 +645,14 @@ def read_and_cons_transitional_cells_and_resyn(
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
             "set CLKGATED_BITWIDTH "  +str(CLKGATED_BITWIDTH) + ";" + \
+            "set OP_BITWIDTH "  +str(OP_BITWIDTH) + ";" + \
             "set DESIGN_NAME " + syn__wrapper_module__na + ";" + \
             "set synth_file__na " + syn__file__na  + ";" + \
             "set transition_cells__base_addr  " +  transition_cells__base_addr+ ";" \
             "set transitioning_cells__log__na " +  transitioning_cells__log__na + " ;" \
             "set Pn " + str(precision) + ";" + \
             "set acc_max_delay " + str(acc_max_delay)+ ";" \
+            "set op_type " + str(op_type)+ ";" \
             "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
             "set ID " + str(ID)+ ";"+\
             "set precisions_striving_for__f__na " + precisions_striving_for__f__na + ";" + \
@@ -753,7 +718,7 @@ def read_and_cons_transitional_cells_and_report_timing(
     ID = input__obj.ID
     delays_striving_for__f__na = input__obj.delays_striving_for__f__na
     precisions_striving_for__f__na = input__obj.precisions_striving_for__f__na
-    
+    OP_BITWIDTH = precision
     op_type = input__obj.op_type
     evol_log__addr = base_to_dump_reports__dir_temp + "/"+op_type+ "_" + \
             str(DATA_PATH_BITWIDTH) +"__"+ \
@@ -769,12 +734,14 @@ def read_and_cons_transitional_cells_and_report_timing(
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
             "set CLKGATED_BITWIDTH "  +str(CLKGATED_BITWIDTH) + ";" + \
+            "set OP_BITWIDTH "  +str(OP_BITWIDTH) + ";" + \
             "set DESIGN_NAME " + syn__wrapper_module__na + ";" + \
             "set synth_file__na " + syn__file__na  + ";" + \
             "set transition_cells__base_addr  " +  transition_cells__base_addr+ ";" \
             "set transitioning_cells__log__na " +  transitioning_cells__log__na + " ;" \
             "set Pn " + str(precision) + ";" + \
             "set acc_max_delay " + str(acc_max_delay)+ ";"\
+            "set op_type " + str(op_type)+ ";" \
             "set attempt__iter__c " + str(attempt__iter__c)+ ";"+\
             "set ID " + str(ID)+ ";"+\
             "set delete_prev_output__p " + str(delete_prev_output__p)+ ";"+\

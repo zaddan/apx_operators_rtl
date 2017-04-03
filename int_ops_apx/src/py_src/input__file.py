@@ -16,7 +16,11 @@ class input__class():
         self.ID = vars__f__addr.ID
         self.clk_period = vars__f__addr.clk_period
         self.DATA_PATH_BITWIDTH = vars__f__addr.DATA_PATH_BITWIDTH
-        
+
+        #*** F:AN this is a hack that would work for two level configuration, but not more. Fix later
+        self.OP_BITWIDTH = vars__f__addr.precisions__curious_about__l[0]; #numebr of apx bits
+        assert(2*self.OP_BITWIDTH > self.DATA_PATH_BITWIDTH)
+
         #-----  -----    -----     -----     -----     -----
         self.attempt__upper_bound = vars__f__addr.attempt__upper_bound
         #-----  -----    -----     -----     -----     -----
@@ -35,8 +39,8 @@ class input__class():
         #*** F:DN Derivded Params
         #---------------------------------------------------- 
         self.wrapper_module__na = self.design_name +"__w_wrapper"
-        self.CLKGATED_BITWIDTH = 2; #numebr of apx bits
-        self.OP_BITWIDTH = self.DATA_PATH_BITWIDTH
+        self.CLKGATED_BITWIDTH = 2 # *** F:AN this doesn't matter at the moment
+        #self.OP_BITWIDTH = self.DATA_PATH_BITWIDTH
         self.transition_cells__base_addr = "/home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src"
         self.syn__module__na = self.design_name+"_OP_BITWIDTH"+str(self.OP_BITWIDTH)+"_DATA_PATH_BITWIDTH"+str(self.DATA_PATH_BITWIDTH)
         self.syn__wrapper_module__na = self.design_name+"__w_wrapper_OP_BITWIDTH"+str(self.OP_BITWIDTH)+"_DATA_PATH_BITWIDTH"+str(self.DATA_PATH_BITWIDTH)
