@@ -49,18 +49,17 @@ def main():
     #precision__higher_limit = input__obj.precision__higher_limit
     #precision__lower_limit = input__obj.precision__higher_limit
     DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
-    precisions__curious_about__l = [DATA_PATH_BITWIDTH]
 
     bestDesignsPrecision__delay__d = {}
-    bestDesignsPrecision__delay__d[DATA_PATH_BITWIDTH] = 1000
+    bestDesignsPrecision__delay__d[input__obj.precisions__curious_about__l[0]] = 1000
     precision_best_delay__d = {}
-    precision_best_delay__d [DATA_PATH_BITWIDTH] =  10000
+    precision_best_delay__d [input__obj.precisions__curious_about__l[0]] =  10000
 
     prev__acc_max_delay = input__obj.init_prev__acc_max_delay
     report__timing__f__best = input__obj.init__report__timing__f
     propagate_info_regarding_previous_transiontal_cells__p = input__obj.propagate_info_regarding_previous_transiontal_cells__p
     #-----  -----    -----     -----     -----     -----
-    precision = DATA_PATH_BITWIDTH
+    precision =  input__obj.precisions__curious_about__l[0]
     #-----  -----    -----     -----     -----     -----
     remove__progress_flow_chart(input__obj) #removing the previous flow chart
     
@@ -101,7 +100,7 @@ def main():
     currently_targetting_acc_max_delay =  acc_max_delay__upper_limit__hard
     input__obj.clk_period = currently_targetting_acc_max_delay
     if not(activate_check_point__p):
-        synth_design_with_only_clk_constraint(input__obj)
+        synth_design_with_only_clk_constraint(input__obj, precision)
     else:
         bestDesignsPrecision__delay__d, precision_best_delay__d, best_design_worth_so_far, report__timing__f__best = \
                 get_delay__before_tuning_and_archive( #@

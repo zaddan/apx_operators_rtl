@@ -144,6 +144,7 @@ echo "**************** " >> ${all_data__file__addr}
 echo "*** F:DN after resynthesis " >> ${all_data__file__addr}
 echo "**************** " >> ${all_data__file__addr}
 report_timing -sort_by slack -significant_digits 4 >>  ${all_data__file__addr}
+report_timing -sort_by slack -significant_digits 4 >>  ${all_data__file__addr} ;#for legacy parsing purposes repeating
 echo "*** F:DN power report" >> ${all_data__file__addr}
 report_power >>  ${all_data__file__addr}
 report_area -hierarchy -nosplit >>  ${all_data__file__addr}

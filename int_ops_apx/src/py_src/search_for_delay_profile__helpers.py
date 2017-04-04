@@ -499,16 +499,19 @@ def read_resyn_and_report(
     delays_striving_for__f__na = input__obj.delays_striving_for__f__na
     precisions_striving_for__f__na = input__obj.precisions_striving_for__f__na
     op_type = input__obj.op_type
-    syn__file__na = op_type
+    syn__file__na = input__obj.syn__file__na
     OP_BITWIDTH = precision
 
 
     evol_log__addr = base_to_dump_reports__dir_temp + "/"+op_type+ "_" + \
             str(DATA_PATH_BITWIDTH) +"__"+ \
             "clk" + "_" + str(clk_period) + "__"+ \
+            "acc_max_del" + "_" + str(acc_max_delay)+"__"+\
+            "Pn"+ "_" + str(precision)+"__"+\
             "atmpt"+"_"+str(attempt__iter__c) + "__"+\
             "id"+"_"+str(ID)+"__"+\
             "evol_log.txt"
+
 
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
@@ -1392,7 +1395,7 @@ def find_best_delay__using_binary_search(
         currently_targetting_acc_max_delay, acc_max_delay__upper_limit,\
         acc_max_delay__lower_limit, updated_boundary__p, bestDesignsPrecision__delay__d,
         precision)
-
+        input__obj.clk_period = currently_targetting_acc_max_delay
         #*** F: exit out if necessary
         if (done_searching__p):
             break
