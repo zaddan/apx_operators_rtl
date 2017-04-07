@@ -1,6 +1,6 @@
 #----------------------------------------------------
 # --- use this file for sweeping the clock and also imposing of different
-# constrains on various bits 
+# constrains on various bits
 #----------------------------------------------------
 import os
 import pylab
@@ -9,18 +9,18 @@ import copy
 from time import gmtime, strftime
 from input__file import *
 #----------------------------------------------------
-#---- F: Main 
+#---- F: Main
 #----------------------------------------------------
 def main():
-    
-    #---------------------------------------------------- 
+
+    #----------------------------------------------------
     #*** F:DN Parameters
-    #---------------------------------------------------- 
+    #----------------------------------------------------
     activate_check_point__p = False
 
-    #---------------------------------------------------- 
+    #----------------------------------------------------
     #*** F:DN initializing the variables
-    #---------------------------------------------------- 
+    #----------------------------------------------------
     input__obj = input__class(activate_check_point__p) # this also includes params
                                                    # for now
     prev__targeted_acc_max_delay = input__obj.init__prev__targeted_acc_max_delay
@@ -29,7 +29,7 @@ def main():
     bestDesignsPrecision__delay__d =\
             input__obj.init__bestDesignsPrecision__delay__d
     precision_best_delay__d = input__obj.init__precision_best_delay__d
-    best_design_worth_so_far = input__obj.init__best_design_worth_so_far 
+    best_design_worth_so_far = input__obj.init__best_design_worth_so_far
     #-----  -----    -----     -----     -----     -----
     first_time__p = input__obj.init__first_time__p #this variable allows us to archive the transitional
                          #cells and also the design in the first iteration
@@ -59,8 +59,8 @@ def main():
     assert (2*precision > input__obj.DATA_PATH_BITWIDTH)
     #-----  -----    -----     -----     -----     -----
     remove__progress_flow_chart(input__obj) #removing the previous flow chart
-    
-    
+
+
     if not(os.path.isdir(input__obj.base_to_dump_reports__dir_temp+"/" +\
             input__obj.ID)):
         print "this directory doesn't exist"
@@ -69,12 +69,12 @@ def main():
     input__obj.base_to_dump_reports__dir_temp =\
             input__obj.base_to_dump_reports__dir_temp+"/" +\
             input__obj.ID+"/"+strftime("%Y_%m_%d__%H_%M_%S", gmtime())
-    
+
     input__obj.base_to_dump_reports__dir = input__obj.base_to_dump_reports__dir_temp+"/details"
     #----------------------------------------------------
     #*** F:DN Body
-    #---------------------------------------------------- 
-    #*** F:DN take a backup (move to a new folder) of previous results 
+    #----------------------------------------------------
+    #*** F:DN take a backup (move to a new folder) of previous results
     """"
     if (os.path.isdir(input__obj.base_to_dump_reports__dir_temp)):
         backup_dir__n = "batch__"+ strftime("%Y_%m_%d__%H_%M_%S", gmtime())
@@ -89,7 +89,7 @@ def main():
     os.system("mkdir " + input__obj.base_to_dump_reports__dir)
     behzad_readMe__addr =  input__obj.base_to_dump_reports__dir_temp+"/"+"behzad_readME"
     #clk__l = [.602, .61, .64, .67]
-    clk__l = [.64]
+    clk__l = [.7]
     os.system("cp " + "params__hardwired.py" +  " " + behzad_readMe__addr)
     os.system("echo " + "activate_check_point__p=" + str(activate_check_point__p) + " >> " + behzad_readMe__addr)
     os.system("echo " + "clk__l =" + str(clk__l) + " >> " + behzad_readMe__addr)
@@ -119,12 +119,12 @@ def main():
                     acc_max_delay__upper_limit__hard, prev__acc_max_delay, report__timing__f__best,
                     precision_best_delay__d)
 
-            #*** F:DN find best delay using design compiler  
+            #*** F:DN find best delay using design compiler
             report__timing__f__best, bestDesignsPrecision__delay__d,\
             acc_max_delay__lower_limit__hard, acc_max_delay__upper_limit__hard, prev__acc_max_delay,\
             precision_best_delay__d = \
             find_best_subdelay__using_binary_search( #@
-                    input__obj, 
+                    input__obj,
                     precision, currently_targetting_acc_max_delay,
                     acc_max_delay__lower_limit__hard, acc_max_delay__upper_limit__hard,
                     bestDesignsPrecision__delay__d,
@@ -133,7 +133,7 @@ def main():
                     report__timing__f__best,
                     activate_check_point__p,
                     precision__l__order)
-                    
+
 
 
             precision__counter += 1
@@ -147,20 +147,20 @@ def main():
             #         start from the best of previous precision
     #        acc_max_delay__lower_limit = bestDesignsPrecision__delay__d[precision -\
     #                precision__step_size]
-            
+
     #        archive_params(dest__f__addr, design_name, ID, clk_period, DATA_PATH_BITWIDTH,
     #                acc_max_delay__upper_limit__initial_value,
     #                acc_max_delay__lower_limit, attempt__upper_bound,
-    #                precision__lower_limit,precision__higher_limit, 
+    #                precision__lower_limit,precision__higher_limit,
     #                precision__step_size,
-    #                propagate_info_regarding_previous_transiontal_cells__p, 
-    #                -1, currentDesignsPrecision_delay__d, 
+    #                propagate_info_regarding_previous_transiontal_cells__p,
+    #                -1, currentDesignsPrecision_delay__d,
     #                precision_mac_8__clk_0.4__acc_max_del_0.196__Pn_7__atmpt_0__id_SCBSD__evol_log.txtbest_delay__d,
     #                best_design_worth_so_far,
-    #                bestDesignsPrecision__delay__d, 
+    #                bestDesignsPrecision__delay__d,
     #                False, report__timing__f__prev, report__timing__f__best,
     #                op_type)
-    #            
+    #
                 #*** F:DN update the synfile and transition file NAMES
             if not(propagate_info_regarding_previous_transiontal_cells__p):
                 print "this needs more work"
@@ -168,7 +168,7 @@ def main():
                 restore_design_and_design_info_first_case(input__obj)
                 first_time__p = True
                 design_worth = 0
-                #*** F:DN copy back the original  
+                #*** F:DN copy back the original
                 restore_design_and_design_info_first_case(input__obj)
                 report__timing__f__prev = "starting point"
 
@@ -195,3 +195,6 @@ main()
 # Note: you can run SCBSD and SCBD in parallel (they don't interfere with each other)
 # Note: params__hardwired.py is shared among SCBSD, SCBD and DFDL. You just need to run the correct .py file
 #       (e.g search_for_best_delay.py or search_for_delay_profile.py ,....) with it
+
+
+

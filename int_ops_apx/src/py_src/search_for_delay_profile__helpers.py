@@ -230,11 +230,20 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call):
                             +"\'b0};\n"
 
 
-
+    # *** F:DN noFF => FF
+    """
     if (op_type == "mac"):
          modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .c_in(c_temp__apx), .d(d_internal));\n"
     else:
         modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d(d_internal));\n"
+    """
+    # *** F:DN FF => noFF
+    if (op_type == "mac"):
+         modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .rst(rst), .a(a_temp__apx), .b(b_temp__apx), .c_in(c_temp__apx), .d(d));\n"
+    else:
+        modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk),.rst(rst),.a(a_temp__apx),.b(b_temp__apx),.d(d) );\n"
+
+
     return modified__line
 
     """
@@ -632,7 +641,8 @@ def parse_file_to_get_design_arrival_times(\
                 if ("after" in word_list) and ("resynthesis" in word_list):
                     start_looking = True 
                 if start_looking:
-                     #*** F:AN FF=>noFF. uncomment the code bellow
+                    #*** F:AN FF=>noFF. uncomment the code bellow
+
                     if ("data" in word_list) and \
                             ("arrival" in word_list) and \
                             ("time") in word_list:
@@ -650,7 +660,7 @@ def parse_file_to_get_design_arrival_times(\
 
                     # *** F:DN uncomment the code bellow
                     # *** F:AN noFF=>FF
-                    """"
+                    """
                     if ("data" in word_list) and \
                             ("arrival" in word_list) and \
                             ("time") in word_list:
@@ -673,7 +683,6 @@ def parse_file_to_get_design_arrival_times(\
                             precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
                         #precision__parsing_for +=1
                     """
-
 
 #    for precision__el in range(precision + 1, precision__higher_limit+1):
 #        design_arrival_times__d[precision__el] = (last_arrival__t__seen)
@@ -1131,7 +1140,6 @@ def find_best_subdelay__using_binary_search(
             precisions_covered_so_far__l, precision, lib__n)
     report__timing__f__this_time = report__timing__f__best
     while (True):
-
         #*** F:DN update what max_delay (and some other vars) we are aiming for
         prev__targeted_acc_max_delay, currently_targetting_acc_max_delay,\
         acc_max_delay__lower_limit, acc_max_delay__upper_limit, updated_boundary__p, done_searching__p = \
