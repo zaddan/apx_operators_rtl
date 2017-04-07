@@ -87,6 +87,7 @@ end
 
 initial
 begin
+     
     $shm_open ("my_waves.shm"); //necessary to dump the signals
     //$Dumpvars(1,test_bench_tb );
     $shm_probe("AC"); //probing for all the signals 
@@ -96,7 +97,7 @@ end
 //finish
 initial
 begin
-    #2000
+    #20000
     $fclose(f); 
     $finish;
 end
@@ -104,17 +105,16 @@ end
 
 //--- behvarioal
 /*
-conf_int_mul__noFF__arch_agnos#(OP_BITWIDTH, DATA_PATH_BITWIDTH) mul( 
+conf_int_mul__noFF__arch_agnos__w_wrapper#(OP_BITWIDTH, DATA_PATH_BITWIDTH) mul( 
     .clk(clk),
     .rst(rst),
     .a(input_a),
     .b(input_b),
-    .c(input_c), 
     .d(d));
 */
 
 //--- synthesized
-conf_int_mul__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32 mul(
+conf_int_mul__noFF__arch_agnos__w_wrapper_OP_BITWIDTH26_DATA_PATH_BITWIDTH32 mul(
     .clk(clk),
     .rst(rst),
     .a(input_a),

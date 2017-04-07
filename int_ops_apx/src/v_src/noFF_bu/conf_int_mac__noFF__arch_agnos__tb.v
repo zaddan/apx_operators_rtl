@@ -103,26 +103,25 @@ end
 
 
 //--- behvarioal
-conf_int_mac__noFF__arch_agnos#(OP_BITWIDTH, DATA_PATH_BITWIDTH) mac( 
-    .clk(clk),
-    .rst(rst),
-    .a(input_a),
-    .b(input_b),
-    .c(input_c), 
-    .d(d));
-
-
-//--- synthesized
 /*
-unconfig_int_add_OP_BITWIDTH32_DATA_PATH_BITWIDTH32 add(
+conf_int_mac__noFF__arch_agnos__w_wrapper #(OP_BITWIDTH, DATA_PATH_BITWIDTH) mac(
     .clk(clk),
     .rst(rst),
     .a(input_a),
     .b(input_b),
-    .c(output_c_acc));
+    .c_in(input_c), 
+    .d(d));
 */
 
-
+//--- synthesized
+conf_int_mac__noFF__arch_agnos__w_wrapper_OP_BITWIDTH26_DATA_PATH_BITWIDTH32 mac( 
+    .clk(clk),
+    .rst(rst),
+    .a(input_a),
+    .b(input_b),
+    .c_in(input_c), 
+    .d(d));
+    
 /* only for ncverilog
 initial begin
     $dumpfile("DUT.vcd");
