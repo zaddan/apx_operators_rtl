@@ -47,12 +47,12 @@ set search_path [concat  $search_path $lib_dir_3]
 #set  std_library  "noAging.db" 
 set target_library $std_library; #$std_library_2" 
 set link_library $std_library; #$std_library_2"
-define_design_lib WORK -path ./WORK
+define_design_lib WORK -path ./WORK_1_${ID}
 set verilogout_show_unconnected_pins "true"
 
 
 #*** F:DN read the design
-read_file  $synth__file -autoread -top $my_toplevel
+read_file  $synth__file -autoread -top $my_toplevel -library WORK_1_${ID}
 check_design
 
 #*** F:DN  set the optimization constraints 

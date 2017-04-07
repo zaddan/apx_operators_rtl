@@ -53,8 +53,11 @@ set link_library $std_library; #$std_library_2"
 #...   ...    ..  ...  ..    ..    ...      ..
 #*** F:AN deleting is necessary otherwise the synthesized design might be renamed
 #         which results in problems while reading it (the synth design)
-file delete -force WORK_1 ;#deleting so I won't have to deal with renaming
-define_design_lib WORK -path ./WORK_1
+file delete -force WORK_1_${ID} ;#deleting so I won't have to deal with renaming
+define_design_lib WORK -path ./WORK_1_${ID}
+#file delete -force WORK_1 ;#deleting so I won't have to deal with renaming
+#define_design_lib WORK -path ./WORK_1
+
 set verilogout_show_unconnected_pins "true"
 
 

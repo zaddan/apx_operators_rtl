@@ -403,6 +403,7 @@ def find_delay_through_each_cell(input__obj, precision, lib__n):
             "set DESIGN_NAME " + syn__wrapper_module__na + ";" + \
             "set synth_file__na " + syn__file__na + ";" + \
             "set std_library " + lib__n+ ";" + \
+            "set ID " + str(ID)+ ";" + \
             "set output__timing__log__na " + timing_per_cell__log__addr + ";"
     
     #*** F:AN for now set the syn__file__na to mac
@@ -632,23 +633,24 @@ def parse_file_to_get_design_arrival_times(\
                     start_looking = True 
                 if start_looking:
                      #*** F:AN FF=>noFF. uncomment the code bellow
-#                    if ("data" in word_list) and \
-#                            ("arrival" in word_list) and \
-#                            ("time") in word_list:
-#                                if (float(word_list[-1]) >=0): #this is b/c arrival time is repeated for the same precision, and the 2nd one is negative
-#                                    if  (counter == len(precisions_covered_so_far__l)):
-#                                        clk__acquired =  (float(word_list[-1]))
-#                                        #break
-#
-#                                    else:
-#                                        design_arrival_times__d[precision__parsing_for] = (float(word_list[-1]))
-#                                        counter += 1
-#                                        if  (counter < len(precisions_covered_so_far__l)):
-#                                            precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
-#                                        #precision__parsing_for +=1
+                    if ("data" in word_list) and \
+                            ("arrival" in word_list) and \
+                            ("time") in word_list:
+                                if (float(word_list[-1]) >=0): #this is b/c arrival time is repeated for the same precision, and the 2nd one is negative
+                                    if  (counter == len(precisions_covered_so_far__l)):
+                                        clk__acquired =  (float(word_list[-1]))
+                                        #break
+
+                                    else:
+                                        design_arrival_times__d[precision__parsing_for] = (float(word_list[-1]))
+                                        counter += 1
+                                        if  (counter < len(precisions_covered_so_far__l)):
+                                            precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
+                                        #precision__parsing_for +=1
 
                     # *** F:DN uncomment the code bellow
                     # *** F:AN noFF=>FF
+                    """"
                     if ("data" in word_list) and \
                             ("arrival" in word_list) and \
                             ("time") in word_list:
@@ -670,7 +672,7 @@ def parse_file_to_get_design_arrival_times(\
                         if  (counter < len(precisions_covered_so_far__l)):
                             precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
                         #precision__parsing_for +=1
-
+                    """
 
 
 #    for precision__el in range(precision + 1, precision__higher_limit+1):

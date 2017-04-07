@@ -70,12 +70,12 @@ set link_library $std_library; #$std_library_2"
 #...   ...    ..  ...  ..    ..    ...      ..
 #*** F:AN deleting is necessary otherwise the synthesized design might be renamed
 #         which results in problems while reading it (the synth design)
-file delete -force WORK_1 ;#deleting so I won't have to deal with renaming
-define_design_lib WORK -path ./WORK_1
+file delete -force WORK_1_${ID} ;#deleting so I won't have to deal with renaming
+define_design_lib WORK -path ./WORK_1_${ID}
 set verilogout_show_unconnected_pins "true"
 #----------------------------------------------------
 #*** F:DN read the design
-read_file  $synth__file -autoread -top $my_toplevel
+read_file  $synth__file -autoread -top $my_toplevel -library WORK_1_${ID}
 check_design
 
 
@@ -85,6 +85,7 @@ set_ideal_network -no_propagate [get_ports clk]
 set_input_delay -max 0 -clock clk [get_ports b*]     
 set_input_delay -max 0 -clock clk [get_ports a*]     
 set_dont_touch_network [get_clocks clk]
+#set_dont_touch "mul__inst"
 #set enable_keep_signal_dt_net true
 #set enable_keep_signal true
 set compile_delete_unloaded_sequential_cells false

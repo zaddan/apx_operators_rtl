@@ -88,19 +88,20 @@ def main():
     os.system("mkdir " + input__obj.base_to_dump_reports__dir_temp)
     os.system("mkdir " + input__obj.base_to_dump_reports__dir)
     behzad_readMe__addr =  input__obj.base_to_dump_reports__dir_temp+"/"+"behzad_readME"
+    #clk__l = [.602, .61, .64, .67]
+    clk__l = [.64]
     os.system("cp " + "params__hardwired.py" +  " " + behzad_readMe__addr)
     os.system("echo " + "activate_check_point__p=" + str(activate_check_point__p) + " >> " + behzad_readMe__addr)
-
+    os.system("echo " + "clk__l =" + str(clk__l) + " >> " + behzad_readMe__addr)
     precision__counter = 0
-    clk__l = [.7]
     #*** F:DN synth design with the clk (only const is the clk)
     for clk in clk__l:
         input__obj.clk_period = clk
 #
         acc_max_delay__upper_limit__hard = acc_max_delay__upper_limit__initial_value
         acc_max_delay__lower_limit__hard = acc_max_delay__lower_limit__initial_value
-#        if not(activate_check_point__p):
-#            synth_design_with_only_clk_constraint(input__obj, precision)
+        if not(activate_check_point__p):
+            synth_design_with_only_clk_constraint(input__obj, precision)
 
         #*** F:DN iterate through precisions and find best delay for each
         #*** F:AN the upper bound can not be higher than 32(hence 32 not included
@@ -180,11 +181,17 @@ def main():
             backup_dir__addr)
     """
 
-#tool_chain__log__handle.close()
 #----------------------------------------------------
 #--- F: Main
 #----------------------------------------------------
 main()
 
 
-
+#----------------------------------------------------
+#--- F:HTN
+#----------------------------------------------------
+# set the param values and simply run
+# Note: to run things in parallel, assign a name (e.g SCBSD_1, SCBSD_2, ...) in the params file.
+# Note: you can run SCBSD and SCBD in parallel (they don't interfere with each other)
+# Note: params__hardwired.py is shared among SCBSD, SCBD and DFDL. You just need to run the correct .py file
+#       (e.g search_for_best_delay.py or search_for_delay_profile.py ,....) with it

@@ -75,8 +75,8 @@ set link_library $std_library; #$std_library_2"
 #...   ...    ..  ...  ..    ..    ...      ..
 #*** F:AN deleting is necessary otherwise the synthesized design might be renamed
 #         which results in problems while reading it (the synth design)
-file delete -force WORK_1 ;#deleting so I won't have to deal with renaming
-define_design_lib WORK -path ./WORK_1
+file delete -force WORK_1_${ID} ;#deleting so I won't have to deal with renaming
+define_design_lib WORK -path ./WORK_1_${ID}
 set verilogout_show_unconnected_pins "true"
 
 
@@ -85,19 +85,19 @@ set verilogout_show_unconnected_pins "true"
 #----------------------------------------------------
 #*** F:AN noFF=>FF
 if {$op_type == "mac"} {
-    set input_name_1 "my_mac/mac/a_reg_reg"
-    set input_name_2 "my_mac/mac/b_reg_reg"
-    set input_name_3 "mac/c_reg"
+    set input_name_1 "a_reg_reg"
+    set input_name_2 "b_reg_reg"
+    set input_name_3 "c_reg_reg"
 }
 if {$op_type == "mul"} {
-    set input_name_1 "mul/a_reg_reg"
-    set input_name_2 "mul/b_reg_reg"
-    set input_name_3 "mul/c_reg"
+    set input_name_1 "a_reg_reg"
+    set input_name_2 "b_reg_reg"
+    set input_name_3 "c_reg_reg"
 }
 if {$op_type == "add"} {
-    set input_name_1 "add/a_reg_reg"
-    set input_name_2 "add/b_reg_reg"
-    set input_name_3 "add/c_reg"
+    set input_name_1 "a_reg_reg"
+    set input_name_2 "b_reg_reg"
+    set input_name_3 "c_reg_reg"
 }
 #....................................................
 #*** F:AN FF=>noFF
@@ -188,7 +188,7 @@ set Pn__l [split $Pn__l__string " "]
 #set non_transition_cells__l [split $non_transition_cells__l__string " "]
 
 #*** F:DN read the design
-read_file  $synth__file -autoread -top $my_toplevel
+read_file  $synth__file -autoread -top $my_toplevel -library WORK_1_${ID}
 check_design
 
 
@@ -208,13 +208,13 @@ set AC_NAME $DESIGN_NAME
 
 #*** F:AN noFF=>FF
 if {$op_type == "mac"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects my_mac/c_reg_reg* -filter "direction == in"]]
+    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
 }
 if {$op_type == "mul"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects mul/c_reg_reg* -filter "direction == in"]]
+    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
 }
 if {$op_type == "add"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects add/c_reg_reg* -filter "direction == in"]]
+    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
 }
 # *** F:AN FF=>noFF
 #set outputs_of_interest [get_object_name [all_outputs]]
