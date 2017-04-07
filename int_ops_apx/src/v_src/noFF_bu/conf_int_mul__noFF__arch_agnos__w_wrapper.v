@@ -36,7 +36,7 @@ output [DATA_PATH_BITWIDTH-1:0] d;
 input clk;
 input rst;
 
-conf_int_mul__noFF__arch_agnos #(DATA_PATH_BITWIDTH, OP_BITWIDTH) mul(.clk(clk), .rst(rst), .a(a), .b(b), 
+conf_int_mul__noFF__arch_agnos #(OP_BITWIDTH, DATA_PATH_BITWIDTH) mul__inst(.clk(clk), .rst(rst), .a(a), .b(b), 
     .d(d));
 
 endmodule 
