@@ -64,7 +64,7 @@ set verilogout_show_unconnected_pins "true"
 # *** F:AN required to preserve the net name
 #          . for us i.e net c
 #
-#set hdlin_keep_signal_name user
+set hdlin_keep_signal_name user
 #set enable_keep_signal_dt_net true
 #set enable_keep_signal true
 

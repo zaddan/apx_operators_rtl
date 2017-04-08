@@ -11,7 +11,7 @@ input clk;
 input rst;
 input [DATA_PATH_BITWIDTH -1:0] a;
 input [DATA_PATH_BITWIDTH-1:0] b;
-output [DATA_PATH_BITWIDTH-1:0] d;
+output [DATA_PATH_BITWIDTH:0] d;
 
 
 //--- no flop design
@@ -32,7 +32,7 @@ parameter DATA_PATH_BITWIDTH = 16; //flip flop Bit width
 //--- input,outputs
 input [DATA_PATH_BITWIDTH -1:0] a;
 input [DATA_PATH_BITWIDTH-1:0] b;
-output [DATA_PATH_BITWIDTH-1:0] d;
+output [DATA_PATH_BITWIDTH:0] d;
 input clk;
 input rst;
 
