@@ -84,27 +84,27 @@ set verilogout_show_unconnected_pins "true"
 #         code (bellow for noFFed version
 #----------------------------------------------------
 #*** F:AN noFF=>FF
-if {$op_type == "mac"} {
-    set input_name_1 "a_reg_reg"
-    set input_name_2 "b_reg_reg"
-    set input_name_3 "c_reg_reg"
-}
-if {$op_type == "mul"} {
-    set input_name_1 "a_reg_reg"
-    set input_name_2 "b_reg_reg"
-    set input_name_3 "c_reg_reg"
-}
-if {$op_type == "add"} {
-    set input_name_1 "a_reg_reg"
-    set input_name_2 "b_reg_reg"
-    set input_name_3 "c_reg_reg"
-}
+#if {$op_type == "mac"} {
+#    set input_name_1 "a_reg_reg"
+#    set input_name_2 "b_reg_reg"
+#    set input_name_3 "c_reg_reg"
+#}
+#if {$op_type == "mul"} {
+#    set input_name_1 "a_reg_reg"
+#    set input_name_2 "b_reg_reg"
+#    set input_name_3 "c_reg_reg"
+#}
+#if {$op_type == "add"} {
+#    set input_name_1 "a_reg_reg"
+#    set input_name_2 "b_reg_reg"
+#    set input_name_3 "c_reg_reg"
+#}
 #....................................................
 #*** F:AN FF=>noFF
-#set input_name_1 "a"
-#set input_name_2 "b"
-#set input_name_3 "c"
-#set output_name_1 "d"
+set input_name_1 "a"
+set input_name_2 "b"
+set input_name_3 "c"
+set output_name_1 "d"
 
 #*** F:DN lumping registers (wires) together
 set all_reg_a_l [make-reg_l $input_name_1 0 $DATA_PATH_BITWIDTH]
@@ -207,17 +207,17 @@ set compile_seqmap_enable_output_inversion false
 set AC_NAME $DESIGN_NAME
 
 #*** F:AN noFF=>FF
-if {$op_type == "mac"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
-}
-if {$op_type == "mul"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
-}
-if {$op_type == "add"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
-}
+#if {$op_type == "mac"} {
+#    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+#}
+#if {$op_type == "mul"} {
+#    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+#}
+#if {$op_type == "add"} {
+#    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+#}
 # *** F:AN FF=>noFF
-#set outputs_of_interest [get_object_name [all_outputs]]
+set outputs_of_interest [get_object_name [all_outputs]]
 
 
 #----------------------------------------------------

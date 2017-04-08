@@ -36,7 +36,11 @@ output [DATA_PATH_BITWIDTH-1:0] d;
 input clk;
 input rst;
 
-conf_int_add__noFF__arch_agnos #(DATA_PATH_BITWIDTH, OP_BITWIDTH) add__inst(.clk(clk), .rst(rst), .a(a), .b(b), 
+ // synopsys dc_script_begin
+ //set_dont_touch d
+ // synopsys dc_script_end
+
+conf_int_add__noFF__arch_agnos #(OP_BITWIDTH,DATA_PATH_BITWIDTH) add__inst(.clk(clk), .rst(rst), .a(a), .b(b), 
     .d(d));
 
 endmodule 

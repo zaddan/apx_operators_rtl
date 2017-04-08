@@ -67,7 +67,7 @@ set_input_delay -max 0 -clock clk [get_ports b*]
 set_input_delay -max 0 -clock clk [get_ports a*]     
 set_dont_touch_network [get_clocks clk]
 
-#set hdlin_keep_signal_name user
+set hdlin_keep_signal_name user
 #set enable_keep_signal_dt_net true
 #set enable_keep_signal true
 

@@ -10,16 +10,20 @@ end
 module test_bench_tb;
   reg [31:0] input_a; //input_a
   reg [31:0] input_b; //input_b
+  reg [31:0] input_a_delayed; //input_a
+  reg [31:0] input_b_delayed; //input_b
+  
   //reg [31:0] input_c; 
   wire [31:0] d; 
-  reg rst;
+  reg racc;
+  reg rapx;
   reg clk;
   
   parameter number_of_input_pairs = 500; 
   parameter OP_BITWIDTH = 32;
   parameter DATA_PATH_BITWIDTH = 32;
 
-  parameter clk_period = 5;
+  parameter clk_period = 10;
   parameter half_clk_period = clk_period/2;
   //reg [100*8:0] base_folder_str;
   //base_folder_str = "../../build/functional";
@@ -43,12 +47,15 @@ module test_bench_tb;
   
   initial
   begin
-    rst <= 1'b1;
+    racc <= 1'b1;
+    rapx <= 1'b1;
     #(30*clk_period)
-    rst <= 1'b0;
+    racc <= 1'b0;
+    rapx <= 1'b0;
     #(20*clk_period) 
-    rst <= 1'b1;
-  end
+    racc <= 1'b1;
+    rapx <= 1'b1;
+end
 
   
   //clk 
@@ -77,8 +84,9 @@ begin
         //input_c <= data[3*i + 2];
         #(clk_period)
         //#(100*clk_period)
-        //$display("input_a: %d input_b %d\n", $signed(input_a), $signed(input_b));
-        $fwrite(f,"%d %d %d\n",$signed(data[2*i]), $signed(data[2*i + 1 ]), $signed(d));
+        //$fwrite("input_a: %d input_b %d\n", $signed(input_a), $signed(input_b));
+        $fwrite(f,"%d %d %d \n",$signed(input_a), $signed(input_b), $signed(d));
+        //$fwrite(f,"%d %d %d\n",$signed(data[2*i]), $signed(data[2*i + 1 ]), $signed(d));
     end
 end
 
@@ -104,23 +112,21 @@ end
 
 //--- behvarioal
 /*
-conf_int_add__noFF__arch_agnos#(OP_BITWIDTH, DATA_PATH_BITWIDTH) add( 
+conf_int_add__noFF__arch_agnos__w_wrapper #(OP_BITWIDTH, DATA_PATH_BITWIDTH) add( 
     .clk(clk),
     .rst(rst),
     .a(input_a),
     .b(input_b),
-    .c(input_c), 
     .d(d));
 */
 
 //--- synthesized
-conf_int_add__noFF__arch_agnos__w_wrapper_OP_BITWIDTH32_DATA_PATH_BITWIDTH32 add(
+conf_int_add__noFF__arch_agnos__w_wrapper_OP_BITWIDTH26_DATA_PATH_BITWIDTH32 add( 
     .clk(clk),
     .rst(rst),
     .a(input_a),
     .b(input_b),
     .d(d));
-
 
 
 
