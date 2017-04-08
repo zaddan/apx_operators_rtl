@@ -196,5 +196,7 @@ main()
 # Note: params__hardwired.py is shared among SCBSD, SCBD and DFDL. You just need to run the correct .py file
 #       (e.g search_for_best_delay.py or search_for_delay_profile.py ,....) with it
 
-
+# *** F:DN to switch between noFF and FF, simply uncomment the spots that are annoated
+#             ass noFF=>FF (and vice versa) for *.py files. Also do the same for tcl files
+#             specifically (resyn.tcl and report_timing.tcl)
 
