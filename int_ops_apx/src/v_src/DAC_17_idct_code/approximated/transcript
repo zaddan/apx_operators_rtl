@@ -1,0 +1,38 @@
+# do runms.tcl 
+# Model Technology ModelSim SE vlog 6.3f Compiler 2008.02 Feb 28 2008
+# -- Compiling module idct
+# -- Compiling module dct
+# ** Warning: idct_simple_add.v(4): [TMREN] - Redefinition of macro: b1_cut.
+# ** Warning: idct_simple_add.v(5): [TMREN] - Redefinition of macro: a2_cut.
+# ** Warning: idct_simple_add.v(6): [TMREN] - Redefinition of macro: b2_cut.
+# ** Warning: idct_simple_add.v(9): 'idct' already exists and will be overwritten.
+# -- Compiling module idct
+# -- Compiling module topdct_idct
+# 
+# Top level modules:
+# 	topdct_idct
+# vsim -sdfnoerror -novopt work.topdct_idct 
+# //  ModelSim SE 6.3f Feb 28 2008 Linux 3.2.0-4-amd64
+# //
+# //  Copyright 1991-2008 Mentor Graphics Corporation
+# //              All Rights Reserved.
+# //
+# //  THIS WORK CONTAINS TRADE SECRET AND 
+# //  PROPRIETARY INFORMATION WHICH IS THE PROPERTY
+# //  OF MENTOR GRAPHICS CORPORATION OR ITS LICENSORS
+# //  AND IS SUBJECT TO LICENSE TERMS.
+# //
+# Refreshing /home/local/bulkhead/behzad/usr/local/verilog_files/DAC_17_idct_code/approximated/work.topdct_idct
+# Loading work.topdct_idct
+# Refreshing /home/local/bulkhead/behzad/usr/local/verilog_files/DAC_17_idct_code/approximated/work.dct
+# Loading work.dct
+# Refreshing /home/local/bulkhead/behzad/usr/local/verilog_files/DAC_17_idct_code/approximated/work.idct
+# Loading work.idct
+# ** Warning: (vsim-PLI-3691) topdct_idct.v(60): Expected a system task, not a system function '$fscanf'.
+#         Region: /topdct_idct
+# ** Warning: (vsim-3015) topdct_idct.v(148): [PCDPC] - Port size (3 or 3) does not match connection size (5) for port 'state_out'.
+#         Region: /topdct_idct/dctblock
+# ** Warning: (vsim-3015) topdct_idct.v(149): [PCDPC] - Port size (3 or 3) does not match connection size (5) for port 'state_out'.
+#         Region: /topdct_idct/idctblock
+# ** Note: $finish    : topdct_idct.v(93)
+#    Time: 2396154 ns  Iteration: 0  Instance: /topdct_idct
