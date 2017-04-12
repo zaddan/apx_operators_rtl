@@ -5,10 +5,21 @@
 `define a2_cut 8
 `define b2_cut 8
 
-module multiply__wrapper (A_in, B_in, state, rstP, clk, reset, P);
+// *** FDN: multiplier
+module multiply(A, B, d);
    parameter BitWidth = 31;
-   input [BitWidth - `a2_cut: 0] A_in;
-   input [BitWidth - `a2_cut: 0] B_in;
+   input [BitWidth : 0] A;
+   input [BitWidth : 0] B;
+   output [2*(BitWidth+1) - 1 : 0] d;
+   assign d = $signed(A) * $signed(B);
+endmodule
+
+// *** F:DN wrapper
+module multiply__wrapper (A_in, B_in, state, rstP, clk, reset, P);
+   
+   parameter BitWidth = 31;
+   input [BitWidth : 0] A_in;
+   input [BitWidth : 0] B_in;
    input [2:0] state;      
    input rstP; 
    input clk;
@@ -17,17 +28,23 @@ module multiply__wrapper (A_in, B_in, state, rstP, clk, reset, P);
    
    wire [2*(BitWidth+1) - 1 : 0] d_out;
    wire [2*(BitWidth+1) - 1 : 0] d_out_temp;
-   wire [BitWidth - `a2_cut: 0] A_in_to_multiply;
-   wire [BitWidth - `a2_cut: 0] B_in_to_multiply;
-   
+   wire [BitWidth : 0] A_in_to_multiply;
+   wire [BitWidth : 0] B_in_to_multiply;
+   wire [BitWidth : 0] A_in_to_multiply__truncated;
+   wire [BitWidth : 0] B_in_to_multiply__truncated;
    reg [31: 0] P_tmp;
    reg [31: 0] P_reg;
    assign P = P_reg;
-   assign A_in_to_multiply =  (state == 3'b010) ? (A_in << `a2_cut) : A_in;
+   
+   assign A_in_to_multiply =  (state == 3'b010) ? (A_in << `a2_cut): A_in;
    assign B_in_to_multiply =  (state == 3'b010) ? (B_in << `b2_cut) : B_in;
    
-   assign d_out_temp = $signed(A_in_to_multiply) * $signed(B_in_to_multiply);
-   assign d_out = (state == 3'b010) ? (d_out_temp[(`a2_cut + `b2_cut)+31:(`a2_cut + `b2_cut)]) : {d_out_temp, {(`a2_cut + `b2_cut){1'b0}}};
+   assign A_in_to_multiply__truncated = {A_in_to_multiply[BitWidth:`a2_cut],{(`a2_cut){1'b0}}};
+   assign B_in_to_multiply__truncated = {B_in_to_multiply[BitWidth:`b2_cut],{(`b2_cut){1'b0}}};
+   
+   multiply mul(A_in_to_multiply__truncated, B_in_to_multiply__truncated, d_out_temp);
+   assign d_out = (state == 3'b010) ? (d_out_temp[(`a2_cut + `b2_cut)+31:(`a2_cut + `b2_cut)]) : d_out_temp;
+
 
    always@(posedge clk or posedge reset)
    begin
@@ -43,9 +60,6 @@ module multiply__wrapper (A_in, B_in, state, rstP, clk, reset, P);
        end
    end
 endmodule
-
-
-
 
 
 module idct(clk, start, reset, din, done, dout, state_out, reading);
@@ -193,10 +207,10 @@ module idct(clk, start, reset, din, done, dout, state_out, reading);
 
 
     wire rstP; 
-    wire [BitWidth - `a2_cut: 0] A_in;
-    wire [BitWidth - `a2_cut: 0] B_in;
-    assign A_in = (state ==  3'b010) ? A[31 - `a2_cut:0]: A[31:`a2_cut]; //
-    assign B_in = (state ==  3'b010) ? B[31-`b2_cut: 0]: B[31:`b2_cut];
+    wire [BitWidth : 0] A_in;
+    wire [BitWidth : 0] B_in;
+    assign A_in = A;
+    assign B_in = B;
       
 
     assign rstP = ((reset == 1) || (( state ==  3'b001) && count0 == 9'd63) || (state == 3'b011)) ? 1'b1: 1'b0;
