@@ -84,27 +84,27 @@ set verilogout_show_unconnected_pins "true"
 #         code (bellow for noFFed version
 #----------------------------------------------------
 #*** F:AN noFF=>FF
-#if {$op_type == "mac"} {
-#    set input_name_1 "a_reg_reg"
-#    set input_name_2 "b_reg_reg"
-#    set input_name_3 "c_reg_reg"
-#}
-#if {$op_type == "mul"} {
-#    set input_name_1 "a_reg_reg"
-#    set input_name_2 "b_reg_reg"
-#    set input_name_3 "c_reg_reg"
-#}
-#if {$op_type == "add"} {
-#    set input_name_1 "a_reg_reg"
-#    set input_name_2 "b_reg_reg"
-#    set input_name_3 "c_reg_reg"
-#}
+if {$op_type == "mac"} {
+    set input_name_1 "a_reg_reg"
+    set input_name_2 "b_reg_reg"
+    set input_name_3 "c_reg_reg"
+}
+if {$op_type == "mul"} {
+    set input_name_1 "a_reg_reg"
+    set input_name_2 "b_reg_reg"
+    set input_name_3 "c_reg_reg"
+}
+if {$op_type == "add"} {
+    set input_name_1 "a_reg_reg"
+    set input_name_2 "b_reg_reg"
+    set input_name_3 "c_reg_reg"
+}
 #....................................................
 #*** F:AN FF=>noFF
-set input_name_1 "a"
-set input_name_2 "b"
-set input_name_3 "c"
-set output_name_1 "d"
+#set input_name_1 "a"
+#set input_name_2 "b"
+#set input_name_3 "c"
+#set output_name_1 "d"
 
 #*** F:DN lumping registers (wires) together
 set all_reg_a_l [make-reg_l $input_name_1 0 $DATA_PATH_BITWIDTH]
@@ -195,9 +195,11 @@ check_design
 #*** F:DN  set the optimization constraints 
 create_clock -name clk -period $clk_period [get_ports clk]
 set_ideal_network -no_propagate [get_ports clk]
-set_input_delay -max 0 -clock clk [get_ports b*]     
-set_input_delay -max 0 -clock clk [get_ports a*]     
+#set_input_delay -max 0 -clock clk [get_ports *]     
+set_input_delay -max 0 -clock clk [get_ports * -filter "direction == in"] 
 set_dont_touch_network [get_clocks clk]
+
+set hdlin_keep_signal_name user
 #set enable_keep_signal_dt_net true
 #set enable_keep_signal true
 set compile_delete_unloaded_sequential_cells false
@@ -207,17 +209,17 @@ set compile_seqmap_enable_output_inversion false
 set AC_NAME $DESIGN_NAME
 
 #*** F:AN noFF=>FF
-#if {$op_type == "mac"} {
-#    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
-#}
-#if {$op_type == "mul"} {
-#    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
-#}
-#if {$op_type == "add"} {
-#    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
-#}
+if {$op_type == "mac"} {
+    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+}
+if {$op_type == "mul"} {
+    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+}
+if {$op_type == "add"} {
+    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+}
 # *** F:AN FF=>noFF
-set outputs_of_interest [get_object_name [all_outputs]]
+#set outputs_of_interest [get_object_name [all_outputs]]
 
 
 #----------------------------------------------------
@@ -336,7 +338,7 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
 compile_ultra -timing_high_effort_script -no_autoungroup 
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
-optimize_netlist -area
+#optimize_netlist -area
 #compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 #read_saif -auto_map_names -input ~/behzad_local/verilog_files/apx_operators/int_ops_apx/DUT.saif -instance test_bench_tb/acc_adder_u -verbose 
 

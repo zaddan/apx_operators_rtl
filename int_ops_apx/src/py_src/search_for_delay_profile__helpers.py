@@ -196,12 +196,31 @@ def get_arg_value(old_module_call, arg__n):
     return "".join(only_arg__l)
 
 
-def module_call_change(sub_module__n, input__obj, precision, old_module_call):
+def module_call_change(sub_module__n, input__obj, precision, old_module_call,
+        HW__p):
+    
+    # *** F:DN simply inject the directive and leave if a call for synopsys_
+    #          directive injection
+    if not(HW__p): # then it's a call for synopys directive injection  
+        modified__line = "// synopsys dc_script_begin\n"
+
+        # ***F:DN noFF=>FF
+        modified__line += "//set_dont_touch d_internal\n"
+        # ***F:DN FF=>noFF
+        #modified__line += "//set_dont_touch d\n"
+
+
+        modified__line += "// synopsys dc_script_end\n"
+        modified__line += old_module_call
+        return modified__line
+    
+    
     DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
     apx_bit__c = DATA_PATH_BITWIDTH - precision
     a_arg = get_arg_value(old_module_call, "a")
     b_arg = get_arg_value(old_module_call, "b")
     op_type = input__obj.op_type
+    
     modified__line = "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a_temp__acc;\n"
     modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b_temp__acc;\n"
     if (op_type == "mac"):
@@ -230,19 +249,20 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call):
                             +"\'b0};\n"
 
 
-    # *** F:DN noFF => FF
-    """
+    # *** F:DN noFF=>FF
+
     if (op_type == "mac"):
          modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .c_in(c_temp__apx), .d(d_internal));\n"
     else:
         modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d(d_internal));\n"
     """
-    # *** F:DN FF => noFF
+    # *** F:DN FF=>noFF
     if (op_type == "mac"):
          modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .rst(rst), .a(a_temp__apx), .b(b_temp__apx), .c_in(c_temp__apx), .d(d));\n"
     else:
         modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk),.rst(rst),.a(a_temp__apx),.b(b_temp__apx),.d(d) );\n"
 
+    """
 
     return modified__line
 
@@ -312,7 +332,8 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call):
 
 #*** F:DN hardwire the bits that will be approimxated (by modifying the
 #         synthesized design
-def hardwire_apx_bits_to_zero(input__obj, precision):
+def hardwire_apx_bits_to_zero__or__inject_syn_directives(input__obj, precision,
+        HW__p):
     syn__file__addr = input__obj.syn__file__addr
     wrapper_module__na = input__obj.syn__wrapper_module__na
     module_name = input__obj.syn__module__na
@@ -335,8 +356,8 @@ def hardwire_apx_bits_to_zero(input__obj, precision):
 
     #*** F:DN Body
     #*** F:DN parse the file 
-    saw_minus_1_wrapper__p = False
-    minus_1_wrapper   = "conf_int_mac__noFF__arch_agnos__w_wrapper_minus_1_OP_BITWIDTH5_DATA_PATH_BITWIDTH5"
+    #saw_minus_1_wrapper__p = False
+    #minus_1_wrapper   = "conf_int_mac__noFF__arch_agnos__w_wrapper_minus_1_OP_BITWIDTH5_DATA_PATH_BITWIDTH5"
     sub_module__n = input__obj.syn__module__na
     collect__module_call__p = False
     old_module_call = ""
@@ -364,7 +385,8 @@ def hardwire_apx_bits_to_zero(input__obj, precision):
                     continue
 
                 if (started_collecting_module_call__p and done_collecting_module_call__p):
-                    modified__line = module_call_change(sub_module__n, input__obj, precision, old_module_call)
+                    modified__line = module_call_change(sub_module__n,
+                            input__obj, precision, old_module_call, HW__p)
                     started_collecting_module_call__p = False
                     done_collecting_module_call__p  = False
                 else:
@@ -641,6 +663,7 @@ def parse_file_to_get_design_arrival_times(\
                 if ("after" in word_list) and ("resynthesis" in word_list):
                     start_looking = True 
                 if start_looking:
+                    """
                     #*** F:AN FF=>noFF. uncomment the code bellow
 
                     if ("data" in word_list) and \
@@ -682,7 +705,7 @@ def parse_file_to_get_design_arrival_times(\
                         if  (counter < len(precisions_covered_so_far__l)):
                             precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
                         #precision__parsing_for +=1
-                    """
+
 
 #    for precision__el in range(precision + 1, precision__higher_limit+1):
 #        design_arrival_times__d[precision__el] = (last_arrival__t__seen)
@@ -909,7 +932,9 @@ def grep_for_and_update_transitional_cells(
     #*** F:DN iterate through various precisions and generate transitional cells
     for precision__el in sorted(precisions_covered_so_far__l):
         #*** F:DN hardwire bits to zero
-        hardwire_apx_bits_to_zero(input__obj, precision__el)
+        HW__p = True # *** F:DN hardwire to zero predicate is ture, so hardwire 
+        hardwire_apx_bits_to_zero__or__inject_syn_directives(input__obj,
+                precision__el, HW__p)
 
         #*** F:DN find cells responsible for the none_apx part of the result
         find_delay_through_each_cell(input__obj, precision__el, lib__n)
@@ -926,7 +951,11 @@ def grep_for_and_update_transitional_cells(
     #
         
         #*** F:DN returning the synthesized file to it's original (un hardwired) 
-        os.system("cp  " + syn__file__addr +"_original_synthesis" + " " + syn__file__addr) 
+        os.system("cp  " + syn__file__addr +\
+                "_original_synthesis" + " " + syn__file__addr) 
+        HW__p = False #synopsys directive injection 
+        hardwire_apx_bits_to_zero__or__inject_syn_directives(input__obj,
+                precision__el, HW__p)
 
 
 def collect_syn_design_statistics(\

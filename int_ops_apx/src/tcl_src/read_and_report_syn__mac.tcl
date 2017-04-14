@@ -321,7 +321,7 @@ puts $all_reg_d_l
 puts "----------------------------------------------------"
 puts "----------------------------------------------------"
 
-set_max_delay $clk_period -from $all_reg_a_b_c_joined -to $all_reg_d_l 
+set_max_delay 0 -to [all_outputs]
 
 #----------------------------------------------------
 #--- F: 1. enforcing total neg-slack
@@ -330,30 +330,6 @@ set_max_delay $clk_period -from $all_reg_a_b_c_joined -to $all_reg_d_l
 #------ to the compilation time
 #---- if apx design should be optimized for:
 #------- set which bits should be optimize for
-if {$apx_optimal == 1} {
-    #--- F: decide which bits to prioritize 
-    if {$apx_optimal_mode(first) == 1} {
-       set priority_array  $lsb_1_reg_a_b_c_joined 
-    } elseif { $apx_optimal_mode(second) == 1} {
-       set priority_array  $lsb_2_reg_a_b_c_joined 
-    } elseif { $apx_optimal_mode(third) == 1} {
-       set priority_array  $lsb_3_reg_a_b_c_joined 
-    } elseif { $apx_optimal_mode(fourth) == 1} {
-       set priority_array  $lsb_4_reg_a_b_c_joined 
-    }  
-    
-    foreach pt $all_reg_a_b_joined { 
-        puts $pt   
-        if {[lsearch -exact $priority_array $pt] >= 0} {
-            group_path -name lsb -from $pt -critical_range 0.5 -priority 2 -weight 2
-        } else {
-            group_path -name msb -from $pt -critical_range 0.5 -priority 5 -weight 5
-        }
-    }
-} else {
-    #group_path -name clk -from clk -critical_range 0.5 -priority 100 -weight 100
-    group_path -name clk -from clk
-}
 
 #FROM HERE:
 #----- TODO: need to set a variabel that activates the following statements

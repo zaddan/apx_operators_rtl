@@ -63,8 +63,8 @@ link
 #*** F:DN  set the optimization constraints 
 create_clock -name clk -period $clk_period [get_ports clk]
 set_ideal_network -no_propagate [get_ports clk]
-set_input_delay -max 0 -clock clk [get_ports b*]     
-set_input_delay -max 0 -clock clk [get_ports a*]     
+set_input_delay -max 0 -clock clk [get_ports * -filter "direction == in"]     
+#set_input_delay -max 0 -clock clk [get_ports *]     
 set_dont_touch_network [get_clocks clk]
 
 set hdlin_keep_signal_name user

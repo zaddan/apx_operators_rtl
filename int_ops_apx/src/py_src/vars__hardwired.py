@@ -19,8 +19,8 @@ bestDesignsPrecision__delay__d[precision__to_start_with] = 10
 precision_best_delay__d[precision__to_start_with] = 10
 
 
-best_design_worth_so_far = -1
-prev__acc_max_delay = -1
+best_design_worth_so_far = -10
+prev__acc_max_delay = -10
 first_time__p = True #this variable allows us to archive the transitional
                      #cells and also the design in the first iteration
                      # this is helpfull when the acc_mac__upper limit 

@@ -15,14 +15,23 @@ for idx, el in enumerate(range(0,2*number_of_pairs)):
 #    else: 
 #        int_to_be_converted = int(random.uniform(8096, 64000))
     
+    # *** F:AN for 32
+    #int_to_be_converted = int(random.uniform(0, 1073741824))
+    #---------------------------------------------------- 
+    #int_to_be_converted = int(random.uniform(0, 1073741824))
+    # *** F:AN for 64
+    int_to_be_converted = int(random.uniform(33554432,268435456))
+    #---------------------------------------------------- 
+    # *** F:AN simple test
+#    int_to_be_converted = int(random.uniform(0, 10))
     
-    #int_to_be_converted = int(random.uniform(8096, 64000))
-    int_to_be_converted = int(random.uniform(0, 1073741824))
-    #int_to_be_converted = 0
-    #int_to_be_converted = int(math.sqrt((sys.maxsize/2)) - 1)
+
 #     int_converted_to_hex = (hex(struct.unpack('!i',struct.pack('!f',int_to_be_converted))[0])&0xffffffff) [0:]
+    # *** F:AN integers 
     int_converted_to_hex = hex(struct.unpack('!I',struct.pack('>i',int_to_be_converted))[0])[2:]
-    
+    # *** XX //
+    #int_converted_to_hex = hex(struct.unpack('!Q',struct.pack('>q',int_to_be_converted))[0])[2:]
+
     file_ptr_1.write(int_converted_to_hex + " ") 
     file_ptr_2.write("int val: " + str(int_to_be_converted) + " hex: " + str(int_converted_to_hex + " \n"))
 
