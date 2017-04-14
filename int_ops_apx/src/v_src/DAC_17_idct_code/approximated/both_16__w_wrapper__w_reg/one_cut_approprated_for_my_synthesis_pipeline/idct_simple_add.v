@@ -5,9 +5,9 @@
 `timescale 1ns / 1ps
 
 `define a1_cut 0
-`define b1_cut 8
-`define a2_cut 8
-`define b2_cut 8
+`define b1_cut 4
+`define a2_cut 4
+`define b2_cut 4
 
 
 module idct(clk, start, racc, rapx, din, done, dout, state_out, reading);
@@ -179,8 +179,14 @@ module idct(clk, start, racc, rapx, din, done, dout, state_out, reading);
         24'b1)));
 
     
-    //reg rapx;
-    conf_int_mul__noFF__arch_agnos__w_wrapper #(24 - `b2_cut, 24)mult(A_in_to_wrapper, B_in_to_wrapper, state, rstP, clk, racc,rapx, P, count0);
+    //conf_int_mul__noFF__arch_agnos__w_wrapper #(24 - `b2_cut, 24)mult(A_in_to_wrapper, B_in_to_wrapper, state, rstP, clk, racc,rapx, P, count0);
+   
+    // synopsys dc_script_begin
+    //set_dont_touch mul__inst
+    // synopsys dc_script_end
+    conf_int_mul__noFF__arch_agnos__w_wrapper_OP_BITWIDTH16_DATA_PATH_BITWIDTH24 mul__inst( 
+        A_in_to_wrapper, B_in_to_wrapper, state, rstP, clk, racc, rapx, P, 
+        count0 );
 
    
    always@(posedge clk or posedge racc)
