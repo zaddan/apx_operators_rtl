@@ -89,7 +89,7 @@ def main():
     os.system("mkdir " + input__obj.base_to_dump_reports__dir)
     behzad_readMe__addr =  input__obj.base_to_dump_reports__dir_temp+"/"+"behzad_readME"
     #clk__l = [.602, .61, .64, .67]
-    clk__l = [1.7]
+    clk__l = [2.5]
     os.system("cp " + "params__hardwired.py" +  " " + behzad_readMe__addr)
     os.system("echo " + "activate_check_point__p=" + str(activate_check_point__p) + " >> " + behzad_readMe__addr)
     os.system("echo " + "clk__l =" + str(clk__l) + " >> " + behzad_readMe__addr)

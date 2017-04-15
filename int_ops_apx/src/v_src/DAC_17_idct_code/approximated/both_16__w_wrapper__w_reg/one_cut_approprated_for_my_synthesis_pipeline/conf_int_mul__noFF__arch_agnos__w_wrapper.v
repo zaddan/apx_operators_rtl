@@ -86,7 +86,7 @@ module conf_int_mul__noFF__arch_agnos__w_wrapper (A_in_to_wrapper, B_in_to_wrapp
            a_reg [DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0]<= 0;
            b_reg [DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0]<= 0;
        end
-          if ((state == 3'b001 && count0 == 9'd63) ||
+       else  if ((state == 3'b001 && count0 == 9'd63) ||
           (state == 3'b010))begin
           if (rapx == 1'b1 && ~(racc))begin  
               //A[DATA_PATH_BITWIDTH:a1_cut] <= A_in_to_wrapper; //commented out since a1_cut is set to be zero all the time

@@ -42,6 +42,12 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
 #set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
+#set clk_period 3;set DATA_PATH_BITWIDTH 24;set CLKGATED_BITWIDTH 2;set OP_BITWIDTH 16;set DESIGN_NAME conf_int_mul__noFF__arch_agnos__w_wrapper_OP_BITWIDTH16_DATA_PATH_BITWIDTH24;set synth_file__na conf_int_mul__noFF__arch_agnos__w_wrapper_OP_BITWIDTH16_DATA_PATH_BITWIDTH24__only_clk_cons_resynthesizedSCBSD__1.v;set transition_cells__base_addr /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/src/py_src;set transitioning_cells__log__na transitioning_cells_after_resynSCBSD__1.txt ;set Pn 16;set acc_max_delay 0;set op_type mul;set attempt__iter__c -1;set ID SCBSD__1;set delete_prev_output__p False;set precisions_striving_for__f__na precisions_striving_forSCBSD__1.txt;set all_data__file__addr /home/polaris/behzad/behzad_local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/SCBSD__1/2017_04_15__18_49_55/mul_24__clk_3__acc_max_del_0__Pn_16__atmpt_-1__id_SCBSD__1__evol_log.txt;set std_library noAging.db;set delays_striving_for__f__na delays_striving_forSCBSD__1.txt;
+#
+#
+
+
+
 
 puts $clk_period
 
@@ -204,18 +210,26 @@ set compile_enable_register_merging false
 set compile_seqmap_enable_output_inversion false
 set AC_NAME $DESIGN_NAME
 
+
+
 #----------------------------------------------------
 #**** F:DN collect data before increasing pressure(time wise) on the design
 #----------------------------------------------------
 #*** F:AN noFF=>FF
 if {$op_type == "mac"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name == *reg*"]]  -filter "direction == in"]]
 }
 if {$op_type == "mul"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    #set outputs_of_interest [get_object_name [get_cells -hierarchical -filter "full_name != mul__inst"]]
+    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    #set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name != mul__inst"]]  -filter "direction == in"]]
+    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical "*reg*"]]  -filter "direction == in"]]
 }
 if {$op_type == "add"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    #set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name != add__inst"]]  -filter "direction == in"]]
+    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical "*reg*"]]  -filter "direction == in"]]
 }
 # *** F:AN FF=>noFF
 #set outputs_of_interest [get_object_name [all_outputs]]

@@ -210,13 +210,18 @@ set AC_NAME $DESIGN_NAME
 
 #*** F:AN noFF=>FF
 if {$op_type == "mac"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name != mac__inst"]]  -filter "direction == in"]]
 }
 if {$op_type == "mul"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    #set outputs_of_interest [get_object_name [get_cells -hierarchical -filter "full_name != mul__inst"]]
+    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    #set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name == *reg*"]]  -filter "direction == in"]]
+    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical "*reg*"]]  -filter "direction == in"]]
 }
 if {$op_type == "add"} {
-    set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name != add__inst"]]  -filter "direction == in"]]
 }
 # *** F:AN FF=>noFF
 #set outputs_of_interest [get_object_name [all_outputs]]
@@ -284,14 +289,14 @@ reset_path -to  $outputs_of_interest ;# need this b/c ow the other set_max_delay
 #*** F:AN I got rid of c b/c now it doesn't show up in any of the designs
 #set priority_array  $acc_reg_a_b_c_joined 
 set priority_array  $acc_reg_a_b_joined 
-
-foreach pt $all_input__pt { 
-    if {[lsearch -exact $priority_array $pt] >= 0} {
-        group_path -name priority -from $pt -critical_range 0.5 -priority 100 -weight 100
-    } else {
-        group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
-    }
-}
+#
+#foreach pt $all_input__pt { 
+#    if {[lsearch -exact $priority_array $pt] >= 0} {
+#        group_path -name priority -from $pt -critical_range 0.5 -priority 100 -weight 100
+#    } else {
+#        group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
+#    }
+#}
 
 
 
@@ -338,6 +343,8 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
 compile_ultra -timing_high_effort_script -no_autoungroup 
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
+compile_ultra -timing_high_effort_script -incremental -no_autoungroup
+compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 #optimize_netlist -area
 #compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 #read_saif -auto_map_names -input ~/behzad_local/verilog_files/apx_operators/int_ops_apx/DUT.saif -instance test_bench_tb/acc_adder_u -verbose 
@@ -345,8 +352,8 @@ compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 #echo "**************** " >> $all_data__file__addr
 #echo "*** F:DN showing slack based on group for fun" >> $all_data__file__addr
 #report_timing -sort_by group -significant_digits 4 >>  $all_data__file__addr
-
-
+report_constraint -all_violators  -verbose > ${all_data__file__addr}__consts
+report_design  > ${all_data__file__addr}__consts
 #*** F:DN report the results
 set report_file__prefix  ${DESIGN_NAME}__only_clk_cons
 #report_timing -sort_by group -nworst 1000 -significant_digits 4 >  ${REPORTS_DIR}/${report_file__prefix}__timing.rpt

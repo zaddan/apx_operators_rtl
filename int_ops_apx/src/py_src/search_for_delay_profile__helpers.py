@@ -219,6 +219,7 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call,
     apx_bit__c = DATA_PATH_BITWIDTH - precision
     a_arg = get_arg_value(old_module_call, "a")
     b_arg = get_arg_value(old_module_call, "b")
+    d_arg = get_arg_value(old_module_call, "d")
     op_type = input__obj.op_type
     
     modified__line = "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a_temp__acc;\n"
@@ -243,6 +244,7 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call,
     modified__line += "assign b_temp__apx = " +  "{b_temp__acc["+\
                             str(DATA_PATH_BITWIDTH - 1)+":" + str(apx_bit__c)+"],"+ str(apx_bit__c)\
                             +"\'b0};\n"
+
     if (op_type == "mac"):
         modified__line += "assign c_temp__apx = " +  "{c_temp__acc["+\
                             str(DATA_PATH_BITWIDTH -1 )+":"+str(2*apx_bit__c)+"],"+ str(2*apx_bit__c)\
@@ -254,7 +256,9 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call,
     if (op_type == "mac"):
          modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .c_in(c_temp__apx), .d(d_internal));\n"
     else:
-        modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d(d_internal));\n"
+        modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d("+str(d_arg)+"));\n"
+        #modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d("+str(d_ard_internal));\n"
+
     """
     # *** F:DN FF=>noFF
     if (op_type == "mac"):
@@ -950,9 +954,9 @@ def grep_for_and_update_transitional_cells(
     #                none_transitioning_cells__log__na)
     #
         
-        #*** F:DN returning the synthesized file to it's original (un hardwired) 
+        #*** F:DN returning the synthesized file to it's original (un hardwired)
         os.system("cp  " + syn__file__addr +\
-                "_original_synthesis" + " " + syn__file__addr) 
+                "_original_synthesis" + " " + syn__file__addr)
         HW__p = False #synopsys directive injection 
         hardwire_apx_bits_to_zero__or__inject_syn_directives(input__obj,
                 precision__el, HW__p)
