@@ -53,10 +53,6 @@ module conf_int_mul__noFF__arch_agnos__w_wrapper (A_in_to_wrapper, B_in_to_wrapp
    assign P = c_reg;
    //assign d_out = (state == 3'b010) ? (d_internal>>8) : d_internal;
    assign d_out = d_internal;
- // synopsys dc_script_begin
- //set_dont_touch d_internal
- // synopsys dc_script_end
- 
 
    conf_int_mul__noFF__arch_agnos #(OP_BITWIDTH, DATA_PATH_BITWIDTH) mul__inst(.clk(clk), .racc(racc), .rapx(rapx), .a(A_in_to_multiply), .b(B_in_to_multiply), .d(d_internal));
    //multiply mul(A_in_to_multiply, B_in_to_multiply, d_internal);
@@ -76,31 +72,89 @@ module conf_int_mul__noFF__arch_agnos__w_wrapper (A_in_to_wrapper, B_in_to_wrapp
    always@(posedge clk or posedge racc)
    begin
        if (racc == 1'b1)begin
-           a_reg[DATA_PATH_BITWIDTH -1: DATA_PATH_BITWIDTH - OP_BITWIDTH] <= 0;
-           b_reg[DATA_PATH_BITWIDTH -1: DATA_PATH_BITWIDTH - OP_BITWIDTH] <= 0;
+//           a_reg[DATA_PATH_BITWIDTH -1: DATA_PATH_BITWIDTH - OP_BITWIDTH] <= 0;
+//           b_reg[DATA_PATH_BITWIDTH -1: DATA_PATH_BITWIDTH - OP_BITWIDTH] <= 0;
+           a_reg <= 0;
+           b_reg <= 0;
        end
-       else if (state == 3'b001 && count0 == 9'd63) begin
-           a_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH + 8] <= A_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
-           b_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH] <= B_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
-       end
-       else if (state == 3'b010)begin
-           if (state_in_to_wrapper != 3'b011) begin  
+       else begin 
+           // *** F: dealing with the upper bits
+           if (state == 3'b001 && count0 == 9'd63) begin
                a_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH + 8] <= A_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
                b_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH] <= B_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
            end
-           else begin
-               a_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH] <= A_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
-               b_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH] <= B_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
+           else if (state == 3'b010)begin
+               if (state_in_to_wrapper != 3'b011) begin  
+                   a_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH + 8] <= A_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
+                   b_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH] <= B_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
+               end
+               else begin
+                   a_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH] <= A_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
+                   b_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH] <= B_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
+               end
            end
-       end
-       else if 
-           ((state == 3'b011) ||
-           (state == 3'b100))begin
+           else if 
+               ((state == 3'b011) || (state == 3'b100)) begin
            a_reg[DATA_PATH_BITWIDTH -1: DATA_PATH_BITWIDTH - OP_BITWIDTH] <= A_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
            b_reg[DATA_PATH_BITWIDTH -1: DATA_PATH_BITWIDTH - OP_BITWIDTH] <= B_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
+           end
+      
+   
+           // *** F: dealing with the lower bits
+           if ((state == 3'b001 && count0 == 9'd63))
+           begin
+               if (rapx == 1'b1 && ~(racc))begin  
+                   //A[DATA_PATH_BITWIDTH:a1_cut] <= A_in_to_wrapper; //commented out since a1_cut is set to be zero all the time
+                   a_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 + 8 :0] <= ({A_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0], 8'b0});
+                   b_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <= 0;//{(OP_BITWIDTH){1'b0}};
+               end
+               else begin
+                   //A[h:a1_cut] <= A_in_to_wrapper; //commented out since a1_cut is always set to zero
+                   a_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 + 8 :0] <= {A_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0], 8'b0};
+                   b_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <= B_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0];
+               end       
+           end
+           else if (state == 3'b010) begin
+               if (state_in_to_wrapper != 3'b011) begin 
+                   if (rapx == 1'b1 && ~(racc))begin  
+                       //A[DATA_PATH_BITWIDTH:a1_cut] <= A_in_to_wrapper; //commented out since a1_cut is set to be zero all the time
+                       a_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 + 8 :0] <= ({A_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0],  8'b0});
+                       b_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <= 0;//{(OP_BITWIDTH){1'b0}};
+                   end
+                   else begin
+                       //A[h:a1_cut] <= A_in_to_wrapper; //commented out since a1_cut is always set to zero
+                       a_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 + 8 :0] <= {A_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0], 8'b0};
+                       b_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <= B_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0];
+                   end
+               end
+               else begin 
+                   if (rapx == 1'b1 && ~(racc))begin  
+                       //A[DATA_PATH_BITWIDTH:a1_cut] <= A_in_to_wrapper; //commented out since a1_cut is set to be zero all the time
+                       a_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1  :0] <= A_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0];
+                       b_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <= 0;//{(OP_BITWIDTH){1'b0}};
+                   end
+                   else begin
+                       //A[h:a1_cut] <= A_in_to_wrapper; //commented out since a1_cut is always set to zero
+                       a_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <= A_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0];
+                       b_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <= B_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0];
+                   end
+               end
+           end
+           else if ((state == 3'b011) ||
+               (state == 3'b100))begin
+               if (rapx == 1'b1 && ~(racc))begin  
+                   a_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <=  0;// {(OP_BITWIDTH){1'b0}};
+                   b_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <= 0;//{(OP_BITWIDTH){1'b0}};
+               end
+               else begin
+                   a_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <=  A_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH - 1: 0];
+                   b_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH - 1 :0] <= B_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0];
+
+               end
+           end
        end
    end
-
+  /*
   always@(posedge clk)
   begin
        if (racc == 1'b1)begin
@@ -159,7 +213,7 @@ module conf_int_mul__noFF__arch_agnos__w_wrapper (A_in_to_wrapper, B_in_to_wrapp
           end
       end
   end
-
+*/
    always@(posedge clk)
    begin
        if (rstP == 1'b1) begin
