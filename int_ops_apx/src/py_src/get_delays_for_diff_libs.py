@@ -4,7 +4,7 @@
 #----------------------------------------------------
 import os
 import pylab
-from search_for_delay_profile__helpers import *
+from get_delays_for_diff_libs__helpers import *
 import copy
 from time import gmtime, strftime
 from input__file import *
@@ -103,6 +103,7 @@ def main():
         bestDesignsPrecision__delay__d[Pn] = 0
     
     #*** iterate through libraries and get the delay (for Pns)
+    iteration_count = 0 
     for lib__n in libs__l:
         currently_targetting_acc_max_delay =  acc_max_delay__upper_limit__hard
         bestDesignsPrecision__delay__d, precision_best_delay__d, best_design_worth_so_far, report__timing__f__best = \
@@ -110,8 +111,8 @@ def main():
                 input__obj, precision, bestDesignsPrecision__delay__d,
                 currently_targetting_acc_max_delay, acc_max_delay__lower_limit__hard,
                 acc_max_delay__upper_limit__hard, prev__acc_max_delay, report__timing__f__best,
-                precision_best_delay__d, lib__n)
-
+                precision_best_delay__d, lib__n, iteration_count)
+        iteration_count +=1
             
 
 #----------------------------------------------------

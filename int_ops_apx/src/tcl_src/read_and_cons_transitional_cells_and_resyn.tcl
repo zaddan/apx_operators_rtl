@@ -290,13 +290,13 @@ reset_path -to  $outputs_of_interest ;# need this b/c ow the other set_max_delay
 #set priority_array  $acc_reg_a_b_c_joined 
 set priority_array  $acc_reg_a_b_joined 
 #
-#foreach pt $all_input__pt { 
-#    if {[lsearch -exact $priority_array $pt] >= 0} {
-#        group_path -name priority -from $pt -critical_range 0.5 -priority 100 -weight 100
-#    } else {
-#        group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
-#    }
-#}
+foreach pt $all_input__pt { 
+    if {[lsearch -exact $priority_array $pt] >= 0} {
+        group_path -name priority -from $pt -critical_range 0.5 -priority 100 -weight 100
+    } else {
+        group_path -name non_priority -from $pt -critical_range 0.5 -priority 1 -weight 1
+    }
+}
 
 
 
@@ -343,8 +343,8 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
 compile_ultra -timing_high_effort_script -no_autoungroup 
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
-compile_ultra -timing_high_effort_script -incremental -no_autoungroup
-compile_ultra -timing_high_effort_script -incremental -no_autoungroup
+#compile_ultra -timing_high_effort_script -incremental -no_autoungroup
+#compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 #optimize_netlist -area
 #compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 #read_saif -auto_map_names -input ~/behzad_local/verilog_files/apx_operators/int_ops_apx/DUT.saif -instance test_bench_tb/acc_adder_u -verbose 
