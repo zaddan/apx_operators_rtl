@@ -92,7 +92,7 @@ module conf_int_mul__noFF__arch_agnos__w_wrapper (A_in_to_wrapper, B_in_to_wrapp
                    b_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH] <= B_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
                end
                else begin
-                   a_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH] <= A_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
+                   a_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH + 8] <= A_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
                    b_reg[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH] <= B_in_to_wrapper[DATA_PATH_BITWIDTH -1 : DATA_PATH_BITWIDTH - OP_BITWIDTH];
                end
            end
@@ -136,7 +136,7 @@ module conf_int_mul__noFF__arch_agnos__w_wrapper (A_in_to_wrapper, B_in_to_wrapp
                    end
                    else begin
                        //A[h:a1_cut] <= A_in_to_wrapper; //commented out since a1_cut is always set to zero
-                       a_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <= A_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0];
+                       a_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 +8  :0] <= {A_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0], 8'b0};
                        b_reg[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0] <= B_in_to_wrapper[DATA_PATH_BITWIDTH - OP_BITWIDTH -1 :0];
                    end
                end
