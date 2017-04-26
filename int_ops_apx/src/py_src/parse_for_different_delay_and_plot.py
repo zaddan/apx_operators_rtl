@@ -37,7 +37,7 @@ def parse_file_to_get_arrival_time(src_file):
                             temperature = get_temperature(word_list[-1])
                 
                 # *** F:DN FF=>noFF 
-                """ 
+                 
                 if ("arrival" in word_list) and \
                         (float(word_list[-1]) > 0):
                             if (counter == 0):
@@ -47,8 +47,9 @@ def parse_file_to_get_arrival_time(src_file):
                             else:
                                 temperature__d[temperature].append(float(word_list[-1]))
                                 counter = 0
-                """
-                # *** F:DN FF=>noFF 
+                
+                # *** F:DN noFF=>FF 
+                """ 
                 if ("data" in word_list) and \
                         ("arrival" in word_list) and \
                         ("time") in word_list:
@@ -66,7 +67,7 @@ def parse_file_to_get_arrival_time(src_file):
                     else:
                         temperature__d[temperature].append(design_arrival_time__val)
                         counter = 0
-
+                """
     return temperature__d
 
 
@@ -87,19 +88,38 @@ def extract_delay_for_vaiours_temperatures(src__f__addr):
 # *** F:DN speed up vs temp
 def plot_1():
     max_temperature__switching_temp_speed_up__curve = {} 
-    sample_rate = 10 #** how often to sample from the list of temperatures
-    src__f__addr__l = ["blah.txt", "blah2.txt"]
-    # *** F:DN needs to correspond to the src__f__addr__l 
-    speed_up__l = [1.086, 1.031]
+    sample_rate = 8 #** how often to sample from the list of temperatures
     
+    #src__f__addr__l = ["blah.txt", "blah2.txt"]
+    # *** F:DN file associated with the idct__best__Pn_24__our_design
+#    src__f__addr__l =\
+#            ["/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__2/2017_04_18__16_22_44/mul_24__clk_0.49__acc_max_del_0__Pn_16__atmpt_-1__id_DFDL__2__evol_log.txt"]
+    # *** F:DN file associated with the idct__best__traditional_design
+    # *** F:DN for mul 
+    src__f__addr__l =\
+            ["/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__1/2017_04_26__19_02_26/mul_32__clk_0.49__acc_max_del_0__Pn_24__atmpt_-1__id_DFDL__1__evol_log.txt", 
+"/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__2/2017_04_26__19_03_32/mul_32__clk_0.49__acc_max_del_0__Pn_24__atmpt_-1__id_DFDL__2__evol_log.txt",
+"/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__3/2017_04_26__19_04_33/mul_32__clk_0.49__acc_max_del_0__Pn_24__atmpt_-1__id_DFDL__3__evol_log.txt"]
+
+                    #            ["/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__1/2017_04_18__16_35_42/mul_24__clk_0.49__acc_max_del_0__Pn_16__atmpt_-1__id_DFDL__1__evol_log.txt"]
+#
+
+    # *** F:DN needs to correspond to the src__f__addr__l 
+    #speed_up__l = [1.086, 1.031]
+    # *** F:DN for mul 
+    #speed_up__l = [float(.546)/float(.493), float(.546)/float(.499),
+            float(.546)/float(.503)]
     
     # *** F:DN parse each file and get the temp_switching    
     for index,src__f__addr in enumerate(src__f__addr__l):
         max_temperature__switching_temp__el = \
                 get_max_temp__switching_temp__per_file(src__f__addr)
+        #continue 
         for index2, temp__val in enumerate(max_temperature__switching_temp__el.keys()):
             if (index2 % sample_rate) == 0: #sample based on the sampling rate
                 # *** if exists append 
+#                if temp__val < 60:
+#                    continue
                 if temp__val in \
                         max_temperature__switching_temp_speed_up__curve.keys():
                             max_temperature__switching_temp_speed_up__curve[temp__val].append(
@@ -109,7 +129,6 @@ def plot_1():
                     max_temperature__switching_temp_speed_up__curve[temp__val] =\
                             [(speed_up__l[index],
                                 max_temperature__switching_temp__el[temp__val])]
-
     n_colors = len(max_temperature__switching_temp_speed_up__curve)
 
 #    for el in max_temperature__switching_temp_speed_up__curve.keys():
@@ -149,6 +168,13 @@ def plot_1():
 def get_max_temp__switching_temp__per_file(src1__f__addr):
     #src1__f__addr = "blah.txt" 
     temp__delay_tuple__d =  extract_delay_for_vaiours_temperatures(src1__f__addr)
+    
+    """ 
+    for el in temp__delay_tuple__d.keys():
+        print str(el) + " " + str(temp__delay_tuple__d[el])
+    return
+    """
+    
     max_temp__switching_temp__delay__d = {} 
     for temp__val in temp__delay_tuple__d.keys():
         max_temp__switching_temp__delay__d[temp__val]  = -1
@@ -169,6 +195,7 @@ def get_max_temp__switching_temp__per_file(src1__f__addr):
     print "-------------------" 
     for el in max_temp__switching_temp__delay__d:
         print str(el) + " " + str(max_temp__switching_temp__delay__d[el])
+    sys.exit() 
     """
 
 def plot():
