@@ -34,7 +34,6 @@ proc make-reg_l {reg_na reg_lower_bound reg_up_bound} {
 #set attempt__iter__c 0
 #set ID 2
 ##----------------------------------------------------
-set op_type mac;# change this to add when doing add, it is used in the 
                 # the log file name and inside the log file for identification
 #set OP_BITWIDTH $DATA_PATH_BITWIDTH; #operator bitwidth
 puts $clk_period
@@ -62,9 +61,12 @@ set synth__file ${design_dir_addr}/$synth_file__na
 #--- libraries
 set lib_dir_1 "/usr/local/packages/synopsys_32.28_07292013/SAED32_EDK/lib"
 set lib_dir_2 "/home/polaris/behzad/behzad_local/verilog_files/libraries"
-set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"
+#set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"
+set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/various_temps__db__all_values"
 set search_path [concat  $search_path $lib_dir_3]
-set  std_library  "noAging.db" 
+#set  std_library  "noAging.db" 
+set  std_library  "1.2V_25T.db"
+
 set target_library $std_library; #$std_library_2" 
 set link_library $std_library; #$std_library_2"
 #...   ...    ..  ...  ..    ..    ...      ..
@@ -85,7 +87,6 @@ set_ideal_network -no_propagate [get_ports clk]
 set_input_delay -max 0 -clock clk [get_ports * -filter "direction == in"] 
 #set_input_delay -max 0 -clock clk [get_ports *]     
 set_dont_touch_network [get_clocks clk]
-#set_dont_touch "mul__inst"
 #set enable_keep_signal_dt_net true
 #set enable_keep_signal true
 set compile_delete_unloaded_sequential_cells false
@@ -114,6 +115,7 @@ report_area -hierarchy -nosplit >>  ${all_data__file__addr}
 set_max_delay $clk_period -to [all_outputs]
 
 #*** F:DN compile
+#set_dont_touch mul__inst__apx
 compile_ultra -timing_high_effort_script -no_autoungroup 
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup

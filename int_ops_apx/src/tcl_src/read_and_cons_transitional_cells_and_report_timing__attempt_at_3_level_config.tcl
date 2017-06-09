@@ -74,9 +74,7 @@ set synth__file ${design_dir_addr}/$synth_file__na
 #--- libraries
 set lib_dir_1 "/usr/local/packages/synopsys_32.28_07292013/SAED32_EDK/lib"
 set lib_dir_2 "/home/polaris/behzad/behzad_local/verilog_files/libraries"
-#set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"
-set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/various_temps__db__all_values"
-
+set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"
 set search_path [concat  $search_path $lib_dir_3]
 #set  std_library  "noAging.db" 
 set target_library $std_library; #$std_library_2" 
@@ -307,7 +305,8 @@ set report_file__prefix  ${DESIGN_NAME}__only_clk_cons
 #....................................................
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${report_file__prefix}__area.rpt
 report_power > ${REPORTS_DIR}/${report_file__prefix}__power.rpt
-report_constraint -all_violators > ${REPORTS_DIR}/${report_file__prefix}__constraint_violators.rpt
+#report_constraint -all_violators > ${REPORTS_DIR}/${report_file__prefix}__constraint_violators.rpt
+report_constraint > ${REPORTS_DIR}/${report_file__prefix}__constraints.rpt
 #report_path_group > ${REPORTS_DIR}/path_groups__garbage_collect.rpt
 #report_constraint > ${REPORTS_DIR}/constraint__garbage_collect.rpt
 report_cell > ${REPORTS_DIR}/${report_file__prefix}__cells.rpt
@@ -327,25 +326,97 @@ echo "*** F:DN transitional cells report" >> $all_data__file__addr
 set offset [expr $non_transition_cells__l__string__length - 1]
 
 
+#set const [expr [lindex $delays_striving_for__l 1]]
+#set counter 1
+#foreach non_transition_cells__l__e $non_transition_cells__l__string {
+#    reset_path -to  $outputs_of_interest ;# need this b/c ow the other set_max_delays 
+#    set const [expr [lindex $delays_striving_for__l $counter]]
+#    set_max_delay $const -to $outputs_of_interest
+#    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+#    set_max_delay $clk_period -through $non_transition_cells__l -to $outputs_of_interest
+#    
+#    #*** F:DN probing in 
+#    set precision_to_be_shown [lindex $Pn__l $counter]
+#    set my_string  ***PRECISION:$precision_to_be_shown 
+#    echo $my_string >> $all_data__file__addr
+#    report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  $all_data__file__addr
+#
+#    #echo $first_el >> non_transition_cells__l__acquired__in_tcl
+#    incr counter
+#}
+
+
 set const [expr [lindex $delays_striving_for__l 1]]
-set counter 1
-foreach non_transition_cells__l__e $non_transition_cells__l__string {
-    reset_path -to  $outputs_of_interest ;# need this b/c ow the other set_max_delays 
-    set const [expr [lindex $delays_striving_for__l $counter]]
-    set_max_delay $const -to $outputs_of_interest
-    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
-    set_max_delay $clk_period -through $non_transition_cells__l -to $outputs_of_interest
-    
-    #*** F:DN probing in 
-    set precision_to_be_shown [lindex $Pn__l $counter]
-    set my_string  ***PRECISION:$precision_to_be_shown 
-    echo $my_string >> $all_data__file__addr
-    report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  $all_data__file__addr
+set counter 2
+#group_path -name priority_$counter -to $outputs_of_interest -critical_range .8 -weight [expr 5 - $counter]
+#set_max_delay .1 -through {mul__inst/U2 mul__inst/U5 mul__inst/U1 mul__inst/U4 U1} -to $outputs_of_interest 
+#set_max_delay .1 -through {mul__inst/U2/* mul__inst/U5/*} -to $outputs_of_interest
+#reset_path -through  {mul__inst/U1} -to $outputs_of_interest
+#reset_path -through  {mul__inst/U4} -to $outputs_of_interest
 
-    #echo $first_el >> non_transition_cells__l__acquired__in_tcl
-    incr counter
-}
+#set_max_delay .65 -through {mul__inst/U3/*  mul__inst/U6/*} -to $outputs_of_interest
+#set_max_delay .1 -through {mul__inst/U2/*  mul__inst/U5/*} -to $outputs_of_interest
+#set_max_delay .165 -through {mul__inst/U1/*  mul__inst/U4/*} -to $outputs_of_interest
 
+# -- working set so far
+#set_max_delay .65 -through {mul__inst/U3  mul__inst/U6} -to $outputs_of_interest
+#set_max_delay .1 -through {mul__inst/U2  mul__inst/U5} -to $outputs_of_interest
+#set_max_delay .04 -through {mul__inst/U1  mul__inst/U4} -to $outputs_of_interest
+
+#set_max_delay .65 -through {mul__inst/U3  mul__inst/U6  mul__inst/U2  mul__inst/U5 mul__inst/U1  mul__inst/U4} -to $outputs_of_interest
+#set_max_delay .1 -through {mul__inst/U2  mul__inst/U5 mul__inst/U3  mul__inst/U6} -to $outputs_of_interest
+#set_max_delay .039 -through {mul__inst/U3  mul__inst/U6} -to $outputs_of_interest
+
+
+#set_max_delay .039 -through {mul__inst/U6  mul__inst/U3} -to $outputs_of_interest
+#set_max_delay .1 -reset_path -through {mul__inst/U2  mul__inst/U5} -to $outputs_of_interest
+#set_max_delay .65 -reset_path -through {mul__inst/U1  mul__inst/U4} -to $outputs_of_interest
+#
+
+group_path -name blah_3 -through {mul__inst/U3  mul__inst/U6}  -to $outputs_of_interest
+group_path -name blah_2 -through {mul__inst/U2  mul__inst/U5}  -to $outputs_of_interest
+group_path -name blah_1 -through {mul__inst/U1  mul__inst/U4}  -to $outputs_of_interest
+
+set_max_delay -group_path blah_1  .65 
+set_max_delay -group_path blah_2 .75
+#
+#
+#
+#group_path -name priority_1 -to $outputs_of_interest 
+#
+
+
+
+
+
+
+
+
+#set_max_delay .65 -through {} -to $outputs_of_interest
+#foreach non_transition_cells__l__e $non_transition_cells__l__string {
+#    
+#    set non_transition_cells__l [split  $non_transition_cells__l__e " "]
+#    set const [expr [lindex $delays_striving_for__l $counter]]
+##    group_path -name priority_$counter -to $outputs_of_interest -critical_range .5 -weight [expr 5 - $counter]
+##    group_path -default -through $non_transition_cells__l -to $outputs_of_interest
+#    
+#    reset_path -through $non_transition_cells__l -to $outputs_of_interest 
+#    set_max_delay $const -through $non_transition_cells__l -to $outputs_of_interest 
+#    
+#    #set_max_delay $const -group_path priority_$counter -to $outputs_of_interest
+#    #echo $first_el >> non_transition_cells__l__acquired__in_tcl
+#    echo "ok" >>  $all_data__file__addr
+#    echo $const >>  $all_data__file__addr
+#    echo $non_transition_cells__l >>  $all_data__file__addr
+#    incr counter
+#}
+
+# *** AN: for sanity check
+echo "*** F:DN start of sanity check" >> $all_data__file__addr
+report_timing -sort_by slack -nworst 1000 -significant_digits 4 >>  $all_data__file__addr
+echo "*** F:DN end of sanity check" >> $all_data__file__addr
+
+# *** AN: end of for sanity check
 
 #
 ##report_timing -sort_by slack -exclude $non_transition_cells__l -significant_digits 4 >>  ${REPORTS_DIR}/data_collected/${all_data__file__na}

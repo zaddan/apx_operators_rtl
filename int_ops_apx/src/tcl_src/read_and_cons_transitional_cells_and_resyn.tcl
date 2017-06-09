@@ -67,9 +67,12 @@ set synth__file ${design_dir_addr}/$synth_file__na
 #--- libraries
 set lib_dir_1 "/usr/local/packages/synopsys_32.28_07292013/SAED32_EDK/lib"
 set lib_dir_2 "/home/polaris/behzad/behzad_local/verilog_files/libraries"
-set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"
+#set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"
+set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/various_temps__db__all_values"
 set search_path [concat  $search_path $lib_dir_3]
-set  std_library  "noAging.db" 
+#set  std_library  "noAging.db" 
+set  std_library  "1.2V_25T.db"
+
 set target_library $std_library; #$std_library_2" 
 set link_library $std_library; #$std_library_2"
 #...   ...    ..  ...  ..    ..    ...      ..
@@ -84,27 +87,28 @@ set verilogout_show_unconnected_pins "true"
 #         code (bellow for noFFed version
 #----------------------------------------------------
 #*** F:AN noFF=>FF
-if {$op_type == "mac"} {
-    set input_name_1 "a_reg_reg"
-    set input_name_2 "b_reg_reg"
-    set input_name_3 "c_reg_reg"
-}
-if {$op_type == "mul"} {
-    set input_name_1 "a_reg_reg"
-    set input_name_2 "b_reg_reg"
-    set input_name_3 "c_reg_reg"
-}
-if {$op_type == "add"} {
-    set input_name_1 "a_reg_reg"
-    set input_name_2 "b_reg_reg"
-    set input_name_3 "c_reg_reg"
-}
+#if {$op_type == "mac"} {
+#    set input_name_1 "a_reg_reg"
+#    set input_name_2 "b_reg_reg"
+#    set input_name_3 "c_reg_reg"
+#}
+#if {$op_type == "mul"} {
+#    set input_name_1 "a_reg_reg"
+#    set input_name_2 "b_reg_reg"
+#    set input_name_3 "c_reg_reg"
+#}
+#if {$op_type == "add"} {
+#    set input_name_1 "a_reg_reg"
+#    set input_name_2 "b_reg_reg"
+#    set input_name_3 "c_reg_reg"
+#}
 #....................................................
 #*** F:AN FF=>noFF
-#set input_name_1 "a"
-#set input_name_2 "b"
-#set input_name_3 "c"
-#set output_name_1 "d"
+set input_name_1 "a"
+set input_name_2 "b"
+set input_name_3 "c"
+set output_name_1 "d"
+#
 
 #*** F:DN lumping registers (wires) together
 set all_reg_a_l [make-reg_l $input_name_1 0 $DATA_PATH_BITWIDTH]
@@ -209,22 +213,22 @@ set compile_seqmap_enable_output_inversion false
 set AC_NAME $DESIGN_NAME
 
 #*** F:AN noFF=>FF
-if {$op_type == "mac"} {
-    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
-    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name != mac__inst"]]  -filter "direction == in"]]
-}
-if {$op_type == "mul"} {
-    #set outputs_of_interest [get_object_name [get_cells -hierarchical -filter "full_name != mul__inst"]]
-    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
-    #set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name == *reg*"]]  -filter "direction == in"]]
-    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical "*reg*"]]  -filter "direction == in"]]
-}
-if {$op_type == "add"} {
-    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
-    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name != add__inst"]]  -filter "direction == in"]]
-}
+#if {$op_type == "mac"} {
+#    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+#    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name != mac__inst"]]  -filter "direction == in"]]
+#}
+#if {$op_type == "mul"} {
+#    #set outputs_of_interest [get_object_name [get_cells -hierarchical -filter "full_name != mul__inst"]]
+#    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+#    #set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name == *reg*"]]  -filter "direction == in"]]
+#    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical "*reg*"]]  -filter "direction == in"]]
+#}
+#if {$op_type == "add"} {
+#    #set outputs_of_interest [get_object_name [get_pins -of_objects c_reg_reg* -filter "direction == in"]]
+#    set outputs_of_interest [get_object_name [get_pins -of_objects [get_object_name [get_cells -hierarchical -filter "full_name != add__inst"]]  -filter "direction == in"]]
+#}
 # *** F:AN FF=>noFF
-#set outputs_of_interest [get_object_name [all_outputs]]
+set outputs_of_interest [get_object_name [all_outputs]]
 
 
 #----------------------------------------------------
@@ -277,6 +281,13 @@ reset_path -to  $outputs_of_interest ;# need this b/c ow the other set_max_delay
 set_max_delay $clk_period -to $outputs_of_interest ;#modifying the constraint to makesure
 echo "*** F:DN all paths report" >> $all_data__file__addr
 report_timing -sort_by slack -significant_digits 4 >>  $all_data__file__addr
+
+# *** AN: for sanity check
+#echo "*** F:DN start of sanity check" >> $all_data__file__addr
+#report_timing -sort_by slack -nworst 1000 -significant_digits 4 >>  $all_data__file__addr
+#echo "*** F:DN end of sanity check" >> $all_data__file__addr
+# *** AN: end of for sanity check
+
 echo "*** F:DN power report" >> $all_data__file__addr
 report_power >>  $all_data__file__addr
 report_area -hierarchy -nosplit >>  $all_data__file__addr
@@ -340,9 +351,11 @@ foreach non_transition_cells__l__e $non_transition_cells__l__string {
 
 
 #*** F:DN compile
+#set_dp_smartgen_options -mult_arch and
 compile_ultra -timing_high_effort_script -no_autoungroup 
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 compile_ultra -timing_high_effort_script -incremental -no_autoungroup
+
 #compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 #compile_ultra -timing_high_effort_script -incremental -no_autoungroup
 #optimize_netlist -area
@@ -370,7 +383,8 @@ echo "*** non transitioning cells" >> ${REPORTS_DIR}/${report_file__prefix}__tim
 #....................................................
 report_area -hierarchy -nosplit > ${REPORTS_DIR}/${report_file__prefix}__area.rpt
 report_power > ${REPORTS_DIR}/${report_file__prefix}__power.rpt
-report_constraint -all_violators > ${REPORTS_DIR}/${report_file__prefix}__constraint_violators.rpt
+#report_constraint -all_violators > ${REPORTS_DIR}/${report_file__prefix}__constraint_violators.rpt
+report_constraint > ${REPORTS_DIR}/${report_file__prefix}__constraints.rpt
 #report_path_group > ${REPORTS_DIR}/path_groups__garbage_collect.rpt
 #report_constraint > ${REPORTS_DIR}/constraint__garbage_collect.rpt
 report_cell > ${REPORTS_DIR}/${report_file__prefix}__cells.rpt

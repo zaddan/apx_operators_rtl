@@ -78,7 +78,9 @@ set my_toplevel ${DESIGN_NAME}
 #--- libraries
 #set lib_dir_1 "/usr/local/packages/synopsys_32.28_07292013/SAED32_EDK/lib"
 #set lib_dir_2 "/home/polaris/behzad/behzad_local/verilog_files/libraries"
-set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"; #technology library
+#set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db"; #technology library
+set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/various_temps__db__all_values"
+
 set synth_lib "/usr/local/packages/synopsys_2016/syn/libraries/syn"
 set synth_lib_ver "/usr/local/packages/synopsys_2016/syn/dw/sim_ver"
 #set lib_dir_3 "/home/polaris/behzad/behzad_local/verilog_files/libraries/FreePDK45/osu_soc/lib/files"
@@ -93,7 +95,8 @@ set search_path [concat  $search_path $lib_dir_3 $synth_lib $synth_lib_ver]
 #set std_library "saed32lvt_tt1p05vn40c.db"; #did the same as 25c 
 #set std_library "saed32lvt_tt0p85v25c.db"; #did worst that 1.05
 #set  std_library  "saed32lvt_ulvl_ff1p16v25c_i0p85v.db" 
-set  std_library  "noAging.db" 
+#set  std_library  "noAging.db" 
+set  std_library  "1.2V_25T.db"
 #set std_library "gscl45nm.db"; #PDK45 themselves
 
 set synth_library_1 "/usr/local/packages/synopsys_2016/syn/libraries/syn/standard.sldb"
