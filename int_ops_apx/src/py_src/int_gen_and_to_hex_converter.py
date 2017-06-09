@@ -20,7 +20,7 @@ for idx, el in enumerate(range(0,2*number_of_pairs)):
     #---------------------------------------------------- 
     #int_to_be_converted = int(random.uniform(0, 1073741824))
     # *** F:AN for 64
-    int_to_be_converted = int(random.uniform(33554432,268435456))
+    int_to_be_converted = int(random.uniform(8388600,8388607))
     #---------------------------------------------------- 
     # *** F:AN simple test
 #    int_to_be_converted = int(random.uniform(0, 10))

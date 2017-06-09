@@ -73,7 +73,7 @@ def generate_graph_2d_for_one_set_of_input(ax, fig, xValues, yValues, xName,
 #    ax.plot(xValues, yValues, symbolsToChooseFrom[symbol__counter]+color[color_counter],
 #            label=label_name, markersize=3, linestyle=':')
     ax.plot(xValues, yValues, c = color[color_counter],
-            label=label_name, markersize=3, marker = "*", linestyle='-')
+            label=label_name, markersize=4, marker = "*", linestyle='-')
     
     """
     file_name = "blah2" 
@@ -90,12 +90,12 @@ def generate_graph_2d_for_one_set_of_input(ax, fig, xValues, yValues, xName,
 def finish_up_making_graph(ax, graph_title, img_name):
     #--- wrapping up making the graph 
     box = ax.get_position()
-    ax.set_position([box.x0, box.y0, box.width*.8 ,  box.height])
+    ax.set_position([box.x0, box.y0, box.width*.64 ,  box.height])
     # Put a legend to the right of the current axis (note: prop changes the fontsize)
-    ax.legend(loc='center left', bbox_to_anchor=(1, .8))
+    ax.legend(loc='center left', bbox_to_anchor=(1, .64))
 
 # --- having control over all the sized
-    plt.rc('font', size=7)                # controls default text sizes
+    plt.rc('font', size=11)                # controls default text sizes
 #    plt.rc('axes', titlesize=SIZE)           # fontsize of the axes title
 #    plt.rc('axes', labelsize=MEDIUM_SIZE)    # fontsize of the x and y labels
 #    plt.rc('xtick', labelsize=SIZE)          # fontsize of the tick labels

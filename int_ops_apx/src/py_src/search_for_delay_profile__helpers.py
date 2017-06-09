@@ -205,30 +205,33 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call,
         modified__line = "// synopsys dc_script_begin\n"
 
         # ***F:DN noFF=>FF
-        modified__line += "//set_dont_touch d_internal\n"
+        #modified__line += "//set_dont_touch d_internal\n"
         # ***F:DN FF=>noFF
-        #modified__line += "//set_dont_touch d\n"
-
+        modified__line += "//set_dont_touch d\n"
 
         modified__line += "// synopsys dc_script_end\n"
         modified__line += old_module_call
         return modified__line
-    
-    
+
+
     DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
     apx_bit__c = DATA_PATH_BITWIDTH - precision
     a_arg = get_arg_value(old_module_call, "a")
     b_arg = get_arg_value(old_module_call, "b")
     d_arg = get_arg_value(old_module_call, "d")
     op_type = input__obj.op_type
-    
+
     modified__line = "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a_temp__acc;\n"
+    #modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1 -11) +":0]b_temp__acc;\n" #for imbalanced
     modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b_temp__acc;\n"
+
     if (op_type == "mac"):
         modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]c_temp__acc;\n"
 
     modified__line += "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a_temp__apx;\n"
+    #modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1-11) +":0]b_temp__apx;\n" #for imbalanced
     modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b_temp__apx;\n"
+
     if (op_type == "mac"):
         modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]c_temp__apx;\n"
 
@@ -241,6 +244,12 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call,
     modified__line += "assign a_temp__apx = " +  "{a_temp__acc["+\
                             str(DATA_PATH_BITWIDTH -1 )+":"+str(apx_bit__c)+"],"+ str(apx_bit__c)\
                             +"\'b0};\n"
+
+    #*** F:DN for imbalanced
+#    modified__line += "assign b_temp__apx = " +  "{b_temp__acc["+\
+#                            str(DATA_PATH_BITWIDTH - 1-11)+":" + str(apx_bit__c)+"],"+ str(apx_bit__c)\
+#                            +"\'b0};\n"
+
     modified__line += "assign b_temp__apx = " +  "{b_temp__acc["+\
                             str(DATA_PATH_BITWIDTH - 1)+":" + str(apx_bit__c)+"],"+ str(apx_bit__c)\
                             +"\'b0};\n"
@@ -252,21 +261,22 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call,
 
 
     # *** F:DN noFF=>FF
-
+    """
     if (op_type == "mac"):
          modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .c_in(c_temp__apx), .d(d_internal));\n"
     else:
         modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d("+str(d_arg)+"));\n"
         #modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d("+str(d_ard_internal));\n"
-
     """
+
     # *** F:DN FF=>noFF
+    
     if (op_type == "mac"):
          modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .rst(rst), .a(a_temp__apx), .b(b_temp__apx), .c_in(c_temp__apx), .d(d));\n"
     else:
         modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk),.rst(rst),.a(a_temp__apx),.b(b_temp__apx),.d(d) );\n"
+    
 
-    """
 
     return modified__line
 
@@ -343,23 +353,23 @@ def hardwire_apx_bits_to_zero__or__inject_syn_directives(input__obj, precision,
     module_name = input__obj.syn__module__na
     DATA_PATH_BITWIDTH = input__obj.DATA_PATH_BITWIDTH
 
-    #*** F:DN Variables 
+    #*** F:DN Variables
     modified_syn__file__addr = syn__file__addr
     original_syn_copy__file__addr = syn__file__addr+"_temp"
-    os.system("cp " + syn__file__addr + " " + original_syn_copy__file__addr) 
+    os.system("cp " + syn__file__addr + " " + original_syn_copy__file__addr)
     modified_syn__file__handle = open(modified_syn__file__addr, "w")
     condition = [False]
     done_modifiying = False
-    next_line_modify = False 
+    next_line_modify = False
     ignore = False #*** F:DN ignoring certain lines
-    apx_bit__c = DATA_PATH_BITWIDTH - precision 
+    apx_bit__c = DATA_PATH_BITWIDTH - precision
     op_type = input__obj.op_type
 
     #*** F:AN switch this manually. if you set it to mac, it'll try to parse and generate
     #         for a design with registers. If you switch this to mac_noFF it does the other obvious thing
 
     #*** F:DN Body
-    #*** F:DN parse the file 
+    #*** F:DN parse the file
     #saw_minus_1_wrapper__p = False
     #minus_1_wrapper   = "conf_int_mac__noFF__arch_agnos__w_wrapper_minus_1_OP_BITWIDTH5_DATA_PATH_BITWIDTH5"
     sub_module__n = input__obj.syn__module__na
@@ -398,15 +408,15 @@ def hardwire_apx_bits_to_zero__or__inject_syn_directives(input__obj, precision,
 
 
                 modified_syn__file__handle.write(modified__line)
-#                if (done_modifiying): 
+#                if (done_modifiying):
 #                    modified_syn__file__handle.write(line)
 #                else:
 #                    modified_syn__file__handle.write(modified__line)
-#                
+#
 #                if (condition[0] and (not(done_modifiying))):
 #                    done_modifiying = True
 
-    
+
     modified_syn__file__handle.close()
 
 
@@ -415,7 +425,7 @@ def hardwire_apx_bits_to_zero__or__inject_syn_directives(input__obj, precision,
 #          part of the result (this is b/c the paths that don't transition
 #          generat a "no path" signal in the timing report
 def find_delay_through_each_cell(input__obj, precision, lib__n):
-        
+
     timing_per_cell__log__addr = input__obj.timing_per_cell__log__addr
     syn__file__na = input__obj.syn__file__na
     syn__wrapper_module__na = input__obj.syn__wrapper_module__na
@@ -426,7 +436,7 @@ def find_delay_through_each_cell(input__obj, precision, lib__n):
     ID = input__obj.ID
     op_type = input__obj.op_type
     OP_BITWITH = precision
-    #*** F:DN Parameters 
+    #*** F:DN Parameters
     tcl_file__na =  "../tcl_src/find_delay_through_each_cell.tcl"
     os.system("pwd")
     os.system("pwd")
@@ -440,7 +450,7 @@ def find_delay_through_each_cell(input__obj, precision, lib__n):
             "set std_library " + lib__n+ ";" + \
             "set ID " + str(ID)+ ";" + \
             "set output__timing__log__na " + timing_per_cell__log__addr + ";"
-    
+
     #*** F:AN for now set the syn__file__na to mac
     syn__file__na = op_type
     output__file__na = base_to_dump_reports__dir + "/"+syn__file__na+ "_" + \
@@ -448,7 +458,7 @@ def find_delay_through_each_cell(input__obj, precision, lib__n):
             str(DATA_PATH_BITWIDTH) +"__"+ \
             "id"+"_"+str(ID)+"__"+\
             "find_delay_through_each_cell__log.txt"
-    
+
     setup_info =  "clk:"+str(clk_period) +"\n"
     setup_info +=  "DATA_PATH_BITWIDTH:"+str(DATA_PATH_BITWIDTH) +"\n"
     os.system("echo \" " + setup_info + " \" > " + output__file__na)
@@ -457,16 +467,16 @@ def find_delay_through_each_cell(input__obj, precision, lib__n):
             output__file__na)
 
 
-#*** F:DN same as the name 
+#*** F:DN same as the name
 def find_and_update_transitioning_cells(input__obj):
     timing_per_cell__log__addr = input__obj.timing_per_cell__log__addr
     transitioning_cells__log__addr = input__obj.transitioning_cells__log__addr
     none_transitioning_cells__log__addr = input__obj.none_transitioning_cells__log__addr
-    
-    #*** F:DN Variables 
+
+    #*** F:DN Variables
     transitioning_cell__log__file_handle = open(transitioning_cells__log__addr,
             "a+")
-    
+
     none_transitioning_cell__log__file_handle = open(none_transitioning_cells__log__addr, "a+")
     look_for_delay__p = False
     all_cells__l = []
@@ -474,7 +484,7 @@ def find_and_update_transitioning_cells(input__obj):
     none_transitioning_cells__l = []
 
     #*** F:DN Body
-    #*** F:DN parse the file 
+    #*** F:DN parse the file
     try:
         f = open(timing_per_cell__log__addr)
     except IOError:
@@ -484,38 +494,38 @@ def find_and_update_transitioning_cells(input__obj):
     else:
         with f:
             for line in f:
-                word_list =   line.strip().replace(',', ' ').replace(';', ' ').split(' ') 
+                word_list =   line.strip().replace(',', ' ').replace(';', ' ').split(' ')
                 if "No paths." in line:
-                    transitioning_cells__l.remove(current_cell_to_work_on) 
+                    transitioning_cells__l.remove(current_cell_to_work_on)
                     none_transitioning_cells__l.append(current_cell_to_work_on)
                 if "cell_name:" in word_list:
                     current_cell_to_work_on = word_list[-1]
-                    all_cells__l.append(current_cell_to_work_on) 
+                    all_cells__l.append(current_cell_to_work_on)
                     transitioning_cells__l.append(current_cell_to_work_on)
-                    
-        
+
+
     #*** F:DN the reason that I add to_be_ignored b/c
     #         i can't figure out a way to separate {
     #         from the cells, so the first cell is always
     #         ignored (when reading the transitioning and non
     #         tranisition cell files
     transitioning_cell__log__file_handle.write("to_be_ignored ")
-    for cell__na in transitioning_cells__l: 
+    for cell__na in transitioning_cells__l:
         transitioning_cell__log__file_handle.write(cell__na + " ")
-    
-    
+
+
     none_transitioning_cell__log__file_handle.write("to_be_ignored ")
-    for cell__na in none_transitioning_cells__l: 
+    for cell__na in none_transitioning_cells__l:
         none_transitioning_cell__log__file_handle.write(cell__na + " ")
-    
+
     transitioning_cell__log__file_handle.write("\n")
     none_transitioning_cell__log__file_handle.write("\n")
     transitioning_cell__log__file_handle.close()
     none_transitioning_cell__log__file_handle.close()
 
 def read_resyn_and_report(
-        input__obj, 
-        acc_max_delay, 
+        input__obj,
+        acc_max_delay,
         precision,
         attempt__iter__c,
         report__timing__f__best):
@@ -581,7 +591,7 @@ def read_resyn_and_report(
             ../tcl_src/"+tcl_file_name +" >>" + output__file__na)
     resyn__file__na = syn__wrapper_module__na +"__only_clk_cons_resynthesized"+\
             str(ID)+".v" # this the wrapper
-    resyn__file__addr = base_to_dump_results__dir + "/" + resyn__file__na 
+    resyn__file__addr = base_to_dump_results__dir + "/" + resyn__file__na
     os.system("echo starting dot_v file  >> " + output__file__na)
     os.system("cat  " + resyn__file__addr + "  >> " + output__file__na)
 
@@ -616,7 +626,7 @@ def is_slack_met_for__precision_under_investigation(\
 
 
 def parse_file_to_get_slack(src_file):
-    start_looking = False 
+    start_looking = False
     try:
         f = open(src_file)
     except IOError:
@@ -626,9 +636,9 @@ def parse_file_to_get_slack(src_file):
     else:
         with f:
             for line in f:
-                word_list =   line.strip().replace(',', ' ').replace(';', ' ').split(' ') 
+                word_list =   line.strip().replace(',', ' ').replace(';', ' ').split(' ')
                 if ("after" in word_list) and ("resynthesis" in word_list):
-                    start_looking = True 
+                    start_looking = True
                 if start_looking:
                     if ("slack" in word_list) and \
                             (not("-sort_by") in word_list):
@@ -646,10 +656,10 @@ def parse_file_to_get_design_arrival_times(\
         precisions_covered_so_far__l,
         precision,
         input__obj):
-            
+
     #precision__lower_limit  = input__obj.precision__lower_limit
     #precision__higher_limit = input__obj.precision__higher_limit
-    start_looking = False 
+    start_looking = False
     design_arrival_times__d = {}
     counter = 0
     #precision__parsing_for = precision__lower_limit
@@ -663,13 +673,13 @@ def parse_file_to_get_design_arrival_times(\
     else:
         with f:
             for line in f:
-                word_list =   line.strip().replace(',', ' ').replace(';', ' ').split(' ') 
+                word_list =   line.strip().replace(',', ' ').replace(';', ' ').split(' ')
                 if ("after" in word_list) and ("resynthesis" in word_list):
-                    start_looking = True 
+                    start_looking = True
                 if start_looking:
-                    """
-                    #*** F:AN FF=>noFF. uncomment the code bellow
 
+                    #*** F:AN FF=>noFF. uncomment the code bellow
+                    
                     if ("data" in word_list) and \
                             ("arrival" in word_list) and \
                             ("time") in word_list:
@@ -684,10 +694,10 @@ def parse_file_to_get_design_arrival_times(\
                                         if  (counter < len(precisions_covered_so_far__l)):
                                             precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
                                         #precision__parsing_for +=1
-
+                    """
                     # *** F:DN uncomment the code bellow
                     # *** F:AN noFF=>FF
-                    """
+
                     if ("data" in word_list) and \
                             ("arrival" in word_list) and \
                             ("time") in word_list:
@@ -710,7 +720,7 @@ def parse_file_to_get_design_arrival_times(\
                             precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
                         #precision__parsing_for +=1
 
-
+                    """
 #    for precision__el in range(precision + 1, precision__higher_limit+1):
 #        design_arrival_times__d[precision__el] = (last_arrival__t__seen)
 
@@ -1156,7 +1166,7 @@ def find_best_subdelay__using_binary_search(
         report__timing__f__best,
         activate_check_point__p,
         precision__l__order,
-        lib__n = "noAging.db"
+        lib__n = "1.2V_25T.db"
         ):
     
     #*** F:DN intialized some vars
@@ -1324,7 +1334,7 @@ def get_delay__before_tuning_and_archive(
         input__obj, precision, bestDesignsPrecision__delay__d,
         currently_targetting_acc_max_delay, acc_max_delay__lower_limit,
         acc_max_delay__upper_limit, prev__acc_max_delay, report__timing__f__best,
-        precision_best_delay__d, lib__n="noAging.db"):
+        precision_best_delay__d, lib__n="1.2V_25T.db"):
 
     attempt__iter__c = -1 #this means we havn't imposed any new constraints
     
@@ -1411,7 +1421,7 @@ def find_best_delay__using_binary_search(
         report__timing__f__best,
         activate_check_point__p,
         precision__l__order,
-        lib__n = "noAging.db"
+        lib__n = "1.2V_25T.db"
         ):
     
     #*** F:DN intialized some vars

@@ -32,16 +32,33 @@ def idct_cos_coef_generator(fixed_point__precision):
 
 
 # *** F:DN generate the coeffs and the assign statements
-def idct_cos_coef__verilog_assign__geenerator(fixed_point__precision):
+def idct_cos_coef__verilog_assign__generator(fixed_point__precision):
     
     coefs__l = idct_cos_coef_generator(fixed_point__precision) 
+    print coefs__l
+    counter = 0 
+    for i in range (0, 8):
+        for j in range(0,8):
+            print "assign COSBlock["+str(i)+"]["+str(j)+\
+                    "]["+str(fixed_point__precision-1)+":0] = "+\
+            str(fixed_point__precision)+"'d"+\
+            str(coefs__l[counter])+";   assign COSBlock["+str(i)+"]["+str(j)+\
+            "][BitWidth:"+str(fixed_point__precision)+"] = {(BitWidth1-"+\
+            str(fixed_point__precision)+"){COSBlock["+\
+            str(i)+"]["+str(j)+"]["+str(fixed_point__precision-1)+"]}};"
+            counter +=1
+        print ""
+
+def dct_cos_coef__verilog_assign__generator(fixed_point__precision):
+    coefs__l = idct_cos_coef_generator(fixed_point__precision) 
+    print coefs__l
     counter = 0 
     for j in range (0, 8):
         for i in range(0,8):
             print "assign COSBlock["+str(i)+"]["+str(j)+\
                     "]["+str(fixed_point__precision-1)+":0] = "+\
             str(fixed_point__precision)+"'d"+\
-            str(hex(coefs__l[counter]))+";   assign COSBlock["+str(i)+"]["+str(j)+\
+            str(coefs__l[counter])+";   assign COSBlock["+str(i)+"]["+str(j)+\
             "][BitWidth:"+str(fixed_point__precision)+"] = {(BitWidth1-"+\
             str(fixed_point__precision)+"){COSBlock["+\
             str(i)+"]["+str(j)+"]["+str(fixed_point__precision-1)+"]}};"
@@ -49,9 +66,15 @@ def idct_cos_coef__verilog_assign__geenerator(fixed_point__precision):
         print ""
 
 
+
+
+
+
 def main():
-    fixed_point__precision = 16
-    idct_cos_coef__verilog_assign__geenerator(fixed_point__precision)
-
-
+    fixed_point__precision = 14
+    print "*** F:DN printing dct assignments" 
+    dct_cos_coef__verilog_assign__generator(fixed_point__precision)
+    print "*** F:DN printing idct assignments" 
+    idct_cos_coef__verilog_assign__generator(fixed_point__precision)
+    
 main()

@@ -19,9 +19,9 @@ def main():
     #---------------------------------------------------- 
 #    libs__l =\
 #            ["/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/aging_and_no_aging__db/noAging.db"] 
-    #*** F:AN if you want to get all the libs in a directory, provide it bellow 
-    #lib__dir__addr = "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/various_temps__db__selected" 
-    lib__dir__addr = "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/various_temps__db__all_values" 
+    #*** F:AN if you want to get all the libs in a directory, provide it bellow
+    #lib__dir__addr = "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/various_temps__db__selected"
+    lib__dir__addr = "/home/polaris/behzad/behzad_local/verilog_files/libraries/germany_NanGate/db/various_temps__db__all_values"
     libs__l = getNameOfFilesInAFolder(lib__dir__addr)
 
     

@@ -88,28 +88,34 @@ def extract_delay_for_vaiours_temperatures(src__f__addr):
 # *** F:DN speed up vs temp
 def plot_1():
     max_temperature__switching_temp_speed_up__curve = {} 
-    sample_rate = 8 #** how often to sample from the list of temperatures
+    sample_rate = 9 #** how often to sample from the list of temperatures
     
-    #src__f__addr__l = ["blah.txt", "blah2.txt"]
-    # *** F:DN file associated with the idct__best__Pn_24__our_design
-#    src__f__addr__l =\
-#            ["/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__2/2017_04_18__16_22_44/mul_24__clk_0.49__acc_max_del_0__Pn_16__atmpt_-1__id_DFDL__2__evol_log.txt"]
-    # *** F:DN file associated with the idct__best__traditional_design
     # *** F:DN for mul 
+    """     
     src__f__addr__l =\
             ["/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__1/2017_04_26__19_02_26/mul_32__clk_0.49__acc_max_del_0__Pn_24__atmpt_-1__id_DFDL__1__evol_log.txt", 
 "/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__2/2017_04_26__19_03_32/mul_32__clk_0.49__acc_max_del_0__Pn_24__atmpt_-1__id_DFDL__2__evol_log.txt",
 "/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__3/2017_04_26__19_04_33/mul_32__clk_0.49__acc_max_del_0__Pn_24__atmpt_-1__id_DFDL__3__evol_log.txt"]
+    """
+    # *** F:DN for add
+    src__f__addr__l =\
+            ["/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__3/2017_04_27__16_20_12/add_32__clk_0.49__acc_max_del_0__Pn_24__atmpt_-1__id_DFDL__3__evol_log.txt",
+                    "/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__2/2017_04_27__16_44_35/add_32__clk_0.49__acc_max_del_0__Pn_24__atmpt_-1__id_DFDL__2__evol_log.txt", 
+                    "/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__1/2017_04_27__16_44_26/add_32__clk_0.49__acc_max_del_0__Pn_24__atmpt_-1__id_DFDL__1__evol_log.txt"]
 
-                    #            ["/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__1/2017_04_18__16_35_42/mul_24__clk_0.49__acc_max_del_0__Pn_16__atmpt_-1__id_DFDL__1__evol_log.txt"]
+            #            ["/home/local/bulkhead/behzad/usr/local/verilog_files/apx_operators/int_ops_apx/build/syn/reports/data_collected/DFDL__1/2017_04_18__16_35_42/mul_24__clk_0.49__acc_max_del_0__Pn_16__atmpt_-1__id_DFDL__1__evol_log.txt"]
 #
 
     # *** F:DN needs to correspond to the src__f__addr__l 
-    #speed_up__l = [1.086, 1.031]
     # *** F:DN for mul 
-    #speed_up__l = [float(.546)/float(.493), float(.546)/float(.499),
-            float(.546)/float(.503)]
+#    speed_up__l = [float(.546)/float(.493), float(.546)/float(.499),
+#            float(.546)/float(.503)]
+    # *** F:DN for add
+    speed_up__l = [float(.149)/float(.133), float(.149)/float(.138),
+            float(.149)/float(.140)]
     
+
+
     # *** F:DN parse each file and get the temp_switching    
     for index,src__f__addr in enumerate(src__f__addr__l):
         max_temperature__switching_temp__el = \
@@ -118,8 +124,8 @@ def plot_1():
         for index2, temp__val in enumerate(max_temperature__switching_temp__el.keys()):
             if (index2 % sample_rate) == 0: #sample based on the sampling rate
                 # *** if exists append 
-#                if temp__val < 60:
-#                    continue
+                if temp__val < 66:
+                    continue
                 if temp__val in \
                         max_temperature__switching_temp_speed_up__curve.keys():
                             max_temperature__switching_temp_speed_up__curve[temp__val].append(
@@ -146,12 +152,16 @@ def plot_1():
                 max_temperature__switching_temp_speed_up__curve[temp__el]
         data_x = map(lambda x: x[0], switching_temp_speed_up)
         data_y = map(lambda x: x[1], switching_temp_speed_up)
-        generate_graph_2d_for_one_set_of_input(ax, fig, data_x, data_y,"speedup",
-                "switching temp", str("max_temp:") + str(temp__el), 1, counter,
+        generate_graph_2d_for_one_set_of_input(ax, fig, data_x, data_y,"Speed-up",
+                "Mode-switch Temperature(Celsius)", str("Max Temp Coverage:") + str(temp__el), 1, counter,
                 n_colors)
         counter +=1
-    finish_up_making_graph(ax, "speedup vs switching temp",\
-            "speedup vs switching temp")
+    finish_up_making_graph(ax, "Speed-up vs Mode-Switch Temperature ",\
+            "Speed-up vs Mode-Switch Temperature")
+    finish_up_making_graph(ax, " ",\
+            "Speed-up vs Mode-Switch Temperature Multiplier")
+
+
 
 #     results__f = open("temp_vs_time__results.txt", "w")
 #    for el in data_y:
@@ -238,11 +248,63 @@ def plot():
     
     results__f.close()
 
+#*** F:DN Area
+def plot_2():
+    adder__x = [float(.149)/float(.133), float(.149)/float(.138),
+            float(.149)/float(.140)]
+    adder__y = [float(694)/float(549), float(687.61)/float(549),
+            float(748)/float(549)]
+#    adder__y = [float(1.93)/float(1.799), float(1.9595)/float(1.799),
+#            float(2.1844)/float(1.799)]
+    
+    multiplier__x = [float(.546)/float(.493), float(.546)/float(.499),
+            float(.546)/float(.503)]
+    multiplier__y = [float(11532)/float(9814), float(11995)/float(9814),
+            float(12914)/float(9814)]
+#    multiplier__y = [float(17.548)/float(20.38), float(19.776)/float(20.38),
+#            float(23.4304)/float(20.38)]
+
+    fig, ax  = start_up_making_graph()
+    generate_graph_2d_for_one_set_of_input(ax, fig, adder__x, adder__y,"Speed-up",
+            "Normalized Area", "Adder Design Points", 1, 1)
+    generate_graph_2d_for_one_set_of_input(ax, fig, multiplier__x,
+            multiplier__y,"Speed-up",
+            "Normalized Area", "Multiplier Design Points", 1, 8)
+
+    finish_up_making_graph(ax, " ", "Area")
+
+
+
+#*** F:DN Power
+def plot_3():
+    adder__x = [float(.149)/float(.133), float(.149)/float(.138),
+            float(.149)/float(.140)]
+    
+    adder__y = [float(1.93)/float(1.799), float(1.9595)/float(1.799),
+            float(2.1844)/float(1.799)]
+    
+    multiplier__x = [float(.546)/float(.493), float(.546)/float(.499),
+            float(.546)/float(.503)]
+
+    multiplier__y = [float(17.548)/float(20.38), float(19.776)/float(20.38),
+            float(23.4304)/float(20.38)]
+
+    fig, ax  = start_up_making_graph()
+    generate_graph_2d_for_one_set_of_input(ax, fig, adder__x, adder__y,"Speed-up",
+            "Normalized Power", "Adder Design Points", 1, 1)
+    generate_graph_2d_for_one_set_of_input(ax, fig, multiplier__x,
+            multiplier__y,"Speed-up",
+            "Normalized Power", "Multiplier Design Points", 1, 8)
+
+    finish_up_making_graph(ax, " ", "Power")
+
+
+
 
 #plot()
-plot_1()
-
-
+#plot_1()
+plot_2()
+#plot_3()
 
 #----------------------------------------------------
 # *** F:HTN  specify the addr of two files you want to parse, and the plot is generated
