@@ -73,7 +73,7 @@ module conf_int_mul__noFF__arch_agnos__w_wrapper (A_in_to_wrapper, B_in_to_wrapp
    // synopsys dc_script_end
    //assign d_internal = d_internal;
 
-   conf_int_mul__noFF__arch_agnos_apx #(OP_BITWIDTH, DATA_PATH_BITWIDTH) mul__inst(.clk(clk), .racc(racc), .rapx(rapx), .a(A_in_to_multiply), .b(B_in_to_multiply), .d(d_internal__apx));
+   conf_int_mul__noFF__arch_agnos #(OP_BITWIDTH, DATA_PATH_BITWIDTH) mul__inst(.clk(clk), .racc(racc), .rapx(rapx), .a(A_in_to_multiply), .b(B_in_to_multiply), .d(d_internal__apx));
 
    assign d_internal [(DATA_PATH_BITWIDTH + DATA_PATH_BITWIDTH) - 1 - 11 : 16] = acc__sel ? d_internal__acc[(DATA_PATH_BITWIDTH + DATA_PATH_BITWIDTH) - 1 - 11: 16] : d_internal__apx;
    assign  d_internal[15: 0] = acc__sel ? d_internal__acc[15: 0]:{(16){1'b0}};
