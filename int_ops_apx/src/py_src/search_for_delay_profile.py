@@ -89,7 +89,7 @@ def main():
     os.system("mkdir " + input__obj.base_to_dump_reports__dir)
     behzad_readMe__addr =  input__obj.base_to_dump_reports__dir_temp+"/"+"behzad_readME"
     #clk__l = [.602, .61, .64, .67]
-    clk__l = [.160]
+    clk__l = [.16]
     os.system("cp " + "params__hardwired.py" +  " " + behzad_readMe__addr)
     os.system("echo " + "activate_check_point__p=" + str(activate_check_point__p) + " >> " + behzad_readMe__addr)
     os.system("echo " + "clk__l =" + str(clk__l) + " >> " + behzad_readMe__addr)
@@ -98,7 +98,6 @@ def main():
     #*** F:DN synth design with the clk (only const is the clk)
     for clk in clk__l:
         input__obj.clk_period = clk
-#
         acc_max_delay__upper_limit__hard = acc_max_delay__upper_limit__initial_value
         acc_max_delay__lower_limit__hard = acc_max_delay__lower_limit__initial_value
         if not(activate_check_point__p):

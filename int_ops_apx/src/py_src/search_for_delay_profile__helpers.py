@@ -142,10 +142,12 @@ def synth_design_with_only_clk_constraint(input__obj, precision):
     ID = input__obj.ID
     op_type = input__obj.op_type
     OP_BITWIDTH = precision
+    long_clk = input__obj.long_clk
     #----------------------------------------------------
     #--- F:DN Variables
     #----------------------------------------------------
     tcl_parametrs = "set clk_period " + str(clk_period) + \
+                    ";set long_clk "  + str(long_clk) + \
                     ";set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + \
                     ";set CLKGATED_BITWIDTH " + str(CLKGATED_BITWIDTH) +\
                     ";set OP_BITWIDTH " + str(OP_BITWIDTH) +\
@@ -205,9 +207,9 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call,
         modified__line = "// synopsys dc_script_begin\n"
 
         # ***F:DN noFF=>FF
-        #modified__line += "//set_dont_touch d_internal\n"
+        modified__line += "//set_dont_touch d_internal\n"
         # ***F:DN FF=>noFF
-        modified__line += "//set_dont_touch d\n"
+        #modified__line += "//set_dont_touch d\n"
 
         modified__line += "// synopsys dc_script_end\n"
         modified__line += old_module_call
@@ -222,15 +224,15 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call,
     op_type = input__obj.op_type
 
     modified__line = "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a_temp__acc;\n"
-    #modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1 -11) +":0]b_temp__acc;\n" #for imbalanced
-    modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b_temp__acc;\n"
+    modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1 -11) +":0]b_temp__acc;\n" #for imbalanced
+    #modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b_temp__acc;\n"
 
     if (op_type == "mac"):
         modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]c_temp__acc;\n"
 
     modified__line += "wire ["+str(DATA_PATH_BITWIDTH-1) +":0]a_temp__apx;\n"
-    #modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1-11) +":0]b_temp__apx;\n" #for imbalanced
-    modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b_temp__apx;\n"
+    modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1-11) +":0]b_temp__apx;\n" #for imbalanced
+    #modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]b_temp__apx;\n"
 
     if (op_type == "mac"):
         modified__line += " wire ["+str(DATA_PATH_BITWIDTH-1) +":0]c_temp__apx;\n"
@@ -246,13 +248,13 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call,
                             +"\'b0};\n"
 
     #*** F:DN for imbalanced
-#    modified__line += "assign b_temp__apx = " +  "{b_temp__acc["+\
-#                            str(DATA_PATH_BITWIDTH - 1-11)+":" + str(apx_bit__c)+"],"+ str(apx_bit__c)\
-#                            +"\'b0};\n"
-
     modified__line += "assign b_temp__apx = " +  "{b_temp__acc["+\
-                            str(DATA_PATH_BITWIDTH - 1)+":" + str(apx_bit__c)+"],"+ str(apx_bit__c)\
+                            str(DATA_PATH_BITWIDTH - 1-11)+":" + str(apx_bit__c)+"],"+ str(apx_bit__c)\
                             +"\'b0};\n"
+
+#    modified__line += "assign b_temp__apx = " +  "{b_temp__acc["+\
+#                            str(DATA_PATH_BITWIDTH - 1)+":" + str(apx_bit__c)+"],"+ str(apx_bit__c)\
+#                            +"\'b0};\n"
 
     if (op_type == "mac"):
         modified__line += "assign c_temp__apx = " +  "{c_temp__acc["+\
@@ -261,21 +263,21 @@ def module_call_change(sub_module__n, input__obj, precision, old_module_call,
 
 
     # *** F:DN noFF=>FF
-    """
+
     if (op_type == "mac"):
          modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .c_in(c_temp__apx), .d(d_internal));\n"
     else:
         modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d("+str(d_arg)+"));\n"
         #modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .racc(racc), .rapx(rapx), .a(a_temp__apx), .b(b_temp__apx), .d("+str(d_ard_internal));\n"
-    """
+
 
     # *** F:DN FF=>noFF
-    
+    """
     if (op_type == "mac"):
          modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk), .rst(rst), .a(a_temp__apx), .b(b_temp__apx), .c_in(c_temp__apx), .d(d));\n"
     else:
         modified__line += sub_module__n +  " " + op_type +"__inst" + "(.clk(clk),.rst(rst),.a(a_temp__apx),.b(b_temp__apx),.d(d) );\n"
-    
+    """
 
 
     return modified__line
@@ -547,7 +549,7 @@ def read_resyn_and_report(
     op_type = input__obj.op_type
     syn__file__na = input__obj.syn__file__na
     OP_BITWIDTH = precision
-
+    long_clk = input__obj.long_clk
 
     evol_log__addr = base_to_dump_reports__dir_temp + "/"+op_type+ "_" + \
             str(DATA_PATH_BITWIDTH) +"__"+ \
@@ -560,6 +562,7 @@ def read_resyn_and_report(
 
 
     tcl_parametrs = "set clk_period " + str(clk_period) + ";" + \
+            "set long_clk " +str(long_clk) + ";" + \
             "set DATA_PATH_BITWIDTH "+str(DATA_PATH_BITWIDTH) + ";" + \
             "set CLKGATED_BITWIDTH "  +str(CLKGATED_BITWIDTH) + ";" + \
             "set OP_BITWIDTH "  +str(OP_BITWIDTH) + ";" + \
@@ -679,7 +682,7 @@ def parse_file_to_get_design_arrival_times(\
                 if start_looking:
 
                     #*** F:AN FF=>noFF. uncomment the code bellow
-                    
+                    """
                     if ("data" in word_list) and \
                             ("arrival" in word_list) and \
                             ("time") in word_list:
@@ -702,25 +705,27 @@ def parse_file_to_get_design_arrival_times(\
                             ("arrival" in word_list) and \
                             ("time") in word_list:
                                 if (float(word_list[-1]) >=0): #this is b/c arrival time is repeated for the same precision, and the 2nd one is negative
-                                    if  (counter == len(precisions_covered_so_far__l)):
+                                    if  (counter == 1):
                                         clk__acquired =  (float(word_list[-1]))
-                                    else:
+                                    elif (counter == 0):
                                         design_arrival_times__d[precision__parsing_for] = (float(word_list[-1]))
+
 
                     if ("library" in word_list) and \
                             ("setup" in word_list) and \
                                     ("time") in word_list:
                         word_list__filtered = filter(lambda x: not(x==''), word_list) #getting rid of '' to extrat data easier
-                        if  (counter == len(precisions_covered_so_far__l)):
+                        if  (counter == 1):
                             clk__acquired +=  -1*(float(word_list__filtered[-2]))
                             break
-                        design_arrival_times__d[precision__parsing_for] += -1*(float(word_list__filtered[-2]))
-                        counter += 1
+                        elif (counter == 0):
+                            design_arrival_times__d[precision__parsing_for] += -1*(float(word_list__filtered[-2]))
+                            counter += 1
                         if  (counter < len(precisions_covered_so_far__l)):
                             precision__parsing_for = sorted(precisions_covered_so_far__l)[counter]
                         #precision__parsing_for +=1
 
-                    """
+
 #    for precision__el in range(precision + 1, precision__higher_limit+1):
 #        design_arrival_times__d[precision__el] = (last_arrival__t__seen)
 

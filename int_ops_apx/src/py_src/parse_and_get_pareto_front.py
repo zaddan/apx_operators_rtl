@@ -30,11 +30,14 @@ def main():
     source__f__na = sys.argv[1] 
     result = parse_for_data(source__f__na)
     result__PF = pareto_frontier(result, False, False)
-    paretoX = list(map(lambda x: get_x(x),result__PF))
+    paretoX = map(lambda x: get_x(x),result__PF)
     paretoY = map(lambda x: get_y(x),result__PF)
     
+    allPointsX = map(lambda x: get_x(x),result)
+    allPointsY = map(lambda x: get_y(x),result)
     print result__PF
-    #plt.plot(paretoX, paretoY, 'go')
+    plt.plot(paretoX, paretoY, 'go')
+    plt.plot(allPointsX, allPointsY, 'rx')
     plt.show()
 
 main()

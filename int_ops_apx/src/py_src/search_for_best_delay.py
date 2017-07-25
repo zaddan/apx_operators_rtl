@@ -100,6 +100,7 @@ def main():
     
     currently_targetting_acc_max_delay =  acc_max_delay__upper_limit__hard
     input__obj.clk_period = currently_targetting_acc_max_delay
+    activate_check_point__p = False
     if not(activate_check_point__p):
         synth_design_with_only_clk_constraint(input__obj, precision)
     else:
